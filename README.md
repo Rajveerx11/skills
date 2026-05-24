@@ -1,33 +1,43 @@
 # Skills
 
-My personal collection of Claude Code skills.
+My personal collection of Claude Code skills, organized by domain.
 
-This repo is structured as an installable Claude Code plugin. Each skill lives in its own folder under `skills/<category>/<skill-name>/` with a `SKILL.md` as the main entry point.
-
-## Install
-
-```bash
-/plugin marketplace add Rajveerx11/skills
-```
-
-Then enable the plugin and pick the skills you want.
+Each skill lives in its own folder under `skills/<category>/<skill-name>/` with a `skill.md` as the main file.
 
 ## Structure
 
 ```
-.claude-plugin/
-  plugin.json          # plugin manifest
 skills/
-  <category>/
-    <skill-name>/
-      SKILL.md         # required, defines the skill
-      ...              # optional supplemental files
+├── building/      # make apps, AI tools, plugins, deploy
+├── checking/      # code review, security, verify
+├── writing/       # docs, slides, posts, style
+├── design/        # UI / UX work
+├── sales/         # leads, outreach, prospecting
+├── workspace/     # notes, memory, setup, automation
+└── extras/        # messaging apps, hardware, demos
 ```
 
 ## Skills
 
-_Coming soon._
+### building/
 
-## License
+- **[code-structure](skills/building/code-structure/skill.md)** — Decide what belongs in actions vs shared service layer; refactor duplicated operational logic across domain flows.
+- **[frontend-design-skill](skills/building/frontend-design-skill/skill.md)** — Create distinctive, production-grade frontend interfaces that avoid generic AI aesthetics.
 
-MIT
+### checking/
+_Empty._
+
+### writing/
+_Empty._
+
+### design/
+_Empty._
+
+### sales/
+_Empty._
+
+### workspace/
+_Empty._
+
+### extras/
+_Empty._
