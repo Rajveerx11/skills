@@ -11,10 +11,8 @@ skills/
 ├── building/      # make apps, AI tools, plugins, deploy
 ├── checking/      # code review, security, verify
 ├── writing/       # docs, slides, posts, style
-├── design/        # UI / UX work
 ├── sales/         # leads, outreach, prospecting
-├── workspace/     # notes, memory, setup, automation
-└── extras/        # messaging apps, hardware, demos
+└── workspace/     # notes, memory, setup, automation
 ```
 
 ## Skills
@@ -25,19 +23,20 @@ skills/
 - **[frontend-design-skill](skills/building/frontend-design-skill/SKILL.md)** — Create distinctive, production-grade frontend interfaces that avoid generic AI aesthetics.
 
 ### checking/
-_Empty._
+
+- **[greploop](skills/checking/greploop/SKILL.md)** — Iteratively improve a PR until Greptile gives 5/5 with zero unresolved comments.
 
 ### writing/
-_Empty._
 
-### design/
-_Empty._
+- **[caveman](skills/writing/caveman/SKILL.md)** — Ultra-compressed communication mode that cuts token usage ~75%.
+- **[frontend-slides](skills/writing/frontend-slides/SKILL.md)** — Build animation-rich HTML presentations from scratch or by converting PPT/PPTX.
+- **[linkedin-post-writer](skills/writing/linkedin-post-writer/SKILL.md)** — Write high-performing LinkedIn posts with hashtags for any project, product, or launch.
 
 ### sales/
-_Empty._
+
+- **[enrich-lead](skills/sales/enrich-lead/SKILL.md)** — Instant lead enrichment from a name, company, LinkedIn URL, or email.
+- **[lead-scrapping-apify](skills/sales/lead-scrapping-apify/SKILL.md)** — Global lead scraping + outreach pipeline via Apify Google Maps.
 
 ### workspace/
-_Empty._
 
-### extras/
-_Empty._
+- **[obsidian-vault-tune-up](skills/workspace/obsidian-vault-tune-up/SKILL.md)** — Audit, reorganize, or tune up an Obsidian vault.
