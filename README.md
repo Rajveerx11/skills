@@ -2,7 +2,7 @@
 
 My personal collection of Claude Code skills, organized by domain.
 
-Each skill lives in its own folder under `skills/<category>/<skill-name>/` with a `skill.md` as the main file.
+Each skill lives in its own folder under `skills/<category>/<skill-name>/` with a `SKILL.md` as the main file.
 
 ## Structure
 
@@ -21,8 +21,8 @@ skills/
 
 ### building/
 
-- **[code-structure](skills/building/code-structure/skill.md)** — Decide what belongs in actions vs shared service layer; refactor duplicated operational logic across domain flows.
-- **[frontend-design-skill](skills/building/frontend-design-skill/skill.md)** — Create distinctive, production-grade frontend interfaces that avoid generic AI aesthetics.
+- **[code-structure](skills/building/code-structure/SKILL.md)** — Decide what belongs in actions vs shared service layer; refactor duplicated operational logic across domain flows.
+- **[frontend-design-skill](skills/building/frontend-design-skill/SKILL.md)** — Create distinctive, production-grade frontend interfaces that avoid generic AI aesthetics.
 
 ### checking/
 _Empty._
