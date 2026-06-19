@@ -1,0 +1,18 @@
+{
+  "date": "2026-06-16",
+  "tasks": [
+    { "id": "bball-morning", "type": "anchor", "planned_min": 90,
+      "actual_min": 90, "completed": true, "rolled": false, "note": "morning basketball happened" },
+    { "id": "tessera-v2-finalise", "type": "focus", "planned_min": 90,
+      "actual_min": 90, "completed": true, "rolled": false, "note": "top priority shipped" },
+    { "id": "research-project-topics", "type": "research", "planned_min": 45,
+      "actual_min": 45, "completed": true, "rolled": false, "note": "done" },
+    { "id": "research-launch-channel", "type": "research", "planned_min": 45,
+      "actual_min": 45, "completed": false, "rolled": true, "note": "partial — research/response unsatisfactory, redoing 17-06" },
+    { "id": "content-posts-batch", "type": "content", "planned_min": 20,
+      "actual_min": 20, "completed": true, "rolled": false, "note": "both batched posts (announcement + contributors) shipped — short posts did NOT slip this time" },
+    { "id": "bball-evening", "type": "anchor", "planned_min": 180,
+      "actual_min": 180, "completed": true, "rolled": false, "note": "evening basketball happened" }
+  ],
+  "summary": { "completed": 5, "partial": 1, "skipped": 0, "rollovers": 1, "peak_energy_block": "13:00-14:30" }
+}

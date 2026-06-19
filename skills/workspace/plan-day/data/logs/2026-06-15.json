@@ -1,0 +1,14 @@
+{
+  "date": "2026-06-15",
+  "tasks": [
+    { "id": "bball-morning", "type": "anchor", "planned_min": 120, "actual_min": 120, "completed": true, "rolled": false, "note": "done" },
+    { "id": "tessera-dev-v2", "type": "focus", "planned_min": 150, "actual_min": null, "completed": false, "rolled": true, "note": "flaky-test feature completed; v2 finalisation remaining, rolled to 16-06" },
+    { "id": "announce-company-page", "type": "content", "planned_min": 15, "actual_min": 0, "completed": false, "rolled": true, "note": "not done, pushed to 16-06" },
+    { "id": "dashboard-ai-news-v1", "type": "focus", "planned_min": 120, "actual_min": null, "completed": true, "rolled": false, "note": "exceeded plan — all versions built AND published, not just v1" },
+    { "id": "contributor-post", "type": "content", "planned_min": 15, "actual_min": 0, "completed": false, "rolled": true, "note": "not done, pushed to 16-06" },
+    { "id": "bball-evening", "type": "anchor", "planned_min": 180, "actual_min": 180, "completed": true, "rolled": false, "note": "done" },
+    { "id": "research-project-topics", "type": "research", "planned_min": 45, "actual_min": 0, "completed": false, "rolled": true, "note": "overflow block, not done, pushed to 16-06" },
+    { "id": "research-launch-channel", "type": "research", "planned_min": 45, "actual_min": 0, "completed": false, "rolled": true, "note": "overflow block, not done, pushed to 16-06" }
+  ],
+  "summary": { "completed": 4, "skipped": 0, "rollovers": 5, "peak_energy_block": "15:45-17:45", "note": "Heavy focus work landed (Tessera feature + full dashboard); short content posts and late-night overflow research all slipped." }
+}

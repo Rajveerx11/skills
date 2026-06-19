@@ -1,0 +1,38 @@
+# LEARNINGS — remotion-video-prompt
+
+Accumulated, dated lessons from real builds. Newest first. Durable rules also get promoted
+into `reference.md` / `template.md`; this file is the running log + the *why*.
+
+## 2026-06-17 — Tessera "Catch Flaky Tests" (vertical Reel, v1.1 → v1.2)
+
+Second full build: 1080×1920 @ 30fps ~51s explainer+demo of a real product feature.
+Reused the intro project's scaffolding (timings/audio/config) almost verbatim — the
+VO-driven-timeline + readiness-flag + pure-Node-audio patterns held up perfectly on a
+totally different video. New, durable lessons:
+
+- **Hooks inside `.map()` break Remotion renders.** Calling a custom hook (`usePop`, which wraps `useCurrentFrame`/`useVideoConfig`/`spring`) per item in a `.map()` violates rules-of-hooks. → Read `useCurrentFrame()` + `useVideoConfig()` **once at the top** of the component, then compute `spring({frame: frame - delay, fps, config})` inline for each mapped item. *Promoted to reference §1.*
+- **`as const` on `@remotion/google-fonts` `loadFont` options is a TS2345.** `options.weights`/`subsets` want a *mutable* union array (`("400"|...)[]`), so a shared `as const` options object is `readonly` and rejected. → **Inline the options object literal at each `loadFont("normal", {weights:[...], subsets:["latin"], ignoreTooManyRequestsWarning:true})` call** so TS contextually types the literals. *Promoted to reference §1.*
+- **Cursor-clicks-the-UI alignment under zoom:** put the code-drawn cursor **inside the same positioned + `scale()`d "device" container** as the focal UI, with cursor coords in that container's *unscaled local* space. The scale then carries the cursor with the UI, so clicks stay pixel-aligned even while the scene zooms. Validated each cursor scene (stepper +, button, history chevron) with `still` renders before the full render. *Promoted to reference §3/§4.*
+- **Vertical 9:16 strategy that worked:** do NOT shrink the whole panel to fit. Compose **one focal element per scene, large and centered**; render the **background once at the `Main` level** (continuous, never re-fades) and crossfade only the scene *content* on top; per-scene "camera" = `scale()` + `translateY()` on the content. Reads as "scrolling/zooming through a phone-sized panel." *Promoted to reference §3.*
+- **Recreate real product UI faithfully in code:** pull the exact tonal tokens + pill alpha rules (e.g. `bg = color@18%`, `border = color@35%`), inline each lucide icon as its real SVG path (24×24, `stroke=currentColor`, round caps), `fontVariantNumeric:"tabular-nums"` on all counters, count-ups via a `spring` on the displayed integer, stagger rows 4–6f. Looks indistinguishable from the app.
+- **Reuse `node_modules` across video projects via `robocopy /E /MT`** when deps are identically pinned — skips a multi-minute `npm install`. **robocopy exit code 1 = "files copied" (success); its codes are a bitmask, 0–7 are all non-error** — don't treat exit 1 as failure.
+- **Monitor/grep gotcha:** the background-task output file's first line **echoes the command**, so grepping the output *filename* (`flaky-tests.mp4`) matches immediately and the watch ends before the render even starts. Match a **completion-specific** token instead (`Encoded N/N`, `time remaining: 0s`, `+ out/`). Simpler: just await the background task's own completion notification.
+- **Kokoro model is cached after the first project** — VO for the whole 10-line script regenerated in well under a minute with no re-download. af_bella @ 1.1x again sounded natural.
+- **Aspect-ratio swap (vertical ⇄ landscape) is cheap when scenes are centered columns.** To take the 1080×1920 cut to **1920×1080 for LinkedIn**: (1) swap `width`/`height` in `timings.json`; (2) add ONE global `transform: scale(~1.3)` in the `SceneWrap` (about frame center) so the ~900px centered column fills the wider frame and stays legible. Every scene — including the cursor scenes — adapted with no per-scene edits, because content is centered and the cursor lives inside the (now also-scaled) device container. Validate with stills that the tallest scene (grid/list) doesn't clip at the chosen scale. *Promoted to reference §3.*
+- **Check CTA VO length against the end-card hold.** A "broader project overview" VO ballooned the CTA to **14.6s** → ~13s of near-static end card. Tighten the line (broad but punchy) to land ~9–10s; let the on-screen text carry the detail the VO drops (VO concise, end card spells out the artifacts). Keep slow gradient drift + Ken-Burns push so even the hold isn't dead-static.
+
+## 2026-06-14 — Tessera intro (first full build, v1.0 → v1.1)
+
+- **SAPI voiceover is not acceptable as the default.** User reaction to Windows SAPI: "too much AI, quite slow, no emotions." → Default to **Kokoro** (`kokoro-js`, voice `af_bella`, `speed: 1.1`); keep SAPI only as an offline fallback. *Fix promoted to reference §6 + template §6.*
+- **Remotion's bundled ffmpeg is a stripped `--disable-filters` build.** `npx remotion ffmpeg` only has `sine`, `volume`, `amix`, `atrim`, `aformat`… — **no** `anoisesrc`, `afade`, `highpass`, `lowpass`. All ffmpeg-based SFX commands failed. → **Synthesize SFX (and music) in pure Node** by writing 16-bit PCM WAVs directly (oscillators + AD envelopes + seeded PRNG noise). Rock-solid, offline, no filter limits. *Promoted to reference §1 + §6.*
+- **No reliable free music *download* path → synthesize the bed too.** Pure-Node ambient-tech bed (chord pad + arpeggio + sub bass + soft kick/hat, intro→build→full→outro) sounded good and is fully controllable. *Promoted.*
+- **Music duck level: 0.12–0.15 is inaudible.** User "couldn't hear" it. → Duck to **~0.22–0.24** under VO. Fade keyed to *video* length (not music-file length) so it fades at the real end. *Promoted.*
+- **Drive the timeline from measured VO duration.** The VO generator writes `public/timings.json` (per-scene durations + `voReady/sfxReady/musicReady` flags); the composition lays scenes out from it. Visuals stayed perfectly synced even when the script/voice changed length. Worked great — keep this as the core pattern.
+- **Readiness flags prevent broken renders.** Gating each `<Audio>` behind its flag means the project renders (and `remotion studio` previews) before any audio is generated. Essential.
+- **Punchier copy + faster pace beats long sentences.** Rewriting VO lines short/energetic (+ `padSeconds 0.55`, Kokoro `speed 1.1`) cut the video 62s→52s and felt far more professional. Copy quality ≈ voice quality.
+- **Pin versions exactly.** All `@remotion/*` + `react`/`react-dom` to one exact version (4.0.477) and `zod@4.3.6`; no `^`. Avoids "Version mismatch / failed renders."
+- **Run the project OUTSIDE `C:\Testing IDE`.** Inside the repo, Remotion resolves the repo's zod-3 and throws a (false) mismatch warning.
+- **Validate with a `still` before the full render.** A single-frame still catches compile/JSX errors in seconds vs. a multi-minute full render. Rendered stills for the trickiest scenes (terminal, CTA) to eyeball quality first.
+- **`@remotion/google-fonts` spams network requests** (48–126) loading all weights and needs network at render. Load specific weights / `ignoreTooManyRequestsWarning`, and always keep a CSS mono/sans fallback.
+- **Film grain = cheap premium.** SVG `feTurbulence` overlay (opacity ~0.045, `soft-light`, drift by frame) adds finish and kills banding. Browser paints the turbulence once; animating position is cheap.
+- **Process that worked:** brand pulled from the real app's CSS tokens; 9-scene 3-act spine; recreate UI/terminal/artifacts in code (no footage); confirm style with the user (they said "emerald + dark"); render at `--concurrency=4`; open result in their browser (Zen) + reveal folder in Explorer.

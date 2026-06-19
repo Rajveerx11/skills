@@ -1,0 +1,21 @@
+{
+  "date": "2026-06-19",
+  "tasks": [
+    { "id": "hod-call-dsy", "type": "event", "planned_min": 45, "actual_min": null,
+      "completed": true, "rolled": false, "note": "DSY admission call happened" },
+    { "id": "remotion-autovideo-skill", "type": "focus", "planned_min": 60, "actual_min": null,
+      "completed": true, "rolled": false, "carried_from": "2026-06-18",
+      "note": "v1 shipped end-to-end; carry-over landed once block was reached, concrete done-line held" },
+    { "id": "tessera-next-feature", "type": "focus", "planned_min": 75, "actual_min": 0,
+      "completed": false, "rolled": true,
+      "note": "not shipped; done-line deferred the pin ('pin which one when you start') — only semi-open block, only build that slipped" },
+    { "id": "linkedin-tessera-post", "type": "content", "planned_min": 20, "actual_min": 0,
+      "completed": false, "rolled": true, "batched": true,
+      "note": "slipped with Tessera — batched behind it, nothing to announce when build didn't ship" },
+    { "id": "yt-ig-research", "type": "focus", "planned_min": 45, "actual_min": null,
+      "completed": true, "rolled": false, "carried_from": "2026-06-18",
+      "note": "concrete go/no-go decision (reframed from open research) landed; carry-over from 06-18" }
+  ],
+  "summary": { "completed": 3, "skipped": 0, "rollovers": 2, "peak_energy_block": null,
+    "note": "Both 06-18 carry-overs landed once reached. Two concrete done-lines shipped; the one semi-open done-line (Tessera) slipped, taking its batched post with it." }
+}

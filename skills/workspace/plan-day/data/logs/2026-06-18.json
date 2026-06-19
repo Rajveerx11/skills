@@ -1,0 +1,30 @@
+{
+  "date": "2026-06-18",
+  "tasks": [
+    { "id": "bball-morning", "type": "anchor", "planned_min": 120,
+      "actual_min": 120, "completed": true, "rolled": false, "note": "morning basketball anchor" },
+    { "id": "linkedin-autoapply-skill", "type": "focus", "planned_min": 60,
+      "actual_min": 60, "completed": true, "rolled": false,
+      "note": "v1 shipped — scrape JD → tailored resume → drafted application. Concrete done-line block landed." },
+    { "id": "remotion-autovideo-skill", "type": "focus", "planned_min": 60,
+      "actual_min": 0, "completed": false, "rolled": true,
+      "note": "not reached — important personal matters took the time. External interruption, task was well-scoped." },
+    { "id": "tessera-next-feature", "type": "focus", "planned_min": 75,
+      "actual_min": 75, "completed": true, "rolled": false,
+      "note": "carried from 06-17; landed this time in the afternoon window." },
+    { "id": "yt-ig-research", "type": "research", "planned_min": 45,
+      "actual_min": 0, "completed": false, "rolled": true,
+      "note": "not reached — same personal-matters interruption. NOT evidence of the open-ended-research pattern; cause was external." },
+    { "id": "bball-evening", "type": "anchor", "planned_min": 180,
+      "actual_min": 180, "completed": true, "rolled": false, "note": "evening basketball anchor (assumed routine)" }
+  ],
+  "summary": {
+    "completed": 2,
+    "skipped": 0,
+    "rollovers": 2,
+    "rollover_cause": "external — important personal matters, not plan/scoping",
+    "energy": "mixed",
+    "peak_energy_block": "13:00-14:00",
+    "note": "2/4 project blocks shipped. The reframed/concretely-scoped blocks that were reached (LinkedIn skill, Tessera) both landed. The two misses were time lost to personal matters, not fragile scoping."
+  }
+}
