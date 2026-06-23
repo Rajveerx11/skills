@@ -39,6 +39,7 @@ video/      # video creation, motion graphics, captions
 
 - **[caveman](skills/writing/caveman/SKILL.md)** — Ultra-compressed communication mode.
 - **[frontend-slides](skills/writing/frontend-slides/SKILL.md)** — Create stunning, animation-rich HTML presentations from scratch or by converting PowerPoint files.
+- **[learn-post](skills/writing/learn-post/SKILL.md)** — Turn what you learned today into a build-in-public LinkedIn post, then log it back into learn-day as the day's shipped post (closes the watch→ship loop).
 - **[linkedin-post-writer](skills/writing/linkedin-post-writer/SKILL.md)** — Write high-performing LinkedIn posts with hashtags for any project, product, launch, or professional update.
 - **[researcher](skills/writing/researcher/SKILL.md)** — Deep research on any topic using web search, multiple sources, and synthesis.
 - **[resume-tailor](skills/writing/resume-tailor/SKILL.md)** — Tailor a master resume to a specific job description and produce an ATS-optimized, recruiter-ready resume.
@@ -55,6 +56,7 @@ video/      # video creation, motion graphics, captions
 ### workspace/
 
 - **[create-skill](skills/workspace/create-skill/SKILL.md)** — Create high-quality Claude Code custom skills and slash commands.
+- **[learn-day](skills/workspace/learn-day/SKILL.md)** — Self-learning daily tracker + coach: logs what you studied and shipped into Obsidian (one note/day), and on a weekend trigger writes a weekly report that scores consistency, synthesizes learnings, and pin-points where you're going wrong. Self-improving.
 - **[obsidian-vault-tune-up](skills/workspace/obsidian-vault-tune-up/SKILL.md)** — Use this skill when Rajveer wants an AI agent to audit, reorganize, or tune up an Obsidian vault â€” whether for human readability, navigation, or to make the vault function as a high-quality "second brain" / LLM context source.
 - **[plan-day](skills/workspace/plan-day/SKILL.md)** — Self-learning daily scheduler and productivity coach.
 - **[visual-plan](skills/workspace/visual-plan/SKILL.md)** — Turn ordinary text plans into rich interactive visual plans with diagrams, file maps, annotated code, open questions, and UI/prototype review when useful.
@@ -79,5 +81,3 @@ video/      # video creation, motion graphics, captions
 - **[remotion-video-prompt](skills/video/remotion-video-prompt/SKILL.md)** — Turn a raw video idea into a production-ready Remotion generation prompt.
 - **[shorts](skills/video/shorts/SKILL.md)** — Turn a recent feature of the CURRENT project into a finished YouTube Short or long-form video.
 - **[website-to-video](skills/video/website-to-video/SKILL.md)** — Capture a general website/URL and turn it into a HyperFrames video (site tour, showcase, or social clip from the site's own visuals).
-
-
