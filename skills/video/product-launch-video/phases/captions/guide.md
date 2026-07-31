@@ -26,11 +26,11 @@ The following are inputs for `captions.mjs html`; the input for `captions.mjs gr
 ## 1. Run (orchestrator runs Bash directly in Step 5.5, before scene fan-out)
 
 ```bash
-(cd "$PROJECT_DIR" && node <SKILL_DIR>/scripts/captions.mjs group \
+(cd "$PROJECT_DIR" && node <SKILL_DIR>/../faceless-explainer/scripts/captions.mjs group \
   --group-spec ./group_spec.json --hyperframes . \
   --tokens design-system/chunks/tokens.css --out ./caption_groups.json)
 
-(cd "$PROJECT_DIR" && node <SKILL_DIR>/scripts/captions.mjs html \
+(cd "$PROJECT_DIR" && node <SKILL_DIR>/../faceless-explainer/scripts/captions.mjs html \
   --hyperframes . --groups ./caption_groups.json \
   --tokens design-system/chunks/tokens.css \
   --inference design-system/inference.json \

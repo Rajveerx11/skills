@@ -80,3 +80,15 @@ Reads every GSAP timeline registered on `window.__timelines`, enumerates tweens,
 - `hyperframes-core` — composition structure, data attributes, sub-compositions, deterministic render contract
 - `hyperframes-creative` — palettes, typography, narration, beat planning (non-animation creative direction)
 - `hyperframes-cli` — `npx hyperframes lint / validate / inspect / preview / render`
+
+<!-- skill-evolver:adaptive-start -->
+## Professional execution
+
+- **Discover automatically:** inspect scene intent, existing timelines, runtime imports, animation-map output, duration, fps, reduced-motion requirements, and the exact elements that need motion. Load only matching rules, blueprint, transition, or adapter references.
+- **Default intelligently:** compose 2-4 atomic rules on one paused GSAP timeline. Escalate to a blueprint or another runtime only when the effect needs it; reuse installed registry motion before creating equivalent code.
+- **Plan motion before code:** state the communication beat, phases, focal hierarchy, entry/hold/exit ownership, durations, and performance budget. Preserve static end-state layout as ground truth.
+- **Protect contracts:** deterministic seeking, `tl.seek(0)`, runtime registration, sub-composition isolation, fixed duration, transition rules, reduced motion, and no timer/random/live-state dependence are non-negotiable.
+- **Validate deliberately:** inspect start/end boundaries and peak frames, run animation-map checks, seek backward/forward, test repeated renders, watch full-speed playback, and verify no layout, contrast, or performance regression.
+- **Finish the handoff:** identify chosen rules/blueprints/runtime, timeline and composition IDs, timing rationale, changed files, validation evidence, and any performance or accessibility caveat.
+- **Learn only from evidence:** record successful blueprints, measured performance, and reviewed motion corrections through `skill-evolver`; never promote novelty without repeatable results.
+<!-- skill-evolver:adaptive-end -->

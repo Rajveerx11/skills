@@ -35,11 +35,11 @@ The #1 reason AI videos look broken is invalid Remotion code. Enforce these in t
 
 **Render/setup conventions to include:**
 - `remotion.config.ts`: `Config.setVideoImageFormat('jpeg')`, `Config.setCodec('h264')`, `Config.setOverwriteOutput(true)`, `Config.setChromiumOpenGlRenderer('angle')` (GPU for preview/glow).
-- Reuse the shared global browser: `Config.setBrowserExecutable("C:/Users/rajve/.remotion/chrome-headless-shell/win64/chrome-headless-shell-win64/chrome-headless-shell.exe")`.
+- Reuse a verified browser only through `REMOTION_BROWSER_EXECUTABLE`; call `Config.setBrowserExecutable(process.env.REMOTION_BROWSER_EXECUTABLE)` when set. Otherwise let Remotion resolve or install its browser. Never hardcode a user directory or platform-specific cache path.
 - Render: `npx remotion render src/index.ts <CompId> out/video.mp4 --concurrency=4` (4 is a good CPU balance on this machine; encode is CPU-only on Windows).
 
 **Gotchas learned the hard way:**
-- **Pin every `@remotion/*` package + `react`/`react-dom` to the SAME exact version** (no `^`), and pin `zod@4.3.6`. Mixed versions → "Version mismatch / failed renders".
+- **Pin every `@remotion/*` package plus `react`/`react-dom` to the SAME exact compatible version** (no `^`), and use the Zod major required by that release. Mixed versions cause version-mismatch failures.
 - **Bundled ffmpeg is stripped** (`--disable-filters`) — see §6. Don't rely on it for audio synthesis; do SFX/music in pure Node.
 - **`@remotion/google-fonts` loads many weights** → a "made N network requests" warning and needs network at render. Pass `loadFont('normal', { weights:['400','500','600','700'], subsets:['latin'], ignoreTooManyRequestsWarning:true })` and always keep a `monospace`/`sans-serif` CSS fallback so it renders even offline. **Inline that options object at each call** — a shared `as const` object makes `weights`/`subsets` `readonly` and fails the (mutable) `loadFont` type (TS2345).
 - **Never call a hook inside `.map()`/loops/conditionals.** A per-item `usePop()`/`useCurrentFrame()` in a `.map()` violates rules-of-hooks and can break the render. Read `useCurrentFrame()` + `useVideoConfig()` **once at the top**, then compute `spring({ frame: frame - delay, fps, config })` inline per item.

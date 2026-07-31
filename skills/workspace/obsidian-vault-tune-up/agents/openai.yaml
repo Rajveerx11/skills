@@ -1,0 +1,4 @@
+interface:
+  display_name: "Obsidian Vault Tune-Up"
+  short_description: "Audit and improve an Obsidian knowledge vault"
+  default_prompt: "Use $obsidian-vault-tune-up to audit and safely improve this vault."

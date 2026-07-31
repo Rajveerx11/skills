@@ -1,6 +1,6 @@
-# ATS & Resume Rules Engine (2025–2026)
+# ATS & Resume Rules Engine (2025–2026 source snapshot)
 
-The verified rules behind the `resume-tailor` skill. Apply these literally. Confidence tags: **[PRIMARY]** vendor data/official docs/named study · **[REPORTED]** widely-repeated, vendor-blog grade · **[DIRECTIONAL]** rule-of-thumb.
+Use this as a dated reference snapshot. Apply durable parser and honesty rules; verify current vendor behavior and any quantitative claim before repeating it to a user. Confidence tags: **[PRIMARY]** vendor data/official docs/named study · **[REPORTED]** widely repeated, vendor-blog grade · **[DIRECTIONAL]** rule of thumb.
 
 ## 0. Reality check (frame the user's expectations honestly)
 
@@ -59,8 +59,8 @@ Formatting causes ~23% of parse failures. Rules:
 | Fonts | One web-safe font: Arial, Calibri, Cambria, Garamond, Georgia, Helvetica, Tahoma, Times New Roman, Verdana. Body 10–12 pt (11 sweet spot); headings 14–16 pt; name 16–20 pt. |
 | Margins / spacing | 1 inch (0.5 in minimum); single line spacing (≤1.15). |
 | Dates | `Month YYYY` (January 2022 / Jan 2022) **or** `MM/YYYY` — pick one, be consistent. Avoid year-only, apostrophe years ('21), single-digit months, em-dashes. Don't start a line with a date. |
-| Characters | ASCII only: straight quotes, `•` or `-` bullets (not ★➤◆), hyphen/en-dash for ranges, spell out symbols ("Phone:", "50%"). Disable ligatures on export. |
-| File | DOCX default (lowest failure rate) + text-based PDF option; never image/scanned PDF; keep < 2.5 MB. Name: `FirstName_LastName_JobTitle_Resume.pdf` (underscores/hyphens, no spaces). |
+| Characters | Plain text characters: straight quotes and `-` bullets for maximum portability (standard `•` bullets are acceptable when extraction is verified); avoid decorative symbols such as ★➤◆, use hyphens for ranges, and disable ligatures on export. |
+| File | DOCX default + text-based PDF option; never image/scanned PDF; keep within the target system's current file limit. Name DOCX as `FirstName_LastName_JobTitle_Resume.docx` and PDF similarly when requested. |
 | Length | 1 page for ≤10 yrs; 1–2 pages mid-career; 2 pages senior. No ATS length penalty — only obey a stated one-page limit. Last ~15 years only. |
 
 ## 5. Section structure

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Researcher"
+  short_description: "Produce current, decision-ready research"
+  default_prompt: "Use $researcher to investigate this question with primary sources, contradiction checks, and a decision-ready recommendation."

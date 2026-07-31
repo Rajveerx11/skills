@@ -27,7 +27,12 @@ cd remotion-src && npm install && npm run render
 # -> remotion-src/out/baseline.mp4
 
 # 4. Render HF translation
-cd .. && node ../../../packages/cli/dist/cli.js render hf-src/ --output hf.mp4
+cd ..
+if [[ -n "${HYPERFRAMES_CLI:-}" ]]; then
+  "$HYPERFRAMES_CLI" render hf-src/ --output hf.mp4
+else
+  npx hyperframes render hf-src/ --output hf.mp4
+fi
 # -> hf.mp4
 
 # 5. SSIM diff

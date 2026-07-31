@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build Premium Website"
+  short_description: "Build a distinctive production marketing site"
+  default_prompt: "Use $build-premium-website to build a polished, responsive marketing site from this brief."

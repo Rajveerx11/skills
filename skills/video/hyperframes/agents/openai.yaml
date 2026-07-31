@@ -1,0 +1,6 @@
+interface:
+  display_name: "HyperFrames"
+  short_description: "Author deterministic HTML video compositions"
+  default_prompt: "Use $hyperframes to route, author, validate, and render this deterministic HTML video composition."
+policy:
+  allow_implicit_invocation: true

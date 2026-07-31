@@ -1,0 +1,6 @@
+interface:
+  display_name: "Website to Video"
+  short_description: "Capture a website and build a branded video"
+  default_prompt: "Use $website-to-video to capture this general website, build an authentic branded story from it, and deliver a validated render."
+policy:
+  allow_implicit_invocation: true

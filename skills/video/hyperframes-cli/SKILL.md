@@ -149,3 +149,15 @@ npx hyperframes compositions   # list compositions in project
 npx hyperframes docs           # open documentation
 npx hyperframes benchmark .    # benchmark render performance
 ```
+
+<!-- skill-evolver:adaptive-start -->
+## Professional execution
+
+- **Discover automatically:** resolve project root, local/global CLI, package manager, installed version, project manifest, browser/ffmpeg availability, platform, GPU mode, prior logs, and existing outputs before choosing commands.
+- **Default intelligently:** prefer the project-local CLI and manifest settings, non-interactive scaffolding, draft renders during iteration, explicit output paths, and the smallest diagnostic command that can falsify the current hypothesis.
+- **Resume safely:** never reinitialize a valid project or overwrite an output blindly. Reuse passing lint/inspect evidence only while relevant inputs are unchanged; preserve failed logs and render to a distinct path when comparison matters.
+- **Protect contracts:** copy documented CLI syntax exactly, quote paths, respect Windows-specific shell behavior, check exit codes, and do not claim success from process launch alone.
+- **Diagnose systematically:** run doctor/version/state checks, reproduce with the minimal command, separate authoring errors from environment errors, apply one scoped fix, then rerun the original failing gate.
+- **Finish the handoff:** report CLI/version resolution, commands run, exit results, project and output paths, render metadata, relevant logs, and any command intentionally skipped.
+- **Learn only from evidence:** record versioned failures and verified environment resolutions through `skill-evolver`; never generalize from an unreproduced transient error.
+<!-- skill-evolver:adaptive-end -->

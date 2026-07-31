@@ -1,143 +1,129 @@
 ---
 name: upwork-proposal
-description: Write a high-converting Upwork proposal for a job post the user provides. Use when the user pastes an Upwork job description, says "write me an upwork proposal", "draft a proposal for this job", "help me apply to this upwork job", or shares a job link and asks for a cover letter.
-argument-hint: [paste the job post / job description / job URL]
+description: Evaluate an Upwork job and write one tailored, truthful proposal using the freelancer's verified proof. Use when the user shares a job post or URL and asks for an Upwork proposal, cover letter, screening answers, bid strategy, attachment plan, fit check, or help applying. Does not submit the proposal or contact the client without explicit authorization and a connected tool.
 ---
 
 # Upwork Proposal Writer
 
-You are an expert at writing Upwork cover letters that win jobs, modeled on Top Rated Plus and Expert Vetted freelancers who hit ~80% reply rates. You write proposals that are personalized, specific, and structured — never generic templates.
+Write like a specialist who understands the work, not an applicant reciting a resume. The proposal must connect one client need to the closest verified proof and a credible first plan.
 
-## What "high-converting" means
+## Ingest the job
 
-Top-rated freelancers hit ~80% reply rates by following a strict formula. Average freelancers hit ~5%. The difference is structure, personalization, and proof — not writing skill. Follow the formula exactly.
+Use pasted text, screenshot, file, or URL. Attempt to read a public URL with available browser/retrieval tools. If authentication or bot protection blocks it, ask for pasted text or an export; never pretend it was read.
 
-## Step 1 — Read the job post
+Extract:
 
-Carefully extract from what the user pasted:
+- client's actual problem and desired outcome;
+- required deliverables and screening questions;
+- stack, industry, scale, constraints, timeline, timezone, and language;
+- budget/rate model and scope ambiguity;
+- client signals when visible: payment verification, history, hire rate, prior spend, ratings, proposal count, and posting time.
 
-- **Client's stated problem** — quote a phrase you can mirror back
-- **Tools/stack mentioned** — exact names, not categories
-- **Vertical/industry** if stated
-- **Budget signals** — fixed vs hourly, range, scope size
-- **Anything specific** — timezone, language, compliance, scale, deadline
+Use exact client terminology only where it improves relevance.
 
-If the user pasted only a URL with no post text, ask them to paste the actual job description (you can't fetch authenticated Upwork URLs).
+## Check viability before writing
 
-## Step 2 — Check what you know about the freelancer
+Classify:
 
-To write a proposal that wins, you need facts from the user — never invent them. Check if you have:
+- **strong fit:** evidence matches core deliverable and constraints;
+- **adjacent fit:** transferable evidence plus a credible gap plan;
+- **weak fit:** missing required capability or economics;
+- **unsafe/suspicious:** off-platform payment/contact pressure, free-work request, credential/identity request, implausible terms, copied/vague scope, or policy evasion.
 
-1. **Their relevant experience** — a past project / case study that matches this job's vertical or stack
-2. **A specific result with a number** — clients booked, $ saved, hours reduced, conversion lifted, scale processed (e.g. "47 estimates booked in 30 days", "$120K pipeline revived", "2,000 leads/month processed")
-3. **Their stack** — what they actually use day-to-day (don't list everything; match what the job needs)
-4. **Their differentiator** — one unfair advantage relevant to this client (timezone, language, niche expertise, specific certification, unique combo of skills)
-5. **Their rate / budget approach** — hourly rate or how they want to handle pricing
-6. **Their name / sign-off preference**
+Recommend skip when required criteria are missing or risk outweighs opportunity. Do not write persuasive copy that hides a material mismatch.
 
-**If any of these are missing AND the job post requires them to write a credible proposal, ASK before drafting.** Ask in one consolidated message — never one question at a time. Example:
+Treat boost/spend decisions as optional bid economics. Recommend them only when fit, competition, client quality, proposal cost, and expected project value are known.
 
-> Before I write this, I need a few things to make it land:
-> 1. Have you done [specific thing the job asks for] before? If yes, what was the outcome (a number, if possible)?
-> 2. What's your stack for this kind of work?
-> 3. What's one thing about you that makes you the obvious pick for this client?
-> 4. What rate / pricing approach do you want?
-> 5. What name should I sign off with?
+## Build the freelancer evidence bank
 
-**Don't ask if you can infer it from prior conversation context, a saved memory, or the user's earlier messages.** Use what you already know.
+Inspect prior conversation, approved profile/memory, portfolio, resume, and supplied case studies before asking.
 
-## Step 3 — Draft using the 5-Part Formula
+For the job, select:
 
-1. **Opening line** — mirror THEIR problem in THEIR words. Reference something specific from the post in the first 15 words. Never start with "I am", "Dear Hiring Manager", "Hi there", or "I hope this finds you well".
-2. **Proof** — ONE specific, relevant result with a number. Pick the closest match to their vertical from what the user told you. If exact match unknown, frame as "same pattern, adjacent industry".
-3. **Mini-plan** — 2–3 step approach showing you've already started thinking about THEIR job. Include rough timeline per step.
-4. **Differentiator** — ONE line on why this freelancer specifically. Pick the single best fit for this client. Don't stack multiple.
-5. **CTA — ONE specific qualifying question** that forces a reply and proves expertise (asks about their stack, scale, or constraints). Never end with "let me know if you have questions".
+- one closest project or work sample;
+- one verified result, scale indicator, or delivered artifact;
+- relevant tools actually used;
+- one differentiator that matters to this client;
+- availability/rate only when needed.
 
-## Hard Rules
+Never invent a metric, client, title, certification, tool, testimonial, or availability. A proposal can be credible without a number; use concrete scope or artifact instead.
 
-1. **150–250 words.** Hard cap 300. Count before delivering.
-2. **First sentence must reference something specific from the job post** — a tool they named, a pain they described, a number they cited. Proves you actually read it.
-3. **Use ONE number/result.** Not a list. One concrete proof beats five vague claims.
-4. **Match only the tools the job asked for** + at most one related upsell. Never dump the freelancer's full stack.
-5. **Use line breaks.** No walls of text. Short paragraphs, ideally a numbered mini-plan.
-6. **Never invent metrics, client names, or testimonials.** If you don't have a real number, ask the user or frame loosely ("the same pattern I've used for similar clients").
-7. **Sign with first name only** (e.g. "— Alex"), unless the user specifies otherwise.
-8. **End with ONE question** that helps scope the job. The question itself signals expertise.
+Ask one consolidated question only when the missing fact is essential to establish fit or price. Otherwise draft with available evidence and note what to replace.
 
-## Tone Calibration
+<!-- skill-evolver:adaptive-start -->
+## Choose the proposal angle
 
-- **Authoritative & calm** by default — not eager, not desperate. Top earners write like consultants, not applicants.
-- **No emojis** in the proposal body. One `→` or `✅` in the mini-plan is OK, never more.
-- **No superlatives** — "amazing", "passionate", "world-class", "high-quality" signal inexperience.
-- **No questions in the opener** — answer their need first; questions go at the end.
-- **Match the post's language.** If the post is in Spanish/German/French, write the proposal in that language (confirm with user if unsure).
+Create three internal openings:
 
-## Reference Template (adapt, don't copy verbatim)
+- **diagnostic insight:** name the likely root constraint in the post;
+- **closest proof:** connect a similar verified result;
+- **mini-plan:** show the first decision or implementation sequence.
 
-```
-Hi [Name if visible, else skip greeting entirely],
+Score for specificity, evidence, client language, confidence, and non-generic value. Choose one. Do not deliver three cosmetic variants unless requested.
+<!-- skill-evolver:adaptive-end -->
 
-[One line mirroring their specific pain in their words] — that's exactly the kind of [system / build / problem] I work on. [One sentence proof: specific past project + number outcome, matched to their vertical].
+## Draft
 
-Here's how I'd approach yours:
-1. [Discovery/audit step] — [duration]
-2. [Build step using their stack] — [duration]
-3. [Handoff / tuning / launch step] — [duration]
+Use the shortest structure that earns a reply:
 
-[One differentiator line — pick the single best fit for this client.]
+1. **Specific opening:** respond to a real detail from the post.
+2. **Proof:** one closest verified example, result, or artifact.
+3. **Plan:** two or three concrete steps, risks, or decisions for this job.
+4. **Fit:** one relevant differentiator or working constraint.
+5. **Close:** one useful scoping question or proposed next step.
 
-[One qualifying scoping question — e.g. "Quick scoping question: are you on [Tool A] or [Tool B]? Changes the build approach."]
+Guidance:
 
-— [First name]
-```
+- usually 120–250 words; shorter for a narrow post, longer only when technical detail earns it;
+- calm, direct, and matched to the client's language;
+- short paragraphs; no generic greeting, adjective pile, stack dump, or desperation;
+- answer explicit screening questions separately and consistently;
+- do not give away a full unpaid implementation or custom sample;
+- do not claim a fixed timeline before critical dependencies are known;
+- first name only in sign-off unless user prefers otherwise.
 
-## Template for Vague / Short Job Posts
+For a vague post, use a compact qualification response: summarize likely need, show one adjacent proof, then ask the two or three questions required to quote accurately. Do not fabricate a plan around missing scope.
 
-When the post is under ~50 words or the client clearly isn't technical, use this variant. Lean into clarity, not pitch.
+## Attachment and Loom plan
 
-```
-Hi,
+Recommend the single artifact that reduces the client's largest uncertainty:
 
-Your post is short so I want to scope this right before quoting. From what you wrote, it sounds like you need [restate in your words, one sentence].
+- relevant case study;
+- annotated screenshot;
+- architecture or workflow diagram;
+- short Loom showing the closest real system;
+- code/sample link with sensitive data removed.
 
-I've built [X] of these for [type of clients] over the last [timeframe]. To send a real plan + fixed price, I need 3 things:
+State exactly what to show and keep it job-specific. Never expose confidential work, source code, credentials, customer data, or an unrelated generic portfolio.
 
-1. [Tool/stack question]
-2. [Scale / volume question]
-3. [What's the #1 thing failing right now?]
+## Deliver
 
-Reply with those and I'll send a [Loom / written plan] within 24h with exact build steps + price.
+Return:
 
-— [First name]
-```
+1. **Fit verdict:** apply, apply-with-caveat, or skip; one-sentence reason.
+2. **Proposal:** copy-paste text in a code block.
+3. **Word count.**
+4. **Screening answers:** when present.
+5. **Attachment/Loom:** one recommended proof asset and framing.
+6. **Bid note:** rate/fixed-price/boost guidance only when enough evidence exists.
+7. **Truth check:** any placeholder or missing proof.
 
-## Anti-Patterns — Kill on Sight
+Do not add a long checklist by default.
 
-- ❌ "Dear Hiring Manager" / "Hi there" / "Hope you're well"
-- ❌ "I am a passionate / experienced / dedicated…"
-- ❌ "Over X years of experience in…"
-- ❌ Listing 10 tools when they asked about 1
-- ❌ "I can deliver high-quality work" (meaningless)
-- ❌ "Please let me know if you have any questions" (passive close)
-- ❌ Walls of text without line breaks
-- ❌ Inventing client names, dollar figures, or testimonials
-- ❌ Generic openings that could apply to any job
+## Learn from outcomes
 
-## Output Format
+When the user supplies results, record job fit, viewed/replied/interviewed/hired state, proposal angle, attachment, bid cost, and date. Distinguish client quality and timing from copy quality. Never infer success from silence or one outcome.
 
-Once you have enough info, output:
+Keep private proposal outcomes outside public skill files.
 
-1. **The proposal** — ready to paste, in a code block for easy copy
-2. **Word count**
-3. **Attachment recommendation** — what kind of work sample / Loom / case study to attach (lifts reply rate +35%). If user hasn't mentioned having one, suggest what they should record/upload.
-4. **Boost recommendation** — Yes / No + reasoning. Boost only if the freelancer is an obvious top-3 fit AND the job has under ~15 proposals already.
-5. **Pre-send checklist:**
-   - [ ] Word count under 250
-   - [ ] Attachment ready
-   - [ ] Boost decision made
-   - [ ] Applied within 60 min of posting (response rates drop sharply after the first hour)
+## Quality gate
 
-## Final Note
+- Opening could only fit this job.
+- Every freelancer claim maps to evidence.
+- Proposal addresses the client's outcome, not the freelancer's biography.
+- Plan demonstrates judgment without unpaid over-delivery.
+- One question makes replying easy and improves scope.
+- Screening answers, rate, timeline, and proposal do not contradict.
+- Risk and fit verdict are honest.
 
-`$ARGUMENTS` is the job post to write a proposal for. Before drafting, verify you have the freelancer facts needed (Step 2). If not, ask once in a consolidated message, then draft. Never invent details about the freelancer.
+Revise the weakest dimension once.

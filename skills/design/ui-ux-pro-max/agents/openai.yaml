@@ -1,0 +1,4 @@
+interface:
+  display_name: "UI/UX Pro Max"
+  short_description: "Query local UI/UX design intelligence"
+  default_prompt: "Use $ui-ux-pro-max to query the bundled dataset and recommend an evidence-backed design system for this product."

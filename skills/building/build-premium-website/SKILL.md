@@ -1,126 +1,82 @@
 ---
 name: build-premium-website
-description: Build a premium, animated marketing website (React + Vite + Tailwind + GSAP) for any industry. Use when the user asks to "build a website", "make a landing page for [business]", "build a marketing site", or wants a high-end animated company website. Adapts color, copy, services, and signature animation to the industry.
-argument-hint: [business name or industry, optional]
+description: Build a complete premium marketing website, company site, product-marketing site, or campaign landing page from a business brief. Use only when the primary deliverable is an end-to-end conversion-focused marketing site with copy, responsive implementation, imagery, and purposeful motion. Route product/app UI and components to frontend-design-skill, portfolios or visual-first redesign direction to design-taste-frontend, targeted critique/polish to impeccable, and UX research or design-system selection to ui-ux-pro-max.
 ---
 
 # Build Premium Website
 
-You are an expert at building high-end, animated, single-page marketing websites (React 19 + Vite + Tailwind CSS + GSAP). Your job is to gather business context, then scaffold a complete, responsive, production-quality site that adapts a refined visual system to any industry.
+Deliver a production-ready marketing site, not a concept or code dump. Preserve the user's stack, brand, content truth, repository conventions, and deployment boundary.
 
-This skill is fully self-contained. A complete reference implementation lives inside the skill at `${CLAUDE_SKILL_DIR}/reference/full-reference-app.jsx` (and accompanying `full-reference-*.css/html/json` files). Read those when you need ground-truth markup or component code. Never copy industry-specific copy verbatim â€” translate every string to match the target business.
+## Route near matches
 
-## Phase 1 â€” Intake (REQUIRED before any code)
+- Use this skill for a complete marketing/company/campaign site whose job is persuasion and conversion.
+- Use `frontend-design-skill` for product interfaces, dashboards, application screens, flows, or standalone components.
+- Use `design-taste-frontend` for portfolio work or a visual-first anti-generic redesign where art direction is the main task.
+- Use `impeccable` for critique, audit, polish, clarification, adaptation, or targeted improvement of an existing interface.
+- Use `ui-ux-pro-max` for UX research, product-pattern selection, design-system guidance, mobile UX, or guideline-driven analysis.
 
-Use `AskUserQuestion` to gather business context. Do not skip this. Batch into ~4 question rounds. See `${CLAUDE_SKILL_DIR}/reference/intake-questions.md` for exact question phrasing and option lists.
+Choose the skill matching the dominant deliverable. Combine skills only when the user explicitly requests multiple distinct outcomes.
 
-Collect at minimum:
-- Company name + tagline
-- Industry / what they do (one sentence)
-- Tone (premium-technical, friendly-local, luxury-minimal, bold-modern, warm-artisanal)
-- Brand colors (primary, accent) â€” or auto-suggest from industry
-- 4â€“8 services (title + one-line description each)
-- Contact info (phone, email, location, hours)
-- Trust signals (years, certifications, memberships)
-- Language (English / Danish / other)
-- Hero imagery search terms (Unsplash keywords)
-- Signature animation theme â€” auto-pick from industry table in `reference/industry-themes.md`
+## Discover before deciding
 
-If the user gives short answers, fill in sensible defaults and proceed. The reminder says "work without stopping for clarifying questions" â€” make reasonable calls.
+Inspect the workspace first:
 
-## Phase 2 â€” Scaffold
+- Read repository instructions, package files, routes, existing components, design tokens, copy, assets, and Git status.
+- Reuse the current framework and component system. For a new standalone site, default to React + Vite only when the user gave no stack preference.
+- If `.openai/hosting.json` exists, follow the Sites workflow and reuse its project identity.
+- Extract company name, offer, audience, proof, CTA, contact details, brand colors, and language from available files or the prompt.
+- Separate supplied facts from assumptions. Never invent testimonials, certifications, clients, metrics, addresses, or legal claims.
 
-Create the project in the user's preferred projects directory (ask if unclear; default `~/Desktop/websites/<slug>/`):
+Ask one consolidated question only when missing information changes the offer, audience, primary CTA, required pages, or irreversible project location. Otherwise choose documented defaults and proceed.
 
-```bash
-cd <PROJECTS_DIR>
-npm create vite@latest <slug> -- --template react
-cd <slug>
-npm install
-npm install gsap lucide-react react-router-dom
-npm install -D tailwindcss@3 postcss autoprefixer
-npx tailwindcss init -p
-```
+## Shape the site
 
-Then drop in configs from `reference/tech-setup.md`:
-- `tailwind.config.js` â€” substitute brand colors into the token slots
-- `postcss.config.js`
-- `vite.config.js` (port 5173, autoOpen)
-- `index.html` â€” Google Fonts links + base meta
-- `src/index.css` â€” copy verbatim from `reference/code-snippets.md`, substituting hex values for the brand colors
-- `src/main.jsx` â€” React Router setup with three routes (/, /privacy, /terms)
+1. Write a compact internal brief: audience, promise, proof, primary CTA, tone, constraints.
+2. Explore two or three meaningfully different art directions internally. Select the strongest by brand fit, memorability, accessibility, implementation cost, and content density.
+3. Define one signature visual or interaction. Do not decorate every section equally.
+4. Choose the smallest section set that tells a complete conversion story. Typical order: navigation, hero, proof, problem/benefit, offer, process, trust, CTA/contact, footer.
+5. Write concrete, audience-specific copy. Make headings informative; avoid generic AI slogans and unsupported superlatives.
 
-## Phase 3 â€” Build sections in order
+Use bundled references selectively:
 
-Build `src/App.jsx` as a single file containing all components (mirror reference structure). Follow `reference/structure.md` section-by-section. Each section:
+- [structure.md](reference/structure.md) for section mechanics and the reference implementation map.
+- [design-system.md](reference/design-system.md) and [visual-examples.md](reference/visual-examples.md) for visual decisions.
+- [animations.md](reference/animations.md) for GSAP and reduced-motion patterns.
+- [industry-themes.md](reference/industry-themes.md) and [logo.md](reference/logo.md) for domain-specific motifs.
+- [tech-setup.md](reference/tech-setup.md) and [code-snippets.md](reference/code-snippets.md) only for a compatible React/Vite build.
+- Treat `full-reference-*` files as pattern sources, never as copy or mandatory architecture.
 
-1. **Navbar** â€” fixed pill nav, glass-on-scroll, mobile hamburger overlay
-2. **Hero** â€” full-dvh, background image + dual gradient overlays, GSAP staggered entrance, floating themed particles (top-right)
-3. **Features** â€” 3 interactive cards: one stacked-shuffler, one signature-animation (water-drops adapted to industry), one cursor-on-calendar/scheduler
-4. **Pillars** â€” 3 trust stats with animated `CountUp` via IntersectionObserver + RAF
-5. **Protocol** â€” 3-step sticky-stack with GSAP ScrollTrigger scrub (cards scale/blur/fade as next overlaps)
-6. **ServicesGrid** â€” 6-tile dark grid with gap-px dividers and hover state
-7. **TrustSignals** â€” 3 credibility badges with stagger fade-in
-8. **ContactForm** â€” name/email/phone/zip + message + drag-drop file upload + idle/sending/sent states
-9. **Footer** â€” multi-col grid + status pulse + legal links
+## Implement end to end
 
-Use `lucide-react` icons matched to the user's services. Use the brand's primary color throughout, accent sparingly. Default typography roles: display headings = Plus Jakarta Sans, italic flourish = Cormorant Garamond, body = Inter, labels = JetBrains Mono.
+- Modify the existing site in place unless the user asked for a separate project.
+- Build real navigation, routes, forms, buttons, and responsive states. A mock submission must be visibly labeled; do not imply data was sent.
+- Reuse local brand assets. When sourcing or generating imagery is authorized, save durable local files, record provenance when relevant, and provide useful alt text.
+- Centralize color, type, spacing, radius, shadow, and motion tokens. Keep dependencies minimal.
+- Adapt motion to the content. Honor `prefers-reduced-motion`; avoid scroll hijacking and effects that block reading or input.
+- Preserve SEO basics: meaningful title, description, heading order, semantic landmarks, share image when available.
+- Do not publish, deploy, buy assets, or create external accounts unless requested.
 
-## Phase 4 â€” Signature animation
+## Verify and improve
 
-The reference's signature is the **falling water drops + ripples on a pipe**. Adapt to the industry by swapping the SVG shape and recoloring while reusing the same keyframes (`rain-fall`, `rain-ripple`, `rain-fadein`). Match table in `reference/industry-themes.md`:
+Run the repository's install, format, lint, typecheck, test, and production-build commands that apply. Then inspect the rendered site:
 
-| Industry | Shape | Colors |
-|---|---|---|
-| Plumbing/water/cleaning | Teardrop | blues |
-| Electrical | Lightning bolt / spark | yellow + cyan arc |
-| HVAC/heating | Flame OR snowflake | warm orange / icy blue |
-| Bakery/food | Flour mote / dough drop | cream + amber |
-| Fitness/wellness | Pulse ring / heartbeat line | crimson + lime |
-| Tech/SaaS | Code bracket / scan dot | violet + neon |
-| Landscaping | Falling leaf | forest green + rust |
-| Auto/mechanic | Gear / oil drop | graphite + amber |
-| Finance | Coin / ascending bar | navy + gold |
-| Beauty/spa | Sparkle / petal | rose + champagne |
-| Real estate | Key / pin drop | slate + brass |
-| Construction | Spark + iron filing | charcoal + safety-orange |
+- 375px, 768px, and a desktop width;
+- keyboard navigation, focus visibility, labels, contrast, and reduced motion;
+- primary CTA, navigation, forms, overlays, and error/success states;
+- console errors, failed requests, overflow, clipped text, layout shift, and image loading;
+- page hierarchy and visual specificity in screenshots.
 
-Always re-skin â€” never just leave the teardrop.
+Fix failures. Critique the weakest of concept, copy, responsiveness, accessibility, performance, or interaction, then revise once.
 
-## Phase 5 â€” Polish & verify
+## Completion
 
-- `npm run dev` (background) and open `http://localhost:5173` via claude-in-chrome
-- Resize to 375 / 768 / 1440 to verify responsive layout
-- Scroll the full page â€” confirm hero stagger, feature reveals, sticky-stack scrub, pillar counters, signature animation loop
-- Submit the contact form (mock state) â€” verify idle â†’ sending â†’ sent transition
-- Read console messages â€” fix any errors
-- Report the local URL to the user
+Return the finished path or URL, major design decision, verification commands and results, any intentionally mocked integration, and remaining launch inputs. Do not create extra documentation unless requested.
 
-## Critical Rules
+<!-- skill-evolver:adaptive-start -->
+## Adaptive excellence
 
-1. **Always run Phase 1 intake first.** Never start coding before AskUserQuestion has returned.
-2. **Translate every string.** No Danish text leaks into a non-Danish site. No plumbing terms leak into a non-plumbing site.
-3. **Re-skin the signature animation** to match the industry â€” never ship water drops on a non-water business.
-4. **Preserve the design system intact** â€” the typography stack, spacing scale, glass/magnetic-btn/grid-bg utilities are what make it look premium. Don't simplify them away.
-5. **All 9 sections by default.** Only drop one if the user explicitly says so.
-6. **Mobile-first.** Test at 375px. Hamburger menu, single-column stack, scaled type.
-7. **Read the bundled reference freely.** When a pattern is unclear, open the in-skill copy at `${CLAUDE_SKILL_DIR}/reference/full-reference-app.jsx` (cited by line range in `reference/structure.md`).
-8. **Use real images.** Pull Unsplash URLs matching the user's hero terms. Never use placeholder boxes.
-9. **Match icon to service.** Pick semantically correct lucide-react icons. Don't reuse Droplets for a bakery.
-10. **Don't write a README or docs** unless asked. Build the site.
-
-## Reference files (read lazily as needed)
-
-- `${CLAUDE_SKILL_DIR}/reference/intake-questions.md` â€” exact questions to ask
-- `${CLAUDE_SKILL_DIR}/reference/structure.md` â€” section-by-section anatomy with line citations
-- `${CLAUDE_SKILL_DIR}/reference/tech-setup.md` â€” package.json, configs, index.html
-- `${CLAUDE_SKILL_DIR}/reference/design-system.md` â€” color slots, typography, components
-- `${CLAUDE_SKILL_DIR}/reference/animations.md` â€” GSAP patterns, keyframes, CountUp
-- `${CLAUDE_SKILL_DIR}/reference/industry-themes.md` â€” signature animation per industry
-- `${CLAUDE_SKILL_DIR}/reference/logo.md` â€” logo lockups, icon picker per industry, favicon
-- `${CLAUDE_SKILL_DIR}/reference/visual-examples.md` â€” ASCII mockups of every section + "premium" checklist
-- `${CLAUDE_SKILL_DIR}/reference/code-snippets.md` â€” index.css, key component skeletons
-
-## Final note
-
-Use `$ARGUMENTS` as a starting hint for the business if provided (e.g. `/build-premium-website acme bakery`). Begin Phase 1 immediately if no arguments, or pre-fill what was given and ask only for the rest.
+- Optimize for a distinctive production site that fits the brand, converts its audience, and works across devices.
+- Use high creative freedom for art direction, narrative, layout, and motion. Preserve truthful claims, stack compatibility, accessibility, performance, and functional interactions.
+- Require a brief-specific design, passing build/interactions, and responsive keyboard/contrast/reduced-motion evidence. Revise the weakest dimension once.
+- Learn only from explicit visual decisions, screenshot deltas, or measured conversion evidence; never self-edit from silence or self-rating.
+<!-- skill-evolver:adaptive-end -->

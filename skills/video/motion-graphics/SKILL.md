@@ -12,10 +12,6 @@ description: >
   (faceless-explainer), product promos (product-launch-video), PR videos
   (pr-to-video), or captions on existing footage (embedded-captions). When unsure whether it's a
   quick motion-first piece or a longer / narrated treatment, see /hyperframes.
-metadata:
-  {
-    "tags": "orchestrator, motion-graphics, kinetic-type, data-viz, logo-reveal, lower-thirds, news, tweet, webpage, asset-fusion, short-form, overlay, no-narration",
-  }
 ---
 
 # motion-graphics — dispatch entry
@@ -28,7 +24,7 @@ A short design-led motion graphic. **Asset-first**: decide the asset strategy an
 | -------- | --------------------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------- |
 | init     | Bash                                                                  | `hyperframes.json`                                               | Step 0                        |
 | plan     | subagent — **decide search?** + classify + asset strategy             | `shot-plan.json` (draft: category, `asset_needs` queries, brief) | `agents/director.md` (Part 1) |
-| source ◇ | Bash — media-use resolve (**skip if `asset_needs` is empty**)         | `assets/` + `assets/index.md`                                    | `phases/source/guide.md`      |
+| source ◇ | Bash — media-use resolve (**skip if `asset_needs` is empty**)         | `$PROJECT_DIR/assets/` + `$PROJECT_DIR/assets/index.md`            | `phases/source/guide.md`      |
 | design   | subagent — shot design around resolved assets                         | `shot-plan.json` (final: block(s) + layout + motion + positions) | `agents/director.md` (Part 2) |
 | build    | subagent — reuse-first composition                                    | `compositions/index.html`                                        | `agents/builder.md`           |
 | render   | Bash — `hyperframes render` (MP4, or `--format webm/mov` for overlay) | `renders/video.mp4`                                              | Step 5                        |
@@ -112,7 +108,7 @@ Degrade gracefully: if a search/provider is unavailable, the category falls back
 
 ### Step 3 — Design (subagent: Director Part 2)
 
-Dispatch a subagent (prompt = `agents/director.md` Part 2 + dispatch context including the resolved `assets/index.md` if Step 2 ran + `catalog-map.md`). It designs the shot **around the available assets**: pick the catalog block(s) + the `hyperframes-animation` rules/blueprints, the layout, the motion, beats, and (for `asset-fusion`) the `element_positions` + eyedropper palette. Finalizes `shot-plan.json` (`content.block` + `content.customize` + per-category content).
+Dispatch a subagent (prompt = `agents/director.md` Part 2 + dispatch context including the resolved `$PROJECT_DIR/assets/index.md` if Step 2 ran + `catalog-map.md`). It designs the shot **around the available assets**: pick the catalog block(s) + the `hyperframes-animation` rules/blueprints, the layout, the motion, beats, and (for `asset-fusion`) the `element_positions` + eyedropper palette. Finalizes `shot-plan.json` (`content.block` + `content.customize` + per-category content).
 
 ### Step 4 — Build (subagent: Builder, reuse-first)
 
@@ -141,7 +137,7 @@ Report the final output (`renders/video.mp4`, or the `.webm` / `.mov` overlay va
 (cd "$PROJECT_DIR" && npx hyperframes preview)   # Studio UI; or `npx hyperframes play` for a shareable link
 ```
 
-Flags live in the `hyperframes-cli` skill (`references/preview-render.md`).
+Preview and render flags live in the `hyperframes-cli` skill.
 
 ## Resume table
 
@@ -168,3 +164,15 @@ Flags live in the `hyperframes-cli` skill (`references/preview-render.md`).
     renders/video.mp4
   ```
 - **Registration:** in `hyperframes` router — add the "design-led short motion graphic" intent + Workflow description; carve the motion-graphics triggers out of `/general-video`; add reverse Do-NOT-use edges. See `motion-graphics-genre.md` §5-7.
+
+<!-- skill-evolver:adaptive-start -->
+## Professional execution
+
+- **Discover automatically:** identify user-supplied facts/assets, platform/format clues, existing project state, catalog matches, and whether real-world search is necessary. Never search when supplied content is sufficient.
+- **Default intelligently:** use one strong visual transformation, the shortest duration that lands the idea, reuse-first registry blocks, 2-4 matching animation rules, and project-local frozen assets. Pick a form category without asking when evidence is clear.
+- **Resume safely:** treat draft/final `shot-plan.json`, asset ledger, composition, lint/inspect output, and render as checkpoints. Continue from the first absent or invalid stage and rerun downstream stages only when their inputs changed.
+- **Protect contracts:** facts, asset provenance, fixed duration after build, HyperFrames timeline/data attributes, deterministic media, and verification commands are low-freedom. Concept, typography, layout, choreography, and transition family are high-freedom.
+- **Validate communication:** the idea must read muted and at a glance; inspect beginning, transformation peak, hold, and end; then run lint/inspect, render, playback, contrast, overflow, and asset-provenance checks. One repair pass may not change fixed duration.
+- **Finish the handoff:** return category, concept sentence, asset ledger, chosen blocks/rules, render path and metadata, verification evidence, and any degraded provider path.
+- **Learn only from evidence:** record approved motifs, timing corrections, and measured performance through `skill-evolver`; never reward visual complexity by default.
+<!-- skill-evolver:adaptive-end -->

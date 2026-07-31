@@ -1,0 +1,4 @@
+interface:
+  display_name: "Enrich Lead"
+  short_description: "Build sourced professional lead briefs"
+  default_prompt: "Use $enrich-lead to enrich and verify these business leads with sources and confidence."

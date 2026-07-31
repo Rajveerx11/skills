@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Presentation</title>
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --surface: #fffdf8;
+      --text: #171714;
+      --muted: #68675f;
+      --accent: #f05a3c;
+      --line: color-mix(in srgb, var(--text) 16%, transparent);
+      --font-display: Inter, ui-sans-serif, system-ui, sans-serif;
+      --font-body: Inter, ui-sans-serif, system-ui, sans-serif;
+      --ease: cubic-bezier(.2, .8, .2, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; }
+    body {
+      overflow: hidden;
+      background: #111;
+      color: var(--text);
+      font-family: var(--font-body);
+    }
+
+    button { font: inherit; }
+    button:focus-visible, a:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      align-content: center;
+      gap: clamp(1rem, 2.4vw, 2.5rem);
+      padding: clamp(2rem, 7vw, 7rem);
+      background: var(--bg);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(4%);
+      transition: opacity 320ms var(--ease), transform 420ms var(--ease), visibility 0s linear 420ms;
+      pointer-events: none;
+    }
+
+    .slide[aria-hidden="false"] {
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      transition-delay: 0s;
+      pointer-events: auto;
+    }
+
+    .eyebrow {
+      margin: 0;
+      color: var(--accent);
+      font-size: clamp(.75rem, 1.2vw, 1rem);
+      font-weight: 750;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1, h2 {
+      max-width: 14ch;
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 7.6vw, 7.4rem);
+      font-weight: 650;
+      letter-spacing: -.055em;
+      line-height: .94;
+      text-wrap: balance;
+    }
+
+    .lede {
+      max-width: 44ch;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1.1rem, 2vw, 1.8rem);
+      line-height: 1.4;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(.8rem, 2vw, 1.5rem);
+    }
+
+    .card {
+      min-height: 12rem;
+      padding: clamp(1rem, 2.5vw, 2rem);
+      border: 1px solid var(--line);
+      border-radius: 1.25rem;
+      background: var(--surface);
+    }
+
+    [data-fragment] {
+      opacity: 0;
+      transform: translateY(1rem);
+      transition: opacity 260ms var(--ease), transform 360ms var(--ease);
+    }
+
+    [data-fragment].is-visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    .deck-nav {
+      position: fixed;
+      right: max(1rem, env(safe-area-inset-right));
+      bottom: max(1rem, env(safe-area-inset-bottom));
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .5rem;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px;
+      background: rgba(18,18,18,.82);
+      color: #fff;
+      backdrop-filter: blur(12px);
+    }
+
+    .deck-nav button {
+      width: 2.5rem;
+      height: 2.5rem;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .deck-nav button:hover { background: rgba(255,255,255,.12); }
+    .counter { min-width: 5ch; text-align: center; font-variant-numeric: tabular-nums; }
+    .progress {
+      position: fixed;
+      inset: auto 0 0;
+      z-index: 11;
+      height: 3px;
+      background: rgba(255,255,255,.16);
+    }
+    .progress > span {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+      transition: width 240ms var(--ease);
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 760px) {
+      .slide { align-content: start; overflow-y: auto; padding-top: 12vh; }
+      .grid { grid-template-columns: 1fr; }
+      .card { min-height: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+
+    @media print {
+      @page { size: 13.333in 7.5in; margin: 0; }
+      html, body { width: auto; height: auto; overflow: visible; background: #fff; }
+      .deck { width: auto; height: auto; overflow: visible; }
+      .slide, .slide[aria-hidden="true"], .slide[aria-hidden="false"] {
+        position: relative;
+        width: 13.333in;
+        height: 7.5in;
+        page-break-after: always;
+        break-after: page;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        overflow: hidden;
+      }
+      [data-fragment] { opacity: 1; transform: none; }
+      .deck-nav, .progress, .sr-only { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck" aria-label="Presentation">
+    <section class="slide" id="opening" aria-hidden="false" tabindex="-1">
+      <p class="eyebrow">Presentation</p>
+      <h1>One clear claim earns attention.</h1>
+      <p class="lede">Replace this sample with the promise, tension, or outcome that drives the talk.</p>
+    </section>
+
+    <section class="slide" id="proof" aria-hidden="true" tabindex="-1">
+      <p class="eyebrow">Evidence</p>
+      <h2>Reveal detail only when it helps the audience follow.</h2>
+      <div class="grid">
+        <article class="card" data-fragment>First verified point</article>
+        <article class="card" data-fragment>Second verified point</article>
+        <article class="card" data-fragment>Third verified point</article>
+      </div>
+    </section>
+
+    <section class="slide" id="close" aria-hidden="true" tabindex="-1">
+      <p class="eyebrow">Next step</p>
+      <h2>End with a decision, not a thank-you.</h2>
+      <p class="lede">State the action the audience should take after the presentation.</p>
+    </section>
+  </main>
+
+  <nav class="deck-nav" aria-label="Slide navigation">
+    <button type="button" data-prev aria-label="Previous slide">←</button>
+    <span class="counter" aria-hidden="true">1 / 3</span>
+    <button type="button" data-next aria-label="Next slide">→</button>
+  </nav>
+  <div class="progress" aria-hidden="true"><span></span></div>
+  <p class="sr-only" aria-live="polite" data-live></p>
+
+  <script>
+    (() => {
+      const slides = [...document.querySelectorAll(".slide")];
+      const counter = document.querySelector(".counter");
+      const progress = document.querySelector(".progress > span");
+      const live = document.querySelector("[data-live]");
+      let index = Math.max(0, slides.findIndex((slide) => `#${slide.id}` === location.hash));
+      let fragmentIndex = 0;
+
+      function fragments(slide = slides[index]) {
+        return [...slide.querySelectorAll("[data-fragment]")];
+      }
+
+      function announce() {
+        const heading = slides[index].querySelector("h1, h2");
+        live.textContent = `Slide ${index + 1} of ${slides.length}: ${heading ? heading.textContent : slides[index].id}`;
+      }
+
+      function render({ focus = true } = {}) {
+        slides.forEach((slide, i) => {
+          const active = i === index;
+          slide.setAttribute("aria-hidden", String(!active));
+          if (!active) {
+            slide.querySelectorAll("[data-fragment]").forEach((item) => item.classList.remove("is-visible"));
+          }
+        });
+        const activeFragments = fragments();
+        activeFragments.forEach((item, i) => item.classList.toggle("is-visible", i < fragmentIndex));
+        counter.textContent = `${index + 1} / ${slides.length}`;
+        progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+        history.replaceState(null, "", `#${slides[index].id}`);
+        announce();
+        if (focus) slides[index].focus({ preventScroll: true });
+      }
+
+      function next() {
+        if (fragmentIndex < fragments().length) {
+          fragmentIndex += 1;
+        } else if (index < slides.length - 1) {
+          index += 1;
+          fragmentIndex = 0;
+        }
+        render();
+      }
+
+      function previous() {
+        if (fragmentIndex > 0) {
+          fragmentIndex -= 1;
+        } else if (index > 0) {
+          index -= 1;
+          fragmentIndex = fragments().length;
+        }
+        render();
+      }
+
+      document.querySelector("[data-next]").addEventListener("click", next);
+      document.querySelector("[data-prev]").addEventListener("click", previous);
+      window.addEventListener("hashchange", () => {
+        const found = slides.findIndex((slide) => `#${slide.id}` === location.hash);
+        if (found >= 0) {
+          index = found;
+          fragmentIndex = 0;
+          render({ focus: false });
+        }
+      });
+      window.addEventListener("keydown", (event) => {
+        if (["ArrowRight", "PageDown", " "].includes(event.key)) {
+          event.preventDefault();
+          next();
+        } else if (["ArrowLeft", "PageUp", "Backspace"].includes(event.key)) {
+          event.preventDefault();
+          previous();
+        } else if (event.key === "Home") {
+          index = 0;
+          fragmentIndex = 0;
+          render();
+        } else if (event.key === "End") {
+          index = slides.length - 1;
+          fragmentIndex = fragments().length;
+          render();
+        } else if (event.key.toLowerCase() === "f") {
+          document.documentElement.requestFullscreen?.();
+        }
+      });
+
+      render({ focus: false });
+    })();
+  </script>
+</body>
+</html>

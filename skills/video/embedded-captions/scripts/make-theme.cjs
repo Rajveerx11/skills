@@ -46,6 +46,14 @@ const F = 1 / 24;
 const theme = JSON.parse(fs.readFileSync(path.join(PROJECT, "theme.json"), "utf8"));
 const dna = JSON.parse(fs.readFileSync(path.join(SKILL, "themes", theme.dna + ".json"), "utf8"));
 const transcript = JSON.parse(fs.readFileSync(path.join(PROJECT, "transcript.json"), "utf8"));
+const coverwordFontPath = path.join(SKILL, "assets/brand/CyberpunkReplica.ttf");
+if (dna.hero?.setpiece === "coverword" && !fs.existsSync(coverwordFontPath)) {
+  throw new Error(
+    "[make-theme] coverword requires a user-supplied, appropriately licensed " +
+      "assets/brand/CyberpunkReplica.ttf. The public skill cannot redistribute " +
+      "the personal-use font. Provide the licensed file or choose another theme.",
+  );
+}
 const W = theme.width || 1280,
   H = theme.height || 720;
 
@@ -5137,9 +5145,7 @@ function setpieceCoverword() {
   const CPM = JSON.parse(
     fs.readFileSync(path.join(SKILL, "assets/brand/cyberpunk-widths.json"), "utf8"),
   );
-  const fontB64 = fs
-    .readFileSync(path.join(SKILL, "assets/brand/CyberpunkReplica.ttf"))
-    .toString("base64");
+  const fontB64 = fs.readFileSync(coverwordFontPath).toString("base64");
   const DISP = HG.coverDisp || heroText[0].toUpperCase() + heroText.slice(1).toLowerCase();
   const hpx = HG.fontPx;
   const em =

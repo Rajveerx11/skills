@@ -1,143 +1,78 @@
 ---
 name: composio
-description: Build AI agent integrations with Composio (composio.dev). Use when the user wants to connect AI agents to third-party apps (GitHub, Gmail, Slack, Notion, Salesforce, etc.), set up OAuth authentication for tools, create Composio sessions, use Composio tools natively or via MCP, set up event triggers, or build multi-app agent workflows. Triggers on imports from composio or @composio or mentions of composio.
-argument-hint: [description of what to build or integrate]
+description: Build or repair Composio integrations for AI agents, including scoped sessions, tool discovery and execution, connected-account authentication, MCP exposure, triggers, and multi-app workflows. Use for Composio SDK code, @composio packages, Composio API/MCP setup, OAuth connection flows, or agent actions across services such as Gmail, GitHub, Slack, Notion, and Salesforce.
 ---
 
-# Composio Skill
+# Composio Integration
 
-You are an expert at integrating AI agents with third-party applications using Composio — the developer-first platform that connects agents to 1000+ apps via unified SDKs and MCP.
+Deliver a least-privilege integration that runs for the correct user and account, handles authentication, and proves both read and write paths safely.
 
-Read the detailed reference files in `${CLAUDE_SKILL_DIR}` for comprehensive patterns:
+## Verify the installed surface
 
-- `sdk-reference.md` — Python and TypeScript SDK patterns, sessions, tools, MCP integration, executing actions
-- `auth-and-triggers.md` — OAuth/API key authentication flows, connected accounts, triggers, webhooks, polling
+Composio changes quickly. Before coding:
 
-## Setup Checklist
+1. Inspect the language, framework, lockfile, installed `composio` or `@composio/*` versions, environment conventions, and existing user/session persistence.
+2. Read types and documentation shipped with the installed package.
+3. Use current official Composio docs for APIs absent from the package. Pin the dependency version used by the implementation.
+4. Treat [sdk-reference.md](sdk-reference.md) and [auth-and-triggers.md](auth-and-triggers.md) as conceptual examples; verify every version-sensitive method, option, tool slug, trigger slug, and response field.
 
-### Python
-```bash
-pip install composio composio-claude-agent-sdk
-```
+Never invent an action name or infer its arguments. Discover the tool and inspect its schema.
 
-### TypeScript
-```bash
-npm install composio @composio/claude-agent-sdk
-```
+## Model authority first
 
-### Environment Variables
-```bash
-COMPOSIO_API_KEY=your_composio_api_key    # from composio.dev dashboard
-ANTHROPIC_API_KEY=your_anthropic_api_key  # for Claude integration
-```
+Write a compact integration contract:
 
-## Key Concepts
+- stable application `user_id` and tenant boundary;
+- allowed toolkits and required scopes;
+- read actions, reversible writes, sensitive writes, and destructive actions;
+- account-selection behavior when a user has multiple accounts;
+- session storage, trigger delivery, idempotency key, and audit fields.
 
-| Concept | Description |
-|---------|-------------|
-| **Toolkits** | Bundles of tools by service (github, gmail, slack, notion, etc.) |
-| **Tools** | Discrete operations: `GITHUB_CREATE_ISSUE`, `GMAIL_SEND_EMAIL`, `SLACK_POST_MESSAGE` |
-| **Auth Configs** | Reusable auth blueprints (OAuth2, API Key, Bearer Token) per toolkit |
-| **Connected Accounts** | User-to-toolkit links created after OAuth consent or API key setup |
-| **Triggers** | Event listeners: `GITHUB_COMMIT_EVENT`, `SLACK_NEW_MESSAGE`, `GMAIL_NEW_EMAIL` |
-| **Sessions** | Isolated user contexts with access to tools (native or MCP) |
-| **User ID** | Primary identifier scoping all operations to a specific user |
+Restrict sessions to needed toolkits. Require explicit account selection when ambiguity could send data from or to the wrong account. Never use email address or another mutable identifier as the primary user key.
 
-## Core Patterns
+## Implement the session
 
-### Initialize Client
+- Prefer current session-based APIs for agentic discovery and authentication.
+- Create a fresh session for a new task context; persist and reuse the session ID for the same multi-turn context.
+- Expose only the provider format the agent framework needs. Use MCP when the client supports it and dynamic discovery reduces context.
+- Disable optional remote execution/sandbox features when the workflow does not need them.
+- Keep `COMPOSIO_API_KEY` and provider credentials in the project's secret mechanism. Never log keys, OAuth codes, connection links after use, or raw tool responses containing sensitive data.
 
-**Python:**
-```python
-from composio import Composio
+## Authenticate and execute
 
-composio = Composio(api_key="your_api_key")
-# Or set COMPOSIO_API_KEY env var and omit api_key
-```
+1. Check connection state for the target user, toolkit, and account.
+2. If authentication is needed, generate the supported connection flow and give the user the consent link. Resume only after active status is verified.
+3. Discover the exact tool and input schema.
+4. Execute a harmless read or sandbox action first.
+5. Normalize large responses outside the model context; retain source IDs and pagination state.
+6. Require current user authority before sends, publishes, payments, permission changes, deletes, or other consequential external writes.
+7. Record tool name, account alias/ID, request correlation ID, result status, and retry count without sensitive payloads.
 
-**TypeScript:**
-```typescript
-import { Composio } from "composio";
+## Triggers and multi-app flows
 
-const composio = new Composio({ apiKey: "your_api_key" });
-```
+- Verify current trigger availability and payload schema for each toolkit.
+- Validate webhook authenticity where supported, deduplicate delivery IDs, make handlers idempotent, and support replay.
+- Separate event intake from downstream work with a queue when retries or bursts matter.
+- Propagate a correlation ID across apps. Define compensation or human review for partial success.
+- Never silently fan out a single event into external messages or updates.
 
-### Create Session and Get Tools (Native)
-```python
-session = composio.create(user_id="user_123", toolkits=["github", "gmail"])
-tools = session.tools()
-# Pass tools to your Claude agent
-```
+## Test
 
-### Create Session and Get MCP URL
-```python
-session = composio.create(user_id="user_123", toolkits=["github", "slack"])
-mcp_url = session.mcp.url
-# Use mcp_url in MCP-compatible clients (Claude Desktop, Cursor, etc.)
-```
+Test with isolated users/accounts or vendor test environments:
 
-### Authenticate a User (OAuth2)
-```python
-connection_request = composio.connected_accounts.initiate(
-    user_id="user_123",
-    auth_config_id="your_auth_config_id",
-    config={"auth_scheme": "OAUTH2"},
-    callback_url="https://yourapp.com/callback"
-)
-# Redirect user to: connection_request.redirect_url
-# After consent, wait for connection:
-connected_account = connection_request.wait_for_connection()
-```
+- no connection, active connection, expired/revoked connection, and multiple accounts;
+- schema validation, pagination, rate limit, timeout, retry, and partial failure;
+- duplicate trigger delivery and replay;
+- an approved write to a non-production target;
+- tenant isolation and secret redaction.
 
-### Set Up a Trigger
-```python
-trigger = composio.triggers.create(
-    slug="GITHUB_COMMIT_EVENT",
-    user_id="user_123",
-    trigger_config={"owner": "repo-owner", "repo": "repo-name"},
-)
-```
+Run compile/typecheck and relevant tests. Report pinned versions, toolkits/scopes, auth state, verified actions, trigger behavior, and any step awaiting user consent.
 
-## Critical Rules
+<!-- skill-evolver:adaptive-start -->
+## Adaptive excellence
 
-1. **Always scope operations by user_id** — every session, connected account, and trigger belongs to a user
-2. **Only ACTIVE connected accounts can execute tools** — check status before using
-3. **Use MCP mode for dynamic tool discovery** — reduces token usage vs passing all tool definitions upfront
-4. **Auth configs are reusable** — create one per toolkit per environment, reuse across users
-5. **Composio auto-refreshes OAuth tokens** — no manual token refresh needed
-6. **Webhook triggers are real-time** — polling triggers check every ~1 minute
-7. **Never hardcode API keys** — use environment variables (`COMPOSIO_API_KEY`)
-8. **Use type-safe tool names** — e.g., `GITHUB_CREATE_ISSUE` not arbitrary strings
-9. **Check connected account status** before executing tools: ACTIVE, INITIATED, EXPIRED, FAILED, INACTIVE
-10. **Max toolkits per session vary by plan** — check Composio dashboard for limits
-
-## Common Workflows
-
-### Email Triage Agent
-```python
-session = composio.create(user_id="user_1", toolkits=["gmail", "slack", "notion"])
-tools = session.tools()
-# Agent reads Gmail, classifies emails, routes to Slack channels, logs in Notion
-```
-
-### GitHub PR Monitor
-```python
-trigger = composio.triggers.create(
-    slug="GITHUB_PULL_REQUEST_EVENT",
-    user_id="user_1",
-    trigger_config={"owner": "myorg", "repo": "myrepo"},
-)
-# On PR event -> agent reviews code, posts summary to Slack
-```
-
-### Multi-App Workflow
-```python
-session = composio.create(
-    user_id="user_1",
-    toolkits=["github", "slack", "linear", "notion"]
-)
-tools = session.tools()
-# Agent receives Slack message -> creates Linear issue -> updates Notion -> confirms in Slack
-```
-
-Use `$ARGUMENTS` to understand what the user wants to integrate. Read the reference files for detailed SDK patterns and authentication flows before writing code.
+- Optimize for a working least-privilege integration with verified actions, auth lifecycle, retries, and tests.
+- Use medium freedom for framework and architecture; obey detected SDK schemas, provider scopes, webhook security, and user authorization.
+- Require current action names, auth/idempotency/replay defenses, and a real or sandbox integration test. Revise once when weak.
+- Learn only from versioned schemas, corrected fixtures, and observed failure modes.
+<!-- skill-evolver:adaptive-end -->

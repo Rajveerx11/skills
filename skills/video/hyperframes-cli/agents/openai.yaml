@@ -1,0 +1,6 @@
+interface:
+  display_name: "HyperFrames CLI"
+  short_description: "Scaffold, validate, preview, and render projects"
+  default_prompt: "Use $hyperframes-cli to inspect this project, run the correct validation or render commands, and report verified output paths."
+policy:
+  allow_implicit_invocation: true

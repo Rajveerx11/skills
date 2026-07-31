@@ -1,0 +1,4 @@
+interface:
+  display_name: "Local Coder"
+  short_description: "Launch and verify the local coding model"
+  default_prompt: "Use $local-coder to start my local Qwen coding model and verify its API and WebUI."

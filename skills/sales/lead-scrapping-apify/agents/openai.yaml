@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lead Scraping with Apify"
+  short_description: "Build compliant scored business lead lists"
+  default_prompt: "Use $lead-scrapping-apify to run a bounded Apify lead search and return a deduplicated scored list."

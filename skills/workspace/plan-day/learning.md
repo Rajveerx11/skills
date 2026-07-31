@@ -1,18 +1,23 @@
-# Self-Learning Loop
+# Evidence-Gated Learning Loop
 
-The skill gets smarter every day. Reality is logged at Wrap, distilled into `LEARNINGS.md`, and fed back into Plan. Goal: continuously improve estimates, slotting, and growth nudges — always pushing the user forward.
+Keep runtime learning outside the installed skill. Reality is logged at Wrap,
+distilled into `<state-root>/LEARNINGS.md`, and fed back into Plan. Resolve
+`<state-root>` from the private location defined in `SKILL.md` before reading or
+writing anything. Goal: improve estimates, slotting, and growth nudges from
+evidence without publishing personal routines.
 
 ## The loop
 
 ```
-Plan (apply learnings) → live the day → Wrap (log planned-vs-actual)
-       ▲                                          │
-       └──────── distill into LEARNINGS.md ◀───────┘
+Plan (apply private learnings) → live the day → Wrap (log planned-vs-actual)
+       ▲                                                  │
+       └──── distill into <state-root>/LEARNINGS.md ◀──────┘
 ```
 
 ## 1. Log reality (at Wrap)
 
-Write/append `data/logs/YYYY-MM-DD.json`. One record per task plus a day summary:
+Upsert `<state-root>/logs/YYYY-MM-DD.json`. One record per task plus a day
+summary. Never store runtime logs in the installed skill directory:
 
 ```json
 {
@@ -27,9 +32,13 @@ Write/append `data/logs/YYYY-MM-DD.json`. One record per task plus a day summary
 }
 ```
 
-## 2. Distill into LEARNINGS.md (at Wrap)
+## 2. Distill into private LEARNINGS.md (at Wrap)
 
-After logging, update `data/LEARNINGS.md`. Don't append raw noise — maintain a small set of durable, evidence-backed insights. For each, keep: the pattern, the evidence count, and how to apply it.
+After logging, update `<state-root>/LEARNINGS.md`. Never create `data/`,
+`LEARNINGS.md`, logs, profiles, or other runtime state inside the installed
+skill or canonical repository. Do not append raw noise—maintain a small set of
+durable, evidence-backed insights. For each, keep the pattern, evidence count,
+and how to apply it.
 
 Categories to maintain:
 - **Estimation** — typical actual duration per task type vs what the user blocks. ("Sandbox/focus features: ~45 min median over 6 days, user blocks ~2 hrs.")

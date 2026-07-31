@@ -32,9 +32,9 @@ Route every request into one of three pipelines first; only load that path's too
   iterate, deterministic, seek-safe. Default for ~everything: title cards, kinetic type, UI
   recreations, stat pops, multi-scene explainers, Shorts and long-form alike.
 - **Remotion (rare escape hatch only)** — React + `useCurrentFrame`. New work is standardized on
-  HyperFrames; reach for Remotion only by §2. Existing Remotion videos (Intro, Flaky) stay as-is —
-  don't migrate them. For real product footage, prefer the FOOTAGE/HYBRID pipeline over rebuilding
-  the UI in either engine.
+  HyperFrames; reach for Remotion only by §2. Do not migrate an existing Remotion project unless
+  the user asks. For real product footage, prefer the FOOTAGE/HYBRID pipeline over rebuilding the
+  UI in either engine.
 
 The **storyboard / motion-design thinking is engine-agnostic** and comes from the
 `remotion-video-prompt` skill (3-act spine, easing language, color, depth, audio). We borrow its
@@ -52,7 +52,7 @@ If HyperFrames has a native answer (transitions, captions, audio-reactive, Lotti
 adapters — see `hyperframes-animation`), it is NOT a fallback case. Prefer HyperFrames.
 
 **How to composite a fallback shot:** build that single clip with the `remotion-video-prompt`
-flow (its own project, outside `C:\Testing IDE`, version-pinned), render it to MP4/transparent
+flow (its own isolated project when parent dependencies conflict, version-pinned), render it to MP4/transparent
 WebM, then bring it into the HyperFrames timeline as a `<video muted playsinline>` clip (+ a
 separate `<audio>` if it carries sound). Keep the seam on a transition so it reads as one piece.
 Always tell the user when and why a shot used Remotion.
@@ -73,7 +73,7 @@ feature:
 **3b. External context (the frame).** To explain the concept to a general audience:
 - Named library/tool/framework → **Context7 MCP** (`resolve-library-id` → `query-docs`) for
   current, accurate docs. Prefer it over memory.
-- The general concept ("what is X, why it matters") → `WebSearch` + `WebFetch`.
+- The general concept ("what is X, why it matters") → the host's current web-research capability.
 - External context FRAMES the feature; it must never add capabilities the project lacks.
 
 **The contract:** if you cannot verify a fact in the repo (or a named, citable source), it does
@@ -84,7 +84,7 @@ list in the feature brief; everything in the video maps to it.
 
 Run only after the video is final. Order: research → draft → GATE D approval.
 
-- **Research current trends** with `WebSearch`: how do high-performing videos in THIS topic +
+- **Research current trends** with the host's web-research capability: how do high-performing videos in THIS topic +
   THIS platform title themselves right now? Which hashtags actually circulate? Shorts and
   long-form differ — Shorts reward a punchy front-loaded hook + 3–8 tight tags; long-form rewards
   a searchable, descriptive title + a fuller description.
@@ -98,7 +98,7 @@ Run only after the video is final. Order: research → draft → GATE D approval
 ## 5. Production checklist (HyperFrames primary path)
 
 Detail lives in `hyperframes-cli` / `hyperframes` / `hyperframes-media`. The spine:
-1. `npx hyperframes init <name>` OUTSIDE `C:\Testing IDE`. Node ≥ 22, FFmpeg present
+1. `npx hyperframes init <name>` in an isolated project directory when parent dependencies conflict. Node ≥ 22, FFmpeg present
    (`npx hyperframes doctor` if render fails).
 2. Author the composition from the approved prompt. Build layout (end-state) before animation.
    Transitions between every scene; entrance on every element; no exit tweens except the last

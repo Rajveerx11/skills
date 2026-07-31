@@ -1,0 +1,4 @@
+interface:
+  display_name: "Paper Deck Style"
+  short_description: "Create coherent premium decks on Paper"
+  default_prompt: "Use $paper-deck-style to turn this content into a coherent premium Paper deck and inspect the rendered slides."

@@ -17,8 +17,8 @@ Score each item 1–5. If any item scores below 3, fix it before continuing. **D
 [ ] No mid-video dark frames              → state explicitly which frames (if any) are dark and why
 [ ] Brand assets actually visible         → for each beat, name which captured SVG / illustration / screenshot is on screen and at what timestamp. If a beat shows zero captured assets, justify why.
 [ ] Audio duration matches video ±0.5s    → paste both numbers
-[ ] animation-map.json generated          → run `node <repo-root>/skills/hyperframes/scripts/animation-map.mjs <project-dir>`; confirm every beat has events listed and no bbox/flag warnings
-[ ] w2h-verify report                     → run `node <repo-root>/skills/website-to-video/scripts/w2h-verify.mjs <project-dir>`; paste the FULL output (every row, every percent) verbatim into your final user-facing summary — see "w2h-verify — the source of truth" below
+[ ] animation-map.json generated          → run `node <SKILL_DIR>/../hyperframes/scripts/animation-map.mjs <project-dir>`; confirm every beat has events listed and no bbox/flag warnings
+[ ] w2h-verify report                     → run `node <SKILL_DIR>/scripts/w2h-verify.mjs <project-dir>`; paste the FULL output (every row, every percent) verbatim into your final user-facing summary — see "w2h-verify — the source of truth" below
 [ ] Audio + motion verification done      → see "Audio + motion verification" below; played the full preview, confirmed SFX lands at storyboard timestamps
 [ ] Critic sub-agent run                  → paste its single biggest quality gap finding, verbatim
 ```
@@ -39,10 +39,12 @@ The skill ran for months on agents reading "REQUIRED" and skipping anyway. The v
 Run it as the LAST gate in your DoD pass, after fixing everything else:
 
 ```bash
-node <repo-root>/skills/website-to-video/scripts/w2h-verify.mjs <project-dir>
+node <SKILL_DIR>/scripts/w2h-verify.mjs <project-dir>
 ```
 
-(Locate the repo root from a project subdirectory: `find "$HOME" -path '*/skills/website-to-video/scripts/w2h-verify.mjs' -maxdepth 10 2>/dev/null | head -1`.)
+Resolve `<SKILL_DIR>` from the loaded `website-to-video` skill metadata. Its
+installed sibling `<SKILL_DIR>/../hyperframes/` supplies shared HyperFrames
+scripts.
 
 **The script's output is the deliverable.** Paste the entire report — the table, the percentages, the FAIL lines — verbatim into your final user-facing summary, in the "What I verified" / "What I did NOT verify" section. The user will read it directly. You don't get to summarize, simplify, or omit rows.
 
@@ -235,7 +237,7 @@ Open the Studio URL in a browser via Playwright (or another browser tool you hav
 When Playwright isn't available, render at 540p (fast — ~30s for a 30s video) and read the MP4:
 
 ```bash
-node /<repo-root>/packages/cli/dist/cli.js render <project-dir> \
+npx hyperframes render <project-dir> \
   --width 960 --height 540 --quality medium
 ```
 

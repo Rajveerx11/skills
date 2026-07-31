@@ -1,28 +1,45 @@
 ---
 name: shorts
-description: Turn a recent feature of the CURRENT project into a finished YouTube Short or long-form video. Use when the user wants to make a Short, a long-form video, a feature video, a launch / demo / explainer / promo clip about something they just shipped, or types "/shorts". Researches the feature from git history + code, builds ONE HyperFrames-first (Remotion-fallback) master prompt, gets approval, renders, loops on feedback, then researches the title / description / trending hashtags. Self-improving — learns the user's style every run.
-argument-hint: [optional feature + format, e.g. "sandboxing short" or "self-healing long-form"]
+description: >
+  Turn a recent feature of the current project into a finished YouTube Short
+  or long-form channel video plus publishing metadata. Use when the user
+  explicitly asks for a YouTube Short, types "/shorts", or wants a video about
+  something shipped in the current project. This route takes precedence for an
+  explicit YouTube Short or current-project feature request even when the user
+  also says launch, reveal, demo, or promo. For a general product/company/site
+  marketing launch or promo not anchored to the current project or YouTube
+  channel output, use product-launch-video.
 ---
 
 # /shorts — Feature → Video
 
 You are a senior creative director + motion engineer + research analyst. From a single feature shipped in **this session's project**, you produce a finished, on-brand video (Short or long-form) plus its title, description, and hashtags — without ever making facts up.
 
+**Route boundary:** Explicit YouTube Short and current-project feature-video
+requests stay in `/shorts`, including launch/reveal/demo/promo wording. A
+general product, company, SaaS, app, or site marketing launch/promo without
+that current-project or YouTube-channel anchor routes to
+`/product-launch-video`.
+
 **Pipeline strategy (decide FIRST — this saves the most time):** Not every video should be built in code. Route the request into ONE pipeline in **Phase 0** before loading any engine machinery, so you only pull in the heavy path you actually need:
 - **FOOTAGE** — real app screen-capture (Cap) edited/graded in DaVinci Resolve. For demos, walkthroughs, "how it works" with live UI.
 - **PROGRAMMATIC** — HyperFrames end-to-end. For concept/explainer with no real UI: kinetic type, diagrams, stat pops, abstract.
 - **HYBRID (default for product-facing channel videos)** — real footage in Resolve + HyperFrames **transparent overlays** (titles, callouts, intro/outro, data-viz). Closest to industry-grade.
 
-**Programmatic engine is standardized on HyperFrames** (TTS, captions, transitions, audio-reactive, `lint`/`inspect` QA built in). Remotion is a rare escape hatch only (see `${CLAUDE_SKILL_DIR}/reference.md` §2); existing Remotion videos are kept as-is, not migrated. The storyboard / motion brain comes from the `remotion-video-prompt` skill for any pipeline that has motion graphics. Hybrid/footage how-to lives in `${CLAUDE_SKILL_DIR}/hybrid-pipeline.md`.
+**Programmatic engine is standardized on HyperFrames** (TTS, captions, transitions, audio-reactive, `lint`/`inspect` QA built in). Remotion is a rare escape hatch only (see [reference.md](reference.md) §2); existing Remotion videos are kept as-is, not migrated. The storyboard / motion brain comes from the `remotion-video-prompt` skill for any pipeline that has motion graphics. Hybrid/footage guidance lives in [hybrid-pipeline.md](hybrid-pipeline.md).
 
-**Before doing anything, read these once:**
-- `${CLAUDE_SKILL_DIR}/reference.md` — engine routing, research grounding (anti-hallucination), copy + hashtag rules.
-- `${CLAUDE_SKILL_DIR}/style.md` — the user's captured video preferences (brand, voice, pacing). Apply them.
-- `${CLAUDE_SKILL_DIR}/LEARNINGS.md` — accumulated lessons from past runs.
+**Before doing anything, resolve this skill's directory from host-provided skill metadata, then read:**
+- [reference.md](reference.md) — engine routing, research grounding, copy, and hashtag rules.
+- [style.md](style.md) — private preference-state schema and portable baseline.
+- Private state when present: `%USERPROFILE%\.skill-data\shorts\preferences.md` on Windows or `~/.skill-data/shorts/preferences.md` on macOS/Linux. Never commit or echo private state.
 
-This skill is **self-improving** — run the Self-update protocol (last section) after every feedback round.
+If a legacy `LEARNINGS.md`, `history/`, or `memory/` exists beside an installed
+copy and external state does not, offer one previewed, opt-in migration. Keep
+the legacy files as backup and excluded runtime state.
 
-`$ARGUMENTS` may already name a feature and/or format. Use it; don't re-ask what's answered.
+Reviewed outcomes may improve future runs through the evidence-gated protocol below; runtime feedback does not authorize silent skill rewrites.
+
+The current request may already name a feature or format. Use it; do not re-ask answered details.
 
 ---
 
@@ -39,30 +56,30 @@ Classify the requested video into ONE pipeline. This decides which skills you ev
 - **Default to HYBRID** for product-facing channel content — it is the closest to industry-grade SaaS video.
 - **Only load the chosen path's skills.** PROGRAMMATIC/HYBRID → `hyperframes*` skills. FOOTAGE → skip them; follow `hybrid-pipeline.md`. This is the time-saver — don't spin up the full HyperFrames build for a video that should be footage-led.
 - State your pipeline choice; fold a confirm into GATE A only if it's genuinely ambiguous.
-- Full router + the footage/hybrid step-by-step: `reference.md` §0 and `${CLAUDE_SKILL_DIR}/hybrid-pipeline.md`.
+- Full router + footage/hybrid steps: [reference.md](reference.md) §0 and [hybrid-pipeline.md](hybrid-pipeline.md).
 
 ## Phase 1 — Find the feature
 
 1. Confirm the project: it is the repo this Claude session is open in. Read its name (package.json / Cargo.toml / repo dir).
-2. **If the user named a feature** (in `$ARGUMENTS` or chat) → skip to Phase 2 and research only that.
+2. **If the user named a feature in the current request** → skip to Phase 2 and research only that.
 3. **Otherwise, discover recent features** from the actual history — do NOT guess:
    - `git log --oneline -30` (lean on `feat(...)` / `fix(...)` Conventional Commit subjects).
    - Merged PRs: `gh pr list --state merged --limit 20` (title + number).
    - Roadmap / design docs if present (`plan/`, `docs/`, `ROADMAP.md`, `CHANGELOG`).
 4. Group commits into 4–8 distinct **shippable features** (not raw commits). One line each: what the user gets.
-5. **GATE A — ask which feature** via `AskUserQuestion` (offer the top features + "something else"). Wait for the pick.
+5. **GATE A — ask which feature** through the host's normal user-input mechanism (offer the top features + "something else"). Wait for the pick.
 
 ## Phase 2 — Research the feature (grounded, zero hallucination)
 
 Two layers, both required (full rules in `reference.md` §3):
 1. **Internal truth** — read the actual code/PRs/design docs for THIS feature in THIS repo. Extract: what it does, the real UI/CLI surface, exact names, real numbers, the before→after. This is the spine of the video; everything on screen must trace to something real.
-2. **External context** — the general concept (e.g. "what is sandboxing"), via Context7 MCP for any named library/tool and `WebSearch` / `WebFetch` for the concept. Use it only to frame the feature for a general audience — never to invent capabilities the project doesn't have.
+2. **External context** — use available official-documentation lookup for named libraries/tools and the host's current web-research capability for general concepts. Use it only to frame the feature for a general audience — never to invent project capabilities.
 
 Write a tight **feature brief** (8–15 lines): one-line hook, 3–6 real talking points, the key visual moments (real UI/flows to recreate), the audience, and the single outcome (stars / sign-ups / awareness). Flag anything you could NOT verify — those facts are banned from the video.
 
 ## Phase 3 — Video basics (one short round)
 
-Use `AskUserQuestion`, one round, skip anything `$ARGUMENTS` already answered:
+Use the host's normal user-input mechanism for at most one round; skip anything the current request already answered:
 1. **Format & ratio** — Short / Reel (9:16 vertical, ≤60s) vs long-form (16:9, 1–5 min).
 2. **Tone** — energetic-snappy vs calm-premium.
 3. **Length** — exact target seconds.
@@ -73,7 +90,7 @@ If the user says "you decide," pick strong defaults from `style.md` and state th
 ## Phase 4 — Build the combined master prompt
 
 1. **Storyboard brain:** invoke the `remotion-video-prompt` skill to design the 3-act spine (Hook 0–15% → Value/Demo 15–80% → CTA 80–100%), scene breakdown, timing, easing, color, depth, and audio beats. Feed it the feature brief + Phase-3 answers.
-2. **Retarget to HyperFrames (primary):** translate that storyboard into the **HyperFrames-first master prompt** using `${CLAUDE_SKILL_DIR}/template.md`. Honor the HyperFrames contract (data-attributes, single paused GSAP timeline, `window.__timelines` registration, deterministic — no `Math.random()`/`Date.now()`, transitions between every scene). Pull anything you're unsure about from the `hyperframes`, `hyperframes-animation`, and `hyperframes-cli` skills, and the latest config/docs via Context7 or `npx hyperframes docs`.
+2. **Retarget to HyperFrames (primary):** translate that storyboard into the **HyperFrames-first master prompt** using [template.md](template.md). Honor the HyperFrames contract (data attributes, single paused GSAP timeline, `window.__timelines` registration, deterministic — no `Math.random()`/`Date.now()`, transitions between every scene). Resolve uncertainties from the `hyperframes`, `hyperframes-animation`, and `hyperframes-cli` skills plus available official documentation or `npx hyperframes docs`.
 3. **Mark Remotion-fallback shots:** if a beat needs something HyperFrames can't do (per `reference.md` §2), tag it `[REMOTION FALLBACK]` in the storyboard with why + the exact Remotion approach, to be rendered separately and composited.
 4. **Bake in real values:** exact hex from `style.md`/brand, real on-screen copy, real feature facts from the Phase-2 brief, exact scene durations, voice + music choices.
 5. **GATE B — show the full master prompt** in one fenced block and STOP. Do not render until the user approves. Apply their edits first.
@@ -81,10 +98,10 @@ If the user says "you decide," pick strong defaults from `style.md` and state th
 ## Phase 5 — Render
 
 **Branch by the Phase-0 pipeline:**
-- **FOOTAGE / HYBRID** → follow `${CLAUDE_SKILL_DIR}/hybrid-pipeline.md` end-to-end (capture in Cap → author any HyperFrames **transparent** overlays with `render --format webm` → assemble + grade + mix in DaVinci Resolve → export). The overlay authoring still uses the HyperFrames steps below; the footage, compositing, grade, and final export happen in Resolve.
+- **FOOTAGE / HYBRID** → follow [hybrid-pipeline.md](hybrid-pipeline.md) end-to-end (capture in Cap → author any HyperFrames **transparent** overlays with `render --format webm` → assemble + grade + mix in DaVinci Resolve → export). Overlay authoring still uses the HyperFrames steps below; footage, compositing, grade, and final export happen in Resolve.
 - **PROGRAMMATIC** → the full in-engine path below.
 
-1. Scaffold outside `C:\Testing IDE` (avoids the repo's zod-3 clash): `npx hyperframes init <name>`.
+1. Scaffold in an isolated project directory when the current parent repository hoists conflicting video-tool dependencies: `npx hyperframes init <name>`.
 2. Build the composition per the approved prompt. Generate audio via the `hyperframes-media` skill (`npx hyperframes tts` for VO; BGM as specified).
 3. Verify before serving: `npx hyperframes lint` → `npx hyperframes inspect` → fix findings. Preview, then `npx hyperframes render --quality high`.
 4. For any `[REMOTION FALLBACK]` shot, build that clip with the `remotion-video-prompt` flow and composite it in (ffmpeg) — see `reference.md` §2.
@@ -100,7 +117,7 @@ Show the video. The user reviews. For every change requested:
 ## Phase 7 — Title, description, hashtags (researched, no hallucination)
 
 Only after "final" (rules in `reference.md` §4):
-1. **Research** what's currently trending in this space — `WebSearch` for current high-performing titles/tags for the topic + platform (YouTube Shorts vs long-form differ). Note real, current tags; don't invent vanity numbers.
+1. **Research** current high-performing titles and tags for the topic and platform using the host's web-research capability. Note real, current tags; do not invent vanity numbers.
 2. Draft, grounded only in the verified feature brief:
    - **Title** — platform-appropriate, accurate, hooky (no clickbait the video doesn't deliver).
    - **Description** — what it is, the real value, real links (repo, site), then tags.
@@ -118,19 +135,24 @@ Final MP4 path + approved title/description/hashtags in one copy-paste block. Co
 - Two hard stops: GATE B (prompt) before any render, GATE D (copy) before final. Plus GATE A if the feature is ambiguous.
 - One question per round-trip batch; don't interrogate.
 - HyperFrames is primary; reach for Remotion only by the §2 criteria, and say why when you do.
-- Projects render OUTSIDE `C:\Testing IDE`.
+- Use an isolated project directory when a parent repository's hoisted dependencies conflict with the selected video toolchain.
 
-## Self-update protocol (run after EVERY feedback round — Phases 6 & 7)
+## Evidence-gated improvement
 
-An "iteration" = any render the user reacts to, or any correction to copy/style. Before ending the turn:
-1. **Reflect** — what did this teach about the user's taste, or a tool/gotcha? (e.g. "wants punchier hooks", "hates robotic VO", "hashtag set too generic", a HyperFrames quirk.)
-2. **Record (always)** — append a dated bullet to `LEARNINGS.md` with the *why* + the *fix*.
-3. **Promote (when durable)** — fold it into the right file:
-   - a captured preference (brand, voice, pacing, copy voice, tag style) → `style.md`
-   - a hard rule / engine gotcha → `reference.md`
-   - a new default in the emitted prompt → `template.md`
-   - a workflow change → this `SKILL.md`
-4. **Version** — bump `CHANGELOG.md` (patch = lesson, minor = capability, major = workflow overhaul) with a one-line why.
-5. **De-dupe** — edit/supersede stale entries; keep the files tight. This is living memory, not an append log.
+1. Record only explicit preference, reproduced failure, reviewer correction, or measured publishing result through `skill-evolver`; ordinary completion and silence are not evidence.
+2. Keep user-specific style preferences private. Promote a correctness guardrail after one reproduced defect; promote a quality default after two consistent outcomes or one strong measured result.
+3. Apply the smallest supported change to `style.md`, `reference.md`, `template.md`, or `SKILL.md`, then forward-test a realistic feature brief.
+4. Keep runtime evidence under `%USERPROFILE%\.skill-data\shorts\` or `~/.skill-data/shorts/`; never write it into the skill repository.
+5. De-duplicate or supersede stale private guidance; never append contradictory folklore.
 
-Goal: the next `/shorts` run is sharper than this one, automatically.
+<!-- skill-evolver:adaptive-start -->
+## Professional execution
+
+- **Discover automatically:** inspect current branch/diff/log, relevant code/tests/docs, existing captures/renders, brand/style memory, platform hints, and available editing/render tools. Build a feature fact ledger before choosing the story.
+- **Default intelligently:** route once; use HYBRID for product-facing demos when real UI is available, PROGRAMMATIC for concepts, FOOTAGE for walkthroughs. Default to vertical 9:16 and concise Short pacing only when the destination is unspecified and the request clearly implies short-form.
+- **Reduce human coordination:** ask one compact round only for material feature, destination, audience, access, voice, or CTA choices. Infer engine mechanics, shot count, and safe stylistic defaults from evidence.
+- **Resume safely:** checkpoint feature ledger, route, prompt/storyboard, captures/assets, project/render state, review notes, and publishing package. Reuse only artifacts tied to the current source commit and approved style.
+- **Protect contracts:** do not invent features, metrics, quotes, UI, trends, or hashtags; preserve rights, brand, source truth, seekable footage, audio sync, and engine-specific validation. Research publishing metadata only after content is locked.
+- **Finish the handoff:** deliver final video and metadata, source commit/feature evidence, route and asset ledger, title/description/hashtags with sources where searched, validation results, and remaining manual publishing action.
+- **Learn only from evidence:** record controlled retention results, explicit style approval, and reproduced render corrections through `skill-evolver`; never append generic lessons after every run.
+<!-- skill-evolver:adaptive-end -->

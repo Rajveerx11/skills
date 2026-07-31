@@ -64,3 +64,15 @@ Animation analysis (`animation-map.mjs`) lives in `hyperframes-animation/scripts
 - Do not require a design system for a minimal technical composition.
 - Do not add extra scenes, narration, music, captions, or transitions unless the request calls for them or you first propose the expansion.
 - Keep recipe references task-specific; do not read every reference for simple edits.
+
+<!-- skill-evolver:adaptive-start -->
+## Professional execution
+
+- **Discover automatically:** read the strongest available design source in precedence order, inspect brand assets/fonts/content/audience/platform, and extract non-negotiables, reusable motifs, forbidden treatments, and accessibility needs before proposing a direction.
+- **Default intelligently:** when no spec exists, generate 2-3 meaningfully different internal worlds, judge them against message, audience, distinctiveness, feasibility, and motion potential, then develop one. Use the house style and embeddable typography as constraints, not a template.
+- **Produce a build contract:** define concept sentence, palette roles, type hierarchy, composition grid, foreground/detail system, imagery/material language, motion grammar, density, transition family, audio relationship, and negative list.
+- **Reduce manual choices:** infer safe platform/design defaults, present only decisions that materially change identity or scope, and reuse the picker/package loader/contrast tooling where applicable.
+- **Validate before build:** reject directions that imitate a named reference too closely, use arbitrary novelty, lack readable hierarchy, fail contrast, depend on unavailable assets/fonts, or cannot be expressed deterministically.
+- **Finish the handoff:** deliver one coherent direction with rationale, tokens, asset needs, scene rules, validation criteria, and explicit assumptions; include alternatives only when the user requested a choice.
+- **Learn only from evidence:** record accepted directions, explicit rejections, and audience feedback through `skill-evolver`; never convert personal model taste into a portfolio rule.
+<!-- skill-evolver:adaptive-end -->

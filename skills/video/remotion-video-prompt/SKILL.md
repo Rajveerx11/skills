@@ -1,21 +1,25 @@
 ---
 name: remotion-video-prompt
-description: Turn a raw video idea into a production-ready Remotion generation prompt. Use when the user wants to create a video with Remotion, make a SaaS intro / explainer / product demo / promo / motion-graphics video, or "write a prompt for an AI to build my video." Asks 4-5 clarifying questions, then outputs one comprehensive master prompt engineered to make any AI coding agent generate an awe-factor, professional video.
+description: Turn a raw video idea into a production-ready Remotion generation prompt. Use when the user wants to create a video with Remotion, make a SaaS intro, explainer, product demo, promo, motion-graphics video, or asks for a prompt an AI can use to build a video. Inspects available context, asks at most one concise round only for material unknowns, then emits one self-contained master prompt with storyboard, assets, timing, audio, implementation contracts, validation, and handoff.
 ---
 
 # Remotion Video Prompt Builder
 
 Your job: take the user's rough idea and turn it into a single, comprehensive **master prompt** that another AI coding agent (or you) can execute to produce a genuinely professional Remotion video — correct animation timing, on-brand color, depth, camera, kinetic typography, and synced audio.
 
-Read `reference.md` (the motion-design + Remotion knowledge base) **and `LEARNINGS.md` (accumulated lessons from past builds)** before assembling the prompt. Emit using the skeleton in `template.md`. This skill is **self-improving** — see "Self-update protocol" below; apply it after every iteration so the skill gets better each time it's used.
+Read [reference.md](reference.md) and [template.md](template.md). If present, read private preferences and outcome evidence from `%USERPROFILE%\.skill-data\remotion-video-prompt\` on Windows or `~/.skill-data/remotion-video-prompt/` on macOS/Linux. Never commit or echo that private state. Runtime feedback is evidence for `skill-evolver`; it does not authorize silently rewriting this skill.
+
+If legacy `LEARNINGS.md`, `history/`, or `memory/` exists beside an installed
+copy and external state does not, offer one previewed, opt-in migration. Keep
+the legacy files as backup and excluded runtime state.
 
 ## Workflow
 
 ### 1. Capture the raw idea
 Take whatever the user gave you. Don't critique it. Note what's already specified so you don't re-ask it.
 
-### 2. Ask 4-5 clarifying questions (one round)
-Use the **AskUserQuestion** tool. Prefer multiple-choice for discrete decisions; ask open free-text only when needed. Skip any question the user already answered. Cover these dimensions (merge/trim to land at 4-5 total):
+### 2. Resolve unknowns (zero or one round)
+Inspect the request and current project first. Ask only about dimensions whose answers materially change the result; zero questions is correct for a complete brief or delegated choices. If needed, use one concise round with at most five questions. Prefer discrete choices with a recommendation; use free text only when necessary. Never re-ask answered dimensions:
 
 1. **Goal & destination** — What's the one outcome (sign-ups, GitHub stars, awareness)? Where does it play (X/LinkedIn 16:9, vertical Reel/Short 9:16, YouTube, site hero loop)? This fixes aspect ratio + length.
 2. **Style archetype & tone** — Offer concrete references from `reference.md` §Style Archetypes (e.g. *Linear-premium*, *Apple-keynote*, *Vercel-dark*, *playful startup*, *cinematic/dramatic*, *retro-terminal*). Tone = energetic/snappy vs. calm/elegant.
@@ -35,9 +39,8 @@ Using their answers + `reference.md`:
 Fill `template.md` completely. Rules for a strong emit:
 - Be concrete: real hex codes, real frame counts / seconds, exact font names, exact on-screen copy, exact VO lines, named SFX cues.
 - Bake in the **Remotion technical contract** (see template + `reference.md` §Remotion Rules) so the agent writes valid, deterministic code on the first try.
-- Include the **global setup line** (reuse the machine's shared headless browser) so renders don't re-download Chrome:
-  `Config.setBrowserExecutable("C:/Users/rajve/.remotion/chrome-headless-shell/win64/chrome-headless-shell-win64/chrome-headless-shell.exe")`
-- Note: run the project from a directory **outside** `C:\Testing IDE` and pin `zod@4.3.6`, to avoid the repo's zod-3 version-mismatch warning.
+- Include portable browser handling: if `REMOTION_BROWSER_EXECUTABLE` names a verified executable, call `Config.setBrowserExecutable(process.env.REMOTION_BROWSER_EXECUTABLE)`; otherwise omit the override and let Remotion resolve or install its browser. Never hardcode a user directory or platform-specific cache path.
+- Run in an isolated project directory when a parent repository hoists conflicting React, Remotion, or Zod versions. Pin every `@remotion/*` package plus `react`/`react-dom` to one exact compatible release and use the Zod major required by that release; do not copy a machine-specific workaround blindly.
 - End the prompt with explicit acceptance criteria + the exact render command.
 
 ### 5. Deliver + offer handoff
@@ -52,17 +55,24 @@ Do not start building the video until the user confirms the prompt.
 - Never emit a vague prompt. If a critical detail is missing and the user didn't answer, choose a sensible default from `reference.md` and state the assumption inside the prompt.
 - The emitted prompt is the product. Keep it self-contained: an agent with zero prior context should be able to produce the video from it alone.
 
-## Self-update protocol (run after EVERY iteration)
+## Evidence-gated improvement
 
-This skill must improve itself continuously. **An "iteration" = any render produced + any round of user feedback on a video.** After each iteration — whether the skill built the video or a downstream agent did — do this before considering the turn done:
+After a reviewed render or explicit correction, treat the outcome as evidence rather than an automatic skill edit:
 
-1. **Reflect.** What did we learn this iteration? Look for: a bug/gotcha hit and fixed; a tool/version quirk; a user preference or correction ("voice too robotic", "make it punchier", "music inaudible"); a technique that worked well; a default worth changing.
-2. **Record (always).** Append a dated bullet to `LEARNINGS.md` for every non-trivial lesson — concise, with the *why* and the *fix*.
-3. **Promote (when durable).** If a lesson should change future prompts, fold it into the right place:
-   - a hard technical rule or gotcha → `reference.md` (§1 or §6 etc.)
-   - a new default / phrasing for the emitted prompt → `template.md`
-   - a workflow change → this `SKILL.md`
-4. **Version + changelog.** Bump the version in `CHANGELOG.md` (semver: patch = lesson/tweak, minor = new capability, major = workflow overhaul) with a one-line summary of what changed and why.
-5. **De-dupe.** If a new lesson supersedes an old one, edit the old entry rather than contradicting it. Keep the files tight — this is a living memory, not an append-only dump.
+1. Record explicit preference, reproduced defect, or measured result privately through `skill-evolver`; do not write secrets, project-private facts, or ordinary completion.
+2. Promote a correctness guardrail after one reproduced defect; promote a quality default only after two consistent outcomes or one strong measured result.
+3. Make the smallest general change in `reference.md`, `template.md`, or `SKILL.md`; keep user-specific preferences private.
+4. Validate any proposed portfolio revision on a realistic brief before release.
+5. Keep private preferences/outcomes under the external state directory; de-duplicate or supersede stale evidence there and never append contradictory folklore to repository files.
 
-Trigger points: right after a render the user reviews, and right after the user gives feedback/asks for a change. Keep updates small and frequent. The goal: the next person who runs `/remotion-video-prompt` benefits from everything we already learned, without re-deriving it.
+<!-- skill-evolver:adaptive-start -->
+## Professional execution
+
+- **Discover automatically:** extract goal, audience, platform, format, duration, brand, assets, product facts, required beats, audio, and constraints from the request and current project before asking anything. Never re-ask known details.
+- **Default intelligently:** when the user delegates choices, select a platform-appropriate format/duration, one specific style archetype, derived accessible palette, coherent font pair, 3-act spine, 5-9 scenes, restrained SFX, and buildable Remotion primitives.
+- **Reduce human coordination:** ask zero to five questions in one round, only for choices whose answers materially change the result. State inferred defaults inside the master prompt so the build agent can proceed without another interview.
+- **Make the prompt executable:** include project/context discovery, asset ledger, scene-level purpose/content/timing/motion/audio, composition IDs/props, implementation constraints, dependency policy, render commands, QA gates, fallback behavior, and completion artifacts.
+- **Protect truth and feasibility:** label assumptions, never invent product behavior or assets, avoid inaccessible/local-only fonts without fallback, specify deterministic frame-based animation, and require source-grounded copy plus final render inspection.
+- **Finish the handoff:** emit one complete master prompt, a compact assumptions list, required user-provided assets only, and suggested invocation. Do not leave placeholders the receiving agent must rediscover.
+- **Learn only from evidence:** record reviewed render outcomes, explicit concept approval, and reproduced failures through `skill-evolver`; update portfolio files only after evidence meets its promotion rules.
+<!-- skill-evolver:adaptive-end -->

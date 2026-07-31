@@ -1,0 +1,4 @@
+interface:
+  display_name: "Customer Support"
+  short_description: "Resolve tickets with accurate human responses"
+  default_prompt: "Use $customer-support to triage this case and draft an accurate customer reply plus internal note."

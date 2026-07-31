@@ -1,0 +1,6 @@
+interface:
+  display_name: "HyperFrames Creative"
+  short_description: "Create distinctive build-ready video direction"
+  default_prompt: "Use $hyperframes-creative to derive a distinctive, accessible, build-ready visual and motion system for this video."
+policy:
+  allow_implicit_invocation: true

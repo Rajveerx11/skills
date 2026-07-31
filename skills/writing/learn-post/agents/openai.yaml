@@ -1,0 +1,4 @@
+interface:
+  display_name: "Learn Post"
+  short_description: "Turn today's learning into a grounded post"
+  default_prompt: "Use $learn-post to turn what I learned today into one authentic LinkedIn post and a proof-based visual idea."

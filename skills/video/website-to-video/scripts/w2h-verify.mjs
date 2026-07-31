@@ -10,7 +10,7 @@
 // paste alongside.
 //
 // Usage:
-//   node skills/website-to-video/scripts/w2h-verify.mjs <project-dir>
+//   node <SKILL_DIR>/scripts/w2h-verify.mjs <project-dir>
 //
 // Exit codes:
 //   0 = all gates pass

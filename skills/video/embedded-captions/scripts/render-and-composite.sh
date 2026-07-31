@@ -2,31 +2,47 @@
 # End-to-end: hyperframes render + ffmpeg overlay matte → final.mp4
 #
 # Usage:
-#   bash render-and-composite.sh <project-dir> [hyperframes-repo-path]
+#   bash render-and-composite.sh <project-dir> [hyperframes-cli]
 #
 # Env:
-#   HYPERFRAMES_ROOT  override the hyperframes checkout location
-
+#   HYPERFRAMES_CLI  executable or built CLI JavaScript file
 set -euo pipefail
 
-PROJECT="${1:?usage: render-and-composite.sh <project-dir> [hyperframes-repo]}"
+PROJECT="${1:?usage: render-and-composite.sh <project-dir> [hyperframes-cli]}"
 PROJECT="$(cd "$PROJECT" && pwd)"
 
-# Resolve the hyperframes checkout. Candidate order:
-#   1. arg 2   2. $HYPERFRAMES_ROOT   3. repo root if this skill ships INSIDE the
-#   hyperframes repo (skills/embedded-captions/scripts → ../../..)   4. ~/Downloads/hyperframes
-SKILL_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-HF=""
-for cand in "${2:-}" "${HYPERFRAMES_ROOT:-}" "$(cd "$SKILL_SCRIPT_DIR/../../.." 2>/dev/null && pwd)" "$HOME/Downloads/hyperframes"; do
-  if [[ -n "$cand" && -f "$cand/packages/cli/dist/cli.js" ]]; then HF="$cand"; break; fi
-done
-if [[ -z "$HF" ]]; then
-  echo "[render] hyperframes CLI not found. Set HYPERFRAMES_ROOT to your hyperframes" >&2
-  echo "         checkout (needs packages/cli/dist/cli.js — 'bun install && bun run build')." >&2
-  exit 1
+# Resolve an installed CLI. An explicit path or command wins; otherwise use
+# the current `npx hyperframes`. Never infer a source-checkout layout.
+HF_CMD=()
+EXPLICIT_CLI="${2:-${HYPERFRAMES_CLI:-}}"
+if [[ -n "$EXPLICIT_CLI" ]]; then
+  if [[ -f "$EXPLICIT_CLI" ]]; then
+    case "$EXPLICIT_CLI" in
+      *.js|*.cjs|*.mjs) HF_CMD=(node "$EXPLICIT_CLI") ;;
+      *)
+        if [[ -x "$EXPLICIT_CLI" ]]; then
+          HF_CMD=("$EXPLICIT_CLI")
+        else
+          echo "[render] CLI file is not executable: $EXPLICIT_CLI" >&2
+          exit 1
+        fi
+        ;;
+    esac
+  elif command -v "$EXPLICIT_CLI" >/dev/null 2>&1; then
+    HF_CMD=("$EXPLICIT_CLI")
+  else
+    echo "[render] HYPERFRAMES_CLI does not resolve: $EXPLICIT_CLI" >&2
+    exit 1
+  fi
 fi
-export HYPERFRAMES_ROOT="$HF"   # so the occlusion gate's measure-layout.cjs finds puppeteer too
-HF_CLI="$HF/packages/cli/dist/cli.js"
+if [[ ${#HF_CMD[@]} -eq 0 ]]; then
+  if command -v npx >/dev/null 2>&1; then
+    HF_CMD=(npx hyperframes)
+  else
+    echo "[render] HyperFrames unavailable. Set HYPERFRAMES_CLI or install npx." >&2
+    exit 1
+  fi
+fi
 if [[ ! -d "$PROJECT/frames_fg" ]]; then
   echo "[render] missing matte frames at $PROJECT/frames_fg — run matte.cjs first" >&2
   exit 1
@@ -256,9 +272,9 @@ hf_render_dir() {
   # bash 3.2 (macOS) throws on empty-array expansion under `set -u`, so branch
   # explicitly instead of splatting an optional --format array.
   if [[ -n "$fmt" ]]; then
-    node "$HF_CLI" render --dir "$proj" --fps "$FPS" --format "$fmt" --crf 11 -o "$out" &
+    "${HF_CMD[@]}" render --dir "$proj" --fps "$FPS" --format "$fmt" --crf 11 -o "$out" &
   else
-    node "$HF_CLI" render --dir "$proj" --fps "$FPS" --crf 11 -o "$out" &
+    "${HF_CMD[@]}" render --dir "$proj" --fps "$FPS" --crf 11 -o "$out" &
   fi
   local pid=$! start=$SECONDS elapsed
   while kill -0 "$pid" 2>/dev/null; do

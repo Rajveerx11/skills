@@ -46,19 +46,28 @@ Accept plain language and redraft the whole table:
 ## Writing on approval (Plan mode)
 
 1. Generate a stable `id` per task (e.g. `kebab-slug` of the title; ensure uniqueness within the day).
-2. Write the Obsidian daily note from the template in `templates.md` — checkbox list + frontmatter holding each task's `id`, `start`, `end`, `type` (event/task), and an empty `gcal_event_id`.
-3. For each block, call the Google Calendar MCP create tool (events by default). Store the returned event id back into the note's frontmatter for that task.
+2. Write the Obsidian daily note from the template in `templates.md` — checkbox
+   list plus frontmatter holding `id`, canonical schedule fields, provider,
+   calendar/event ids, synchronization fingerprint, and ownership state.
+3. For each block, run `scripts/sync_fingerprint.py` on the provider-neutral
+   canonical block, then call the connected calendar create tool (events by
+   default). Store provider, calendar id, returned event id, and that
+   synchronization fingerprint in managed note frontmatter for the task.
 4. Report: `✅ Wrote <note path> → N items` and `✅ Calendar: X events, Y tasks`.
 
 ## Re-running Plan for the same day (idempotency)
 
 - Read the existing note's frontmatter first.
-- Match tasks by `id`. For unchanged times, do nothing. For changed times/titles, call `update_event` with the stored `gcal_event_id`. For removed tasks, `delete_event`. For new tasks, `create_event` and store the new id.
-- Never create a second event for a task that already has a `gcal_event_id`.
+- Match tasks by stable `id`. When canonical fingerprint is unchanged, do
+  nothing. For changed times/titles, call the provider update tool with stored
+  provider, calendar id, and event id. Delete removed events only when
+  `sync_owned: true`. Create new tasks once, then persist returned ids.
+- Never create a second provider event for a task with a verified event id.
 
 ## Wrap mode
 
-1. Read today's note + `logs/YYYY-MM-DD.json` (create the log if absent from the note's planned data).
+1. Read today's note plus `<state-root>/logs/YYYY-MM-DD.json` (create the log if
+   absent from the note's planned data).
 2. Ask "what got done?" or accept the user's volunteered status. Map answers to tasks by `id`/title.
 3. Tick `- [ ]` → `- [x]` in the note for completed items.
 4. Fill the log's `actual` fields: completed bool, actual start/end or duration if known, skipped/rolled flags, a one-line note.

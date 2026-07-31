@@ -1,35 +1,11 @@
-# SFX Credits
+# Optional SFX library
 
-All sound effects in this directory are sourced from [Pixabay](https://pixabay.com/sound-effects/) and used under the [Pixabay Content License](https://pixabay.com/service/license-summary/).
+No sound-effect audio is bundled with this skill. `manifest.json` is intentionally empty.
 
-The Pixabay license allows free use for commercial and non-commercial purposes without attribution, but attribution is appreciated and given here for transparency.
+To use SFX, provide a separate library directory through `--sfx-lib` or `SFX_LIB_DIR`. It must contain:
 
-## Files
+- `manifest.json` with one object entry per `.mp3`, including `file` and a positive `duration`;
+- every audio file declared by the manifest;
+- optional `CREDITS.md` or other license records.
 
-The following `.mp3` files are bundled with this skill:
-
-- `chime.mp3`
-- `click.mp3` / `click-soft.mp3`
-- `error.mp3`
-- `glitch-1.mp3` / `glitch-2.mp3` / `glitch-3.mp3`
-- `impact-bass-1.mp3` / `impact-bass-2.mp3`
-- `key-press.mp3`
-- `notification.mp3`
-- `ping.mp3`
-- `pop.mp3`
-- `riser.mp3`
-- `sparkle.mp3`
-- `typing.mp3`
-- `whoosh.mp3` / `whoosh-short.mp3` / `whoosh-cinematic.mp3`
-
-See `manifest.json` for per-file metadata (duration, energy character, recommended use).
-
-## License
-
-All files are distributed under the [Pixabay Content License](https://pixabay.com/service/license-summary/), which permits:
-
-- Commercial and non-commercial use
-- Modification and remixing
-- Redistribution as part of derivative works (such as videos rendered with HyperFrames)
-
-without any attribution requirement.
+Use only audio you created, commissioned, or are licensed to use in the intended output. Keep the license evidence with the external library. The preparation step validates all declared sources before copying anything and aborts if a file is missing or malformed.

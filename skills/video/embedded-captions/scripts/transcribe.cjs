@@ -9,19 +9,21 @@
  */
 const path = require("path");
 const fs = require("fs");
-const os = require("os");
 const cp = require("child_process");
 
-function hfRoot() {
-  const roots = [
-    process.env.HYPERFRAMES_ROOT,
-    path.resolve(__dirname, "..", "..", ".."),
-    path.join(os.homedir(), "Downloads", "hyperframes"),
-  ].filter(Boolean);
-  for (const r of roots)
-    if (fs.existsSync(path.join(r, "packages", "cli", "dist", "cli.js"))) return r;
-  console.error("[transcribe] hyperframes CLI not found — set HYPERFRAMES_ROOT");
-  process.exit(3);
+function hfCommand() {
+  const explicit = process.env.HYPERFRAMES_CLI;
+  if (explicit) {
+    if (/\.(?:c?js|mjs)$/i.test(explicit)) {
+      if (!fs.existsSync(explicit)) throw new Error(`HYPERFRAMES_CLI not found: ${explicit}`);
+      return { command: process.execPath, prefix: [explicit] };
+    }
+    return { command: explicit, prefix: [] };
+  }
+  return {
+    command: process.platform === "win32" ? "npx.cmd" : "npx",
+    prefix: ["hyperframes"],
+  };
 }
 function ensureSource(project) {
   const src = path.join(project, "source.mp4");
@@ -243,12 +245,12 @@ function main() {
 
   if (!words) {
     // run hyperframes Whisper → writes a flat word array to <dir>/transcript.json
-    const cli = path.join(hfRoot(), "packages", "cli", "dist", "cli.js");
     const args = ["transcribe", audio, "-d", project, "--json", "--model", model];
     if (language) args.push("--language", language);
     let info = {};
     try {
-      const so = cp.execFileSync("node", [cli, ...args], { encoding: "utf8" });
+      const hf = hfCommand();
+      const so = cp.execFileSync(hf.command, [...hf.prefix, ...args], { encoding: "utf8" });
       const line = so.trim().split("\n").filter(Boolean).pop();
       info = JSON.parse(line);
     } catch (e) {

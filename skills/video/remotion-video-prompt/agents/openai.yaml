@@ -1,0 +1,6 @@
+interface:
+  display_name: "Remotion Video Prompt"
+  short_description: "Create production-ready Remotion build prompts"
+  default_prompt: "Use $remotion-video-prompt to turn this video idea into one complete, executable Remotion production prompt."
+policy:
+  allow_implicit_invocation: true

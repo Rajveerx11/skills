@@ -16,7 +16,6 @@
  */
 const path = require("path");
 const fs = require("fs");
-const os = require("os");
 
 const THRESH = 30 / 255; // a cell is "subject" if ≥12% covered at any sampled frame in the window
 const SAMPLES = 48; // frames cached across the clip (windows aggregate the cached grids)
@@ -24,7 +23,6 @@ const SAMPLES = 48; // frames cached across the clip (windows aggregate the cach
 const HF_ROOTS = [
   process.env.HYPERFRAMES_ROOT,
   path.resolve(__dirname, "../../.."),
-  path.join(os.homedir(), "Downloads", "hyperframes"),
 ].filter(Boolean);
 let sharp = null;
 for (const root of HF_ROOTS) {

@@ -122,18 +122,18 @@ The anchor is **validator-only**: prep strips it before the worker brief, so it 
 
 **SFX anchor (optional / soft - only write when using sound effects):**
 
-Most scenes have no SFX - in that case **omit the entire `**SFX:**` line**. Omission = "no sound effect for this scene", validator does not complain. To add SFX, write `**SFX:**` alone on a line + one or more bullets:
+No audio is packaged. If dispatch `## SFX library` is `{}`, **omit every `**SFX:**` line**. When the user supplied a licensed library, cite only filenames present in that manifest. To add SFX, write `**SFX:**` alone on a line + one or more bullets:
 
 ```markdown
 **SFX:**
 
-- `impact-bass-1.mp3` at 0.2s, volume 0.35 — hero stamp lands
-- `whoosh-short.mp3` at 4.1s — exit
+- `<licensed-impact-file>.mp3` at 0.2s, volume 0.35 — hero stamp lands
+- `<licensed-transition-file>.mp3` at 4.1s — exit
 ```
 
 (Explicit `**SFX:** none` is also accepted; but because it is optional, omitting the line when unused is simpler.)
 
-**No silent drop risk:** once you cite a `<file>.mp3`, validator checks it immediately against `## SFX library` - misspelled filenames are Phase 3 fatal errors you can fix on the spot, no longer silently dropped by prep.mjs. So optional is safe: not writing = explicitly unused, writing = guaranteed valid.
+**Integrity rule:** prep revalidates the selected manifest and every declared source before copying. A manifest that names a missing or malformed MP3 aborts preparation; an empty manifest is a clean no-SFX run.
 
 - `<file>.mp3` must be listed in dispatch `## SFX library` (misspelling = validator fatal)
 - `<T>s` is **scene-local seconds**; prep.mjs adds `start_s` offset automatically

@@ -1,119 +1,132 @@
 ---
 name: upwork
-description: Audit and rewrite Upwork freelancer profiles using patterns from Top Rated Plus / Expert Vetted top earners. Use when the user wants to improve their Upwork profile, headline, title, bio, overview, specialized profile, project catalog, gig description, skills tags, testimonial, employment history, or job proposal. Triggers on "upwork", "freelancer profile", "improve my headline", "rewrite my bio", "profile overview", "project catalog", "fix my upwork".
-argument-hint: [section to improve, or paste profile text]
+description: Audit, position, and rewrite truthful Upwork freelancer profiles, headlines, overviews, specialized profiles, skills, project catalog offers, consultations, employment history, portfolios, and testimonials. Use when the user wants a stronger Upwork profile, better-fit invites, clearer niche positioning, a full profile package, or diagnosis of weak profile conversion. Use upwork-proposal for a specific job application.
 ---
 
-# Upwork Profile Skill
+# Upwork Profile
 
-You are an expert at writing high-converting Upwork profiles, modeled on $1M+ earners with Top Rated Plus and Expert Vetted badges. Your job is to audit, rewrite, and level up any part of an Upwork profile so it lands more high-ticket invites and wins more proposals.
+Build a profile that makes the right client understand fit quickly. Optimize for credible relevance and offer clarity, not hype or maximum keyword count.
 
-For deep dives, read these on demand:
-- `${CLAUDE_SKILL_DIR}/patterns.md` â€” full copywriting pattern library and power-word lists
-- `${CLAUDE_SKILL_DIR}/examples.md` â€” annotated examples from the three reference profiles (Vepa D., Abayomi O., Harsumeet S.)
+Read [patterns.md](patterns.md) when drafting. Use [examples.md](examples.md) only for structure and critique; all examples are synthetic.
 
-## Workflow
+## Discover the current state
 
-1. **Identify the section.** Headline/title, overview/bio, skills tags, project catalog package, employment history, testimonial, consultation offering, or full-profile audit.
-2. **Audit against the principles below.** Call out exactly what's weak (vague claims, no numbers, buried hook, missing CTA).
-3. **Rewrite.** Apply the formulas. Always offer **2â€“3 variants** at different tones (authoritative / friendly-expert / direct-response) so the user can pick.
-4. **Show the diff thinking.** Briefly note *why* each rewrite is stronger (e.g. "led with $ figure instead of years of experience").
-5. **Ask for missing facts only if necessary.** If the user hasn't given numbers, testimonials, or specifics, request them â€” you cannot fabricate metrics.
+Inspect:
 
-## Core Principles (the rules top earners follow)
+- current headline, overview, specialized profiles, skills, portfolio, project catalog, rate, availability, work history, and testimonials;
+- verified Upwork badges, earnings, job count, rating, and hours when supplied;
+- strongest case studies, measurable outcomes, named clients allowed for public use, industries, tools, and delivery model;
+- target client, target problem, preferred project size, disqualifiers, and recent relevant job posts.
 
-1. **Specificity beats adjectives.** "$2.3M saved" beats "lots of savings." "56+ SaaS products" beats "many projects." Never write "experienced" â€” prove it with a number.
-2. **Lead with a credibility marker.** First 60 characters must contain: Top 1% / Expert Vetted / Top Rated Plus / $X earned / X+ years / a brand-name client. The Upwork headline is what shows in search.
-3. **Hook before history.** Open the overview with a one-line transformation promise ("Create Leverage", "I build automation systems that work"), not "I am a developer with X years..."
-4. **Qualify and disqualify.** Top profiles tell people who they're *for* AND who they're *not* for. Disqualifying signals authority and filters time-wasters.
-5. **Outcome-anchored skills, not generic tags.** "AI Agent for Healthcare Process Automation" beats "Python." Skill tags should match what *clients search for*, ordered by what wins highest-ticket jobs.
-6. **Scannable formatting.** Use âœ…, â˜…, â†’, âƒ, bold/unicode for proof bullets. Recruiters skim. A wall of text loses.
-7. **Stack the proof.** Concrete client outcomes (Chevron $2.2M, real estate firm $812K ARR) > generic feature lists. Name brands when allowed.
-8. **End with urgency.** Direct-response close: "Message me now", "Let's build", "no time to waste". The CTA is the conversion event.
-9. **Project Catalog is a leverage tool.** 3â€“4 fixed-price packages from $150 entry to $8K premium creates anchoring + a passive lead funnel. Always recommend the user has these.
-10. **Consultation as foot-in-the-door.** Offer a $55â€“$200 / 30-min Zoom consult â€” it converts browsers into paying clients with low friction.
+Do not ask the user to paste sections already available in supplied files, screenshots, profile exports, or prior conversation. Never access or edit the live account unless a connected tool and explicit authorization exist.
 
-## Headline Formula
+Build a proof inventory:
 
-```
-[Credibility Marker] [Role/Specialty] | [Domain 1] & [Domain 2] Expert | [Hot Tool/Stack]
-```
+| Capability | Evidence/result | Client/problem | Public? | Best profile use |
+|---|---|---|---|---|
 
-Fill-in templates that work:
-- `Top 1% Full-Stack Developer | SaaS & AI Specialist | [Stack] Expert`
-- `[Role], [Domain] Integration & [Skill] Expert | [Platform Name]`
-- `Expert Vetted [Role] | [Outcome 1], [Outcome 2], [Outcome 3]`
+Separate verified platform status from self-claimed positioning. Never invent badges, earnings, clients, outcomes, credentials, or demand.
 
-Headline must be â‰¤70 characters where possible. Front-load the strongest credibility marker.
+## Diagnose
 
-## Overview Skeleton
+Score:
 
-```
-[HOOK â€” one-line transformation promise, present tense]
+1. **Positioning:** one clear client/problem/outcome;
+2. **Proof:** specific, relevant, and defensible evidence;
+3. **Search relevance:** natural role, service, tool, and industry terms;
+4. **Offer clarity:** what the client can buy and what happens next;
+5. **Scanability:** strongest evidence appears early;
+6. **Trust:** accurate scope, process, boundaries, and no unsupported promises;
+7. **Portfolio alignment:** samples prove the services being sold.
 
-[PROOF â€” 3-4 dollar-amount/metric bullets with â†’ or âœ…]
-â†’ I save over $X in operating costs through [specialty]
-â†’ I've scaled [client/industry] from [start] to $X annually
-â†’ [Brand name]: $X saved through [your work]
+Rank the three highest-leverage changes. Do not bury the user in a long checklist.
 
-[QUALIFIER â€” "we may be a great fit if you're thinking..."]
-"There's millions on the line and I want the BEST"
-"I know my business â€” I don't understand code"
-"The last [thing] was embarrassing â€” never again"
+<!-- skill-evolver:adaptive-start -->
+## Choose positioning
 
-[DISQUALIFIER â€” "we might NOT be a good fit if..."]
-âœ— Only looking to make a quick buck
-âœ— No realistic budget for the scope
-âœ— Not committed to seeing it through
+Create three internal positions:
 
-[TRANSFORMATION â€” "Working with me, you will..."]
-â˜… Stop struggling with [pain]
-â˜… Anticipate [objection] and pre-handle it
-â˜… Receive turnkey, [adjective], futureproofed [deliverable]
+- problem/outcome specialist;
+- industry/domain specialist;
+- capability combination with a clear use case.
 
-[STACK / EXPERTISE â€” categorized, scannable]
-- Front End: ...
-- Back End: ...
-- AI/ML: ...
-- Cloud: ...
+Score against proof strength, target-job demand, differentiation, project economics, and long-term credibility. Choose one recommended position. Show alternatives only when requested or evidence supports two distinct specialized profiles.
+<!-- skill-evolver:adaptive-end -->
 
-[CTA â€” urgent close]
-Message me now, and let's [outcome]!
-```
+## Rewrite end to end
 
-## Other Sections â€” Quick Recipes
+### Headline
 
-**Skills tags (15 max):** Pack with high-search keywords clients actually type. Mix broad ("Full-Stack Development") + niche ("AI Agent Development", "GoHighLevel"). Drop tags that no client searches for.
+Lead with searchable role/service language, then the most valuable specialization. Use verified badges only if they are real and current. Clarity beats cleverness; respect the live platform's current character limit.
 
-**Project Catalog:** 3â€“4 packages.
-- Entry: $30â€“$150 â€” consult or small fix (1 day)
-- Standard: $1Kâ€“$2K â€” common scoped work (7 days)
-- Premium: $7Kâ€“$8K â€” industry-vertical AI/SaaS build (30 days)
-- Always title outcome-first: "You will get AI Agent for [Industry] Business Process Automation"
+### Overview
 
-**Employment history:** Write as outcome stories, not job duties. "Grew customer base from 2,000 to 10,000 in less than a year" â€” not "managed CRM development."
+Use:
 
-**Testimonials:** Always include full client name + role + company. Verified testimonials = social proof gold. Solicit them after every 5-star job.
+1. client problem and outcome;
+2. strongest relevant proof;
+3. services and delivery approach;
+4. fit boundaries;
+5. one low-friction next step.
 
-**Consultation:** Price between $55â€“$200 / 30 min. Lower = higher conversion; higher = positioning. List it prominently.
+Write like a calm specialist. Avoid adjective piles, fake scarcity, aggressive fear, guaranteed outcomes, and generic tech-stack dumps.
 
-## Anti-Patterns to Kill on Sight
+### Skills and specialized profiles
 
-- "Hardworking, passionate, detail-oriented" â€” adjective soup, zero proof
-- "Years of experience in..." â€” replace with a $ figure or outcome
-- "Available 24/7" â€” desperate, not premium
-- Wall-of-text overview with no formatting
-- Generic skill tags with no specialty
-- No CTA at the end of the overview
-- No project catalog at all
-- Listing tech stack without listing what you *built* with it
+- choose terms visible in real target jobs and supported by evidence;
+- combine broad category terms with precise services/tools;
+- order by target work, not every skill the freelancer has;
+- use specialized profiles only for genuinely different buyers or offers.
 
-## Output Format
+### Portfolio and work history
 
-When the user pastes a section, respond with:
-1. **Audit** â€” 3â€“5 bullets on what's weak
-2. **Rewrite (3 variants)** â€” Authoritative / Friendly Expert / Direct Response
-3. **Why these win** â€” one line per variant
-4. **Next move** â€” what other section to improve next, or what facts you still need from them
+Convert each item into problem, contribution, constraints, artifact, and verified outcome. Preserve confidentiality. When metrics are unavailable, use scope, complexity, adoption, or delivered state instead of invented numbers.
 
-If the user just says "improve my upwork profile" with no text, ask them to paste their current headline + overview first.
+### Project catalog and consultations
+
+Recommend only offers that can be scoped, priced, and delivered repeatably. Derive tiers from actual effort, risk, inputs, revision boundaries, and market positioning—not fixed universal price ladders. State deliverables, exclusions, client inputs, timeline, and acceptance criteria.
+
+### Testimonials
+
+Use exact approved text and correct attribution. Never rewrite a quote to sound stronger. Suggest future testimonial prompts focused on problem, experience, and result.
+
+## Deliver
+
+For one section:
+
+1. concise diagnosis;
+2. one recommended rewrite;
+3. one short rationale;
+4. missing proof or next highest-leverage section.
+
+For a full profile:
+
+- positioning statement and ideal-client definition;
+- headline;
+- overview;
+- skills order;
+- specialized-profile recommendation;
+- portfolio/project-catalog plan;
+- consultation offer if appropriate;
+- proof gaps and capture plan;
+- before/after rationale.
+
+Do not make the user choose among three cosmetic variants. Provide a decisive draft; create alternatives only when requested.
+
+## Measure and improve
+
+Track only user-provided platform outcomes: profile views, invites, qualified invites, replies, interviews, hires, average project value, and time period. Compare changes over similar windows and note confounders such as availability, season, rate, and proposal volume.
+
+One outcome does not prove a universal rule. Record exact user edits as voice preferences; keep private analytics out of the public skill folder.
+
+## Quality gate
+
+- Every claim maps to proof.
+- Positioning matches target clients and visible work.
+- First screen communicates role, specialization, and credible result.
+- Keywords read naturally.
+- Offer and next step are concrete.
+- Tone is confident without manipulation.
+- Portfolio samples prove the promised work.
+
+Revise the weakest dimension once.

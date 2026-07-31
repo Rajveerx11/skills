@@ -1,0 +1,4 @@
+interface:
+  display_name: "LinkedIn Post Writer"
+  short_description: "Write grounded posts and matching visuals"
+  default_prompt: "Use $linkedin-post-writer to turn this update into a truthful, distinctive LinkedIn post and the strongest proof-based visual."

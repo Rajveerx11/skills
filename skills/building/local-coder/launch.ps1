@@ -4,18 +4,138 @@ param(
     [int]$Ctx = 32768,
     # -1 => --cpu-moe (ALL experts on CPU, safest for 8 GB). >=0 => --n-cpu-moe N (fewer on CPU = faster, more VRAM).
     [int]$NCpuMoe = -1,
-    [switch]$NoBrowser
+    [switch]$NoBrowser,
+    [string]$LlamaDir = "",
+    [string]$ServerPath = "",
+    [string]$ModelPath = ""
 )
 
 $ErrorActionPreference = 'Stop'
 
-$LlamaDir = "C:\Users\rajve\llamacpp"
-$Server   = Join-Path $LlamaDir "llama-server.exe"
-$Model    = Join-Path $LlamaDir "models\Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf"
+if (-not $LlamaDir) {
+    $LlamaDir = if ($env:LLAMA_CPP_DIR) {
+        $env:LLAMA_CPP_DIR
+    } else {
+        Join-Path ([Environment]::GetFolderPath('UserProfile')) 'llamacpp'
+    }
+}
+if (-not $ServerPath -and $env:LLAMA_SERVER_PATH) {
+    $ServerPath = $env:LLAMA_SERVER_PATH
+}
+if (-not $ModelPath -and $env:LLAMA_MODEL_PATH) {
+    $ModelPath = $env:LLAMA_MODEL_PATH
+}
+
+$Server   = if ($ServerPath) { $ServerPath } else { Join-Path $LlamaDir "llama-server.exe" }
+$Model    = if ($ModelPath) { $ModelPath } else { Join-Path $LlamaDir "models\Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf" }
 $LogDir   = Join-Path $LlamaDir "logs"
 $Url      = "http://127.0.0.1:$Port"
 
 New-Item -ItemType Directory -Force -Path $LogDir | Out-Null
+
+function Get-CommandLineModelArguments {
+    param([string]$CommandLine)
+
+    if (-not $CommandLine) { return @() }
+
+    $pattern = '(?i)(?:^|\s)(?:-m|--model)(?:\s+|=)(?:"([^"]*)"|''([^'']*)''|(\S+))'
+    return @([regex]::Matches($CommandLine, $pattern) | ForEach-Object {
+        foreach ($groupIndex in 1..3) {
+            if ($_.Groups[$groupIndex].Success) {
+                $_.Groups[$groupIndex].Value
+                break
+            }
+        }
+    })
+}
+
+function Get-NormalizedFullPath {
+    param([string]$Path)
+
+    if (-not $Path) { return $null }
+    try {
+        return [IO.Path]::GetFullPath($Path)
+    } catch {
+        return $null
+    }
+}
+
+function Get-LlamaServerStatus {
+    param(
+        [string]$BaseUrl,
+        [int]$LocalPort,
+        [string]$ExpectedServer,
+        [string]$ExpectedModel
+    )
+
+    $listener = Get-NetTCPConnection -LocalPort $LocalPort -State Listen -ErrorAction SilentlyContinue |
+        Select-Object -First 1
+    if (-not $listener) {
+        return [pscustomobject]@{ Healthy = $false; Reason = 'no listener'; ProcessId = $null; Models = @() }
+    }
+
+    $processInfo = Get-CimInstance Win32_Process -Filter "ProcessId = $($listener.OwningProcess)" -ErrorAction SilentlyContinue
+    $actualExecutable = if ($processInfo) { $processInfo.ExecutablePath } else { $null }
+    $actualCommandLine = if ($processInfo) { $processInfo.CommandLine } else { $null }
+    $expectedExecutable = (Resolve-Path -LiteralPath $ExpectedServer).Path
+    $executableMatches = $actualExecutable -and
+        [string]::Equals(
+            [IO.Path]::GetFullPath($actualExecutable),
+            [IO.Path]::GetFullPath($expectedExecutable),
+            [StringComparison]::OrdinalIgnoreCase
+        )
+
+    $expectedModelPath = Get-NormalizedFullPath $ExpectedModel
+    $commandLineModels = @(Get-CommandLineModelArguments $actualCommandLine)
+    $normalizedCommandLineModels = @($commandLineModels | ForEach-Object {
+        Get-NormalizedFullPath $_
+    })
+    $commandLineModelMatches = $normalizedCommandLineModels.Count -eq 1 -and
+        $normalizedCommandLineModels[0] -and
+        [string]::Equals(
+            $normalizedCommandLineModels[0],
+            $expectedModelPath,
+            [StringComparison]::OrdinalIgnoreCase
+        )
+
+    $healthMatches = $false
+    $modelIds = @()
+    try {
+        $health = Invoke-WebRequest -Uri "$BaseUrl/health" -UseBasicParsing -TimeoutSec 3
+        $healthMatches = ($health.StatusCode -eq 200)
+        $models = Invoke-RestMethod -Uri "$BaseUrl/v1/models" -TimeoutSec 3
+        $modelIds = @($models.data | ForEach-Object { [string]$_.id })
+    } catch { }
+
+    $expectedFile = [IO.Path]::GetFileName($ExpectedModel)
+    $expectedStem = [IO.Path]::GetFileNameWithoutExtension($ExpectedModel)
+    $modelMatches = @($modelIds | Where-Object {
+        $id = [string]$_
+        $leaf = [IO.Path]::GetFileName($id)
+        $stem = [IO.Path]::GetFileNameWithoutExtension($id)
+        $id -eq $expectedFile -or $id -eq $expectedStem -or
+            $leaf -eq $expectedFile -or $stem -eq $expectedStem
+    }).Count -gt 0
+
+    $reasons = @()
+    if (-not $executableMatches) { $reasons += "listener executable is '$actualExecutable'" }
+    if (-not $commandLineModelMatches) {
+        $reportedModels = if ($commandLineModels.Count) {
+            "'$($commandLineModels -join "', '")'"
+        } else {
+            'none'
+        }
+        $reasons += "listener command line model is $reportedModels; expected exact path '$expectedModelPath'"
+    }
+    if (-not $healthMatches) { $reasons += '/health is not ready' }
+    if (-not $modelMatches) { $reasons += "expected model '$expectedFile' not exposed by /v1/models" }
+    return [pscustomobject]@{
+        Healthy = $executableMatches -and $commandLineModelMatches -and $healthMatches -and $modelMatches
+        Reason = $reasons -join '; '
+        ProcessId = $listener.OwningProcess
+        Models = $modelIds
+    }
+}
 
 # 1. Pre-flight
 if (-not (Test-Path $Server)) { Write-Host "ERROR: llama-server.exe not found at $Server" -ForegroundColor Red; exit 1 }
@@ -25,14 +145,25 @@ if (-not (Test-Path $Model)) {
     Write-Host "It may still be downloading. Check: $LlamaDir\models\download.log"
     exit 1
 }
+$Server = (Resolve-Path -LiteralPath $Server).Path
+$Model = (Resolve-Path -LiteralPath $Model).Path
 
-# 2. Already running? Just open the UI.
-$listening = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
-if ($listening) {
-    Write-Host "llama-server is already listening on port $Port." -ForegroundColor Yellow
+# 2. Already running? Require exact executable, exact -m/--model path, health, and API model identity.
+$status = Get-LlamaServerStatus -BaseUrl $Url -LocalPort $Port -ExpectedServer $Server -ExpectedModel $Model
+if ($status.Healthy) {
+    Write-Host "llama-server already exposes the intended model on port $Port." -ForegroundColor Yellow
     if (-not $NoBrowser) { Start-Process $Url }
     Write-Host "WebUI: $Url"
+    Write-Host "PID: $($status.ProcessId)"
+    Write-Host "Model: $($status.Models -join ', ')"
     exit 0
+}
+$listening = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
+if ($listening) {
+    $squatter = (Get-Process -Id $listening[0].OwningProcess -ErrorAction SilentlyContinue).ProcessName
+    Write-Host "ERROR: port $Port is taken by '$squatter'; $($status.Reason)." -ForegroundColor Red
+    Write-Host "Relaunch with another port, e.g.: launch.ps1 -Port 8081"
+    exit 1
 }
 
 # 3. RAM check (experts live in system RAM)
@@ -62,7 +193,7 @@ $outLog = Join-Path $LogDir "server-$stamp.out.log"
 $errLog = Join-Path $LogDir "server-$stamp.err.log"
 
 Write-Host "Starting llama-server (Qwen3-Coder-30B-A3B Q4_K_M, ctx $Ctx)..." -ForegroundColor Cyan
-$proc = Start-Process -FilePath $Server -ArgumentList $serverArgs -PassThru -WindowStyle Minimized -RedirectStandardOutput $outLog -RedirectStandardError $errLog
+$proc = Start-Process -FilePath $Server -ArgumentList $serverArgs -PassThru -WindowStyle Hidden -RedirectStandardOutput $outLog -RedirectStandardError $errLog
 
 # 5. Wait for /health (first load reads ~18 GB from disk -> can take 1-3 min)
 Write-Host "Loading model... (this can take 1-3 min on first launch)"
@@ -75,13 +206,22 @@ for ($i = 0; $i -lt 120; $i++) {
         exit 1
     }
     try {
-        $resp = Invoke-WebRequest -Uri "$Url/health" -UseBasicParsing -TimeoutSec 3
-        if ($resp.StatusCode -eq 200) { $ready = $true; break }
+        $status = Get-LlamaServerStatus -BaseUrl $Url -LocalPort $Port -ExpectedServer $Server -ExpectedModel $Model
+        if ($status.Healthy) { $ready = $true; break }
     } catch { }
 }
 
 if (-not $ready) {
-    Write-Host "Server did not become ready in time. Check log: $errLog" -ForegroundColor Red
+    if (-not $proc.HasExited) {
+        try {
+            Stop-Process -Id $proc.Id -Force -ErrorAction Stop
+            Wait-Process -Id $proc.Id -Timeout 10 -ErrorAction SilentlyContinue
+            Write-Host "Stopped owned process $($proc.Id) after readiness timeout." -ForegroundColor Yellow
+        } catch {
+            Write-Host "WARNING: could not stop owned process $($proc.Id): $($_.Exception.Message)" -ForegroundColor Yellow
+        }
+    }
+    Write-Host "Server did not expose the intended model in time. Check log: $errLog" -ForegroundColor Red
     exit 1
 }
 
@@ -90,5 +230,6 @@ if (-not $NoBrowser) { Start-Process $Url }
 Write-Host ""
 Write-Host "  WebUI            : $Url"
 Write-Host "  OpenAI API       : $Url/v1   (point Cline / Aider / OpenCode here)"
+Write-Host "  Process ID       : $($proc.Id)"
 Write-Host "  Server log       : $errLog"
-Write-Host "  Stop the server  : Get-Process llama-server | Stop-Process"
+Write-Host "  Stop this server : Stop-Process -Id $($proc.Id)"

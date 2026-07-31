@@ -1,0 +1,6 @@
+interface:
+  display_name: "HyperFrames Core"
+  short_description: "Apply the deterministic composition contract"
+  default_prompt: "Use $hyperframes-core to implement or repair this composition's sizing, clips, tracks, timing, media, variables, and deterministic state."
+policy:
+  allow_implicit_invocation: true

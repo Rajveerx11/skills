@@ -1,0 +1,6 @@
+interface:
+  display_name: "General Video"
+  short_description: "Build custom fallback HyperFrames compositions"
+  default_prompt: "Use $general-video to design and build this custom video when no specialist video workflow fits."
+policy:
+  allow_implicit_invocation: true

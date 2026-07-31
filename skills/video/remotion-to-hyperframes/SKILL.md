@@ -105,10 +105,14 @@ Anything that didn't translate cleanly (volume ramps dropped, custom presentatio
 Run the test corpus orchestrator:
 
 ```bash
+# Optional: point at a standalone executable or built CLI JavaScript file.
+export HYPERFRAMES_CLI=/path/to/hyperframes
 ./assets/test-corpus/run.sh
 ```
 
-It runs T1, T2, T3 (render + diff) and T4 (lint validation), prints a per-tier pass/fail table, and emits an aggregate JSON report. Use this to verify the skill is working end-to-end on a clean checkout — and as a regression check after editing any reference.
+Without `HYPERFRAMES_CLI`, the corpus uses the current `npx hyperframes`. It never assumes the skill lives inside a HyperFrames source checkout. It runs T1, T2, T3 (render + diff) and T4 (lint validation), prints a per-tier pass/fail table, and emits an aggregate JSON report. Use this to verify the installed skill end to end and as a regression check after editing any reference.
+
+Corpus reports, renders, diffs, comparison strips, installed fixture dependencies, and setup-generated media are disposable runtime outputs. Keep them out of synchronized or published skill copies; regenerate them when testing.
 
 Validated baseline (as of 2026-04-27):
 
@@ -118,3 +122,15 @@ Validated baseline (as of 2026-04-27):
 | T2   | multi-scene + spring + audio + image        | 0.985     | 0.95      |
 | T3   | data-driven, custom subcomponents, count-up | 0.953     | 0.90      |
 | T4   | escape-hatch (8 lint cases)                 | 8/8 pass  | n/a       |
+
+<!-- skill-evolver:adaptive-start -->
+## Professional execution
+
+- **Discover automatically:** locate Remotion entry/root/config/compositions, package versions, props, assets/fonts/audio, target composition, render settings, existing baselines, and destination project. Never assume the first composition is the target when multiple exist.
+- **Default intelligently:** run source lint before planning, load only API references used by the source, preserve source dimensions/fps/duration/props, and translate mechanical patterns directly. Use the interop escape hatch rather than approximating a blocker.
+- **Create checkpoints:** save lint report, source manifest, translation map, baseline render metadata, HyperFrames output, diff report/frame strip, and `TRANSLATION_NOTES.md`. Fingerprint source/config/assets so reruns translate only changed surfaces.
+- **Protect contracts:** source semantics, timing, sequencing, parameters, media, fonts, color space, pixel format, deterministic state, and parity threshold are low-freedom. Refactoring and HTML organization may vary only when behavior stays measurable.
+- **Validate proportionally:** warnings require documented gaps; blockers stop translation. Match render settings, run lint/inspect, compare representative frames and SSIM against the tier threshold, then inspect audio/timing manually when the metric cannot cover them.
+- **Finish the handoff:** deliver source and destination composition IDs, lint classification, translation map, output/baseline/diff paths, measured threshold result, notes, and exact interop recommendation for unsupported behavior.
+- **Learn only from evidence:** add reproducible failures to the regression corpus and record versioned results through `skill-evolver`; never weaken parity from one difficult source.
+<!-- skill-evolver:adaptive-end -->

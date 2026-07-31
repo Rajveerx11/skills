@@ -1,0 +1,4 @@
+interface:
+  display_name: "Application Security"
+  short_description: "Find and fix evidence-backed application risks"
+  default_prompt: "Use $security to threat-model and harden this application with regression evidence."

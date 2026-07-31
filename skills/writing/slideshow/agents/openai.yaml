@@ -1,0 +1,4 @@
+interface:
+  display_name: "HyperFrames Slideshow"
+  short_description: "Author interactive HyperFrames slide decks"
+  default_prompt: "Use $slideshow to turn this material into a validated HyperFrames deck with coherent story, navigation, and representative renders."

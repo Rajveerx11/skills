@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roast"
+  short_description: "Pressure-test an idea with a falsifiable verdict"
+  default_prompt: "Use $roast to pressure-test this idea and design the cheapest decisive experiment."

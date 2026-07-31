@@ -1,108 +1,73 @@
 ---
 name: security
-description: Secure web and desktop application development. Use when writing authentication, authorization, API endpoints, form handling, database queries, file uploads, Electron apps, Tauri apps, IPC handlers, cryptography, secrets management, security headers, input validation, or when reviewing code for vulnerabilities. Covers OWASP Top 10, XSS, CSRF, SQL injection, SSRF, command injection, path traversal, and desktop app security.
-argument-hint: [area to secure or review]
+description: Design, review, harden, or repair web and desktop application security. Use for authentication, authorization, tenancy, APIs, forms, databases, file uploads, SSRF, XSS, CSRF, injection, secrets, cryptography, dependencies, Electron/Tauri IPC, security headers, threat modeling, or evidence-backed vulnerability review and regression testing.
 ---
 
 # Application Security
 
-You are a security-focused engineer. Every line of code you write or review must defend against real attack vectors. You don't add security theater — you implement defenses that stop actual exploits.
+Reduce exploitable risk within the user's authorized scope. Do not perform broad exploitation, access unrelated data, or report speculative scanner output as a confirmed vulnerability.
 
-Read the detailed reference files in `${CLAUDE_SKILL_DIR}` for comprehensive patterns:
+## Establish scope and threat model
 
-- `web-security.md` — XSS, CSRF, injection, SSRF, path traversal, input validation, security headers
-- `auth-and-secrets.md` — Authentication, JWT, OAuth2 PKCE, API keys, password hashing, secrets management
-- `desktop-security.md` — Electron and Tauri hardening, IPC security, auto-updater, deep links, sandboxing
-- `database-and-deps.md` — SQL injection prevention, ORM security, connection management, dependency supply chain
+Inspect repository instructions, architecture, deployment, trust boundaries, identities, roles, tenant model, sensitive assets, entry points, dependencies, and existing controls. Define:
 
-## Security-First Mindset
+- attacker capabilities and protected assets;
+- authentication, authorization, and ownership rules;
+- external inputs and privileged sinks;
+- production/test boundary and allowed verification.
 
-When writing or reviewing code, always ask:
+Read the relevant reference:
 
-1. **What can an attacker control?** — Every external input is hostile: URL params, headers, cookies, form data, file uploads, WebSocket messages, deep links, IPC messages
-2. **What's the blast radius?** — If this is exploited, what's the worst case? RCE > data theft > DoS > information leak
-3. **Am I validating at the boundary?** — Validate where data enters the system, not deep inside
+- [web-security.md](web-security.md) for browser/API boundaries and injection.
+- [auth-and-secrets.md](auth-and-secrets.md) for identity, tokens, and cryptography.
+- [desktop-security.md](desktop-security.md) for Electron/Tauri, IPC, updates, and deep links.
+- [database-and-deps.md](database-and-deps.md) for data access and supply chain.
 
-## Quick Reference: The Non-Negotiables
+Verify framework/version-sensitive guidance against current official documentation.
 
-### Web Apps
-```
-✗ NEVER concatenate user input into SQL, HTML, shell commands, or URLs
-✗ NEVER use eval(), Function(), innerHTML with untrusted data
-✗ NEVER store secrets in code, localStorage, or client-accessible locations
-✗ NEVER disable CORS, CSP, or same-origin protections without justification
-✗ NEVER use MD5/SHA1 for passwords — use Argon2id or bcrypt
-✗ NEVER use Math.random() for security tokens — use crypto.randomBytes()
-✗ NEVER trust client-side validation alone
+## Review systematically
 
-✓ ALWAYS use parameterized queries (prepared statements, ORMs)
-✓ ALWAYS set HttpOnly, Secure, SameSite on auth cookies
-✓ ALWAYS escape output in the context it's rendered (HTML, JS, URL, CSS)
-✓ ALWAYS validate and sanitize input at system boundaries
-✓ ALWAYS use HTTPS + HSTS in production
-✓ ALWAYS implement rate limiting on auth endpoints
-✓ ALWAYS use CSP headers — start with default-src 'self'
-```
+Trace untrusted data from source to privileged sink. Check:
 
-### Desktop Apps (Electron)
-```
-✗ NEVER enable nodeIntegration in renderer
-✗ NEVER disable contextIsolation or webSecurity
-✗ NEVER expose raw ipcRenderer to renderer process
-✗ NEVER use the remote module (deprecated, dangerous)
-✗ NEVER load remote URLs without URL validation
+- authentication lifecycle, session fixation/revocation, account recovery, and MFA;
+- authorization on every server/IPC boundary, tenant isolation, and object ownership;
+- injection, output encoding, CSRF, CORS, SSRF, redirects, file/path handling;
+- secret storage/logging, cryptographic purpose and key lifecycle;
+- dependency provenance, install scripts, lockfiles, update/signing path;
+- abuse controls, rate limits, audit events, and fail-closed behavior.
 
-✓ ALWAYS enable contextIsolation + sandbox
-✓ ALWAYS use contextBridge with minimal, validated API surface
-✓ ALWAYS validate IPC sender identity and message schema
-✓ ALWAYS validate deep link URLs before processing
-✓ ALWAYS use code signing for distribution
-```
+Use focused static analysis and dependency tooling where available. Never print discovered secrets; report file/location and redact the value.
 
-### Desktop Apps (Tauri)
-```
-✗ NEVER allow unrestricted shell execution
-✗ NEVER use broad file system scopes
-✗ NEVER skip command input validation (even with Rust types)
+## Findings
 
-✓ ALWAYS use invoke() pattern (not raw events) for sensitive ops
-✓ ALWAYS configure restrictive scopes (fs, http, shell)
-✓ ALWAYS set CSP in tauri.conf.json
-✓ ALWAYS define per-window capabilities (least privilege)
-```
+For each finding include:
 
-## Vulnerability Response Patterns
+- title, severity, confidence, CWE/category;
+- affected path and trust boundary;
+- attacker preconditions and impact;
+- minimal reproducible evidence safe for the environment;
+- root cause, smallest fix, defense in depth, and regression test;
+- uncertainty or compensating control.
 
-When you detect a vulnerability in code:
+Rank severity by exploitability and impact in this system, not a generic label. Separate confirmed, likely, and hardening-only items. Do not recommend rotating a secret without noting that exposed credentials must be revoked/rotated through the owning provider.
 
-| Vulnerability | Immediate Fix |
-|--------------|---------------|
-| SQL injection | Switch to parameterized queries |
-| XSS (reflected/stored) | Escape output + add CSP header |
-| Command injection | Use spawn() with array args, never exec() with strings |
-| Path traversal | Resolve path, verify it starts with allowed directory |
-| CSRF | Add SameSite=Strict cookies + CSRF tokens |
-| SSRF | Validate URL against allowlist, block private IP ranges |
-| Insecure auth cookie | Add HttpOnly, Secure, SameSite flags |
-| Hardcoded secret | Move to env var, rotate the exposed secret |
-| Weak password hash | Migrate to Argon2id with proper parameters |
-| Electron nodeIntegration | Set false + enable contextIsolation + sandbox |
+## Fix when requested
 
-## Critical Rules
+Implement the smallest root-cause repair while preserving public behavior. Use established libraries and framework-native controls; do not design custom cryptography or authentication protocols. Add negative tests that prove unauthorized, cross-tenant, malformed, replayed, or hostile inputs fail closed.
 
-1. **Validate at boundaries** — Every system edge (HTTP, IPC, file read, DB query) needs validation
-2. **Defense in depth** — Never rely on a single security control; layer defenses
-3. **Principle of least privilege** — Grant minimum access needed; restrict tools, scopes, permissions
-4. **Fail closed** — Errors should deny access, not grant it; default to rejection
-5. **Never trust the client** — All client data is attacker-controlled until validated server-side
-6. **Secrets never in code** — Use env vars, vaults, or OS keychains; rotate exposed secrets immediately
-7. **Escape for the output context** — HTML entities for HTML, parameterized for SQL, array args for shell
-8. **Use established crypto** — Argon2id for passwords, AES-256-GCM for encryption, crypto.randomBytes() for tokens
-9. **Pin dependencies** — Use lock files, audit regularly, verify integrity with SRI for CDN resources
-10. **Log security events** — Failed logins, permission denials, input validation failures; never log secrets
+Run format, lint, typecheck, tests, security checks, and safe reproduction. Re-scan the changed path and inspect the diff for secret leakage.
 
-## Using This Skill
+Consequential operations—credential rotation, account/permission changes, production configuration, destructive proof, or external scanning—require explicit authority.
 
-If `$ARGUMENTS` specifies an area (e.g., `/security authentication`), read the relevant reference file and focus there. Otherwise, apply security principles to whatever code you're currently writing or reviewing.
+## Completion
 
-When reviewing existing code, scan for the vulnerability patterns in the reference files and flag each finding with severity (Critical/High/Medium/Low) and a concrete fix.
+Return scope, threat model, findings by severity/confidence, changed paths, regression and tool evidence, residual risk, and exact operational follow-up. Never claim “secure” or “no vulnerabilities”; state tested coverage and limits.
+
+<!-- skill-evolver:adaptive-start -->
+## Adaptive excellence
+
+- Optimize for evidence-backed risk reduction with exploit path, calibrated severity, fix, and regression test.
+- Use low freedom for security invariants/current framework guidance and high freedom for threat hypotheses within authorized scope.
+- Require trust-boundary/authz/tenancy/abuse coverage, reproducible evidence with uncertainty, and current fixes plus negative tests. Revise once when weak.
+- Learn only from reproduced defects and reviewed false-positive suppressions with owner and expiry.
+<!-- skill-evolver:adaptive-end -->

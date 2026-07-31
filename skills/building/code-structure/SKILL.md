@@ -1,127 +1,68 @@
 ---
 name: code-structure
-description: Use when multiple workflows duplicate the same operational logic, when deciding what belongs in actions vs shared services, or when refactoring repeated operational blocks across domain flows. Use when adding new features that share mechanics with existing ones.
+description: Diagnose and refactor duplicated operational logic into appropriate shared services without changing behavior. Use when workflows repeat provider, filesystem, process, networking, or infrastructure mechanics; when deciding what belongs in actions/controllers versus services; or when adding a feature that shares mechanics with existing flows.
 ---
 
-# Service Layer Architecture
+# Code Structure
 
-## Overview
+Reduce duplication and ownership confusion while preserving observable behavior. Prefer a small extraction over a new architecture.
 
-**Two-layer separation:** Actions orchestrate domain rules (the "why/when"), while a service layer centralizes reusable operational mechanics (the "how").
+## Map the behavior
 
-This prevents duplicated code, inconsistent behavior, and bugs fixed in one path but not others.
+1. Read repository instructions, dependency boundaries, public APIs, tests, and Git status.
+2. Use code search to find every caller, near-duplicate, provider edge, state transition, transaction, retry, error mapping, and side effect.
+3. Build a compact comparison:
+   - behavior shared exactly;
+   - behavior similar but intentionally different;
+   - domain policy owned by each caller;
+   - operational mechanics suitable for reuse.
+4. Add or identify characterization tests before moving logic whose behavior is unclear.
 
-## When to Use
+Do not extract a one-off block solely to make a file shorter. Extract when multiple callers share a stable capability or a new caller would otherwise copy it.
 
-- Multiple callers need the same low-level operation (sandbox creation, email sending, payment processing)
-- You're copy-pasting operational logic between action files
-- A bug fix in one workflow doesn't propagate to others doing the same thing
-- Adding a new feature that shares mechanics with existing flows
+## Choose the boundary
 
-**Don't use when:** Logic is truly domain-specific and used by only one caller.
+Keep in orchestration/actions:
 
-## Core Pattern
+- authorization, ownership, business policy, state transitions, transactions;
+- user-facing error classification, workflow ordering, and product-specific retries;
+- decisions about whether and when an operation occurs.
 
+Move into a shared service:
 
-```
-Orchestration Layer (Actions)          Service Layer (Shared Mechanics)
-├── owns business rules                ├── owns reusable operations
-├── owns state transitions             ├── owns provider/SDK interactions
-├── owns auth/ownership checks         ├── owns command execution details
-├── owns failure classification        ├── owns health checks / readiness
-├── owns retries / user-facing errors  └── returns structured results
-└── calls service functions
-```
+- provider/SDK calls, command execution, sandbox setup, file mechanics;
+- readiness checks, protocol normalization, and reusable low-level retries;
+- operations that can accept explicit inputs and return structured results without reaching into domain state.
 
+Design capability-sized functions. Avoid a god service that hides the original flow.
 
+## Refactor safely
 
-**Rule of thumb:**
-- "What this product flow means" → keep in actions
-- "How to do this operation reliably" → move to service layer
+1. Define explicit parameters, return type, error contract, cancellation/timeout behavior, and observability.
+2. Extract the smallest shared unit without opportunistic cleanup.
+3. Migrate one representative caller and run its focused tests.
+4. Migrate remaining callers in a mechanical batch, preserving their policy differences.
+5. Remove dead copies only after search confirms no caller remains.
+6. Add tests for shared mechanics plus caller-specific semantics and failure paths.
 
-## Quick Reference
+Prefer dependency injection at external boundaries. Do not introduce global mutable state, hidden database access, swallowed errors, or a generic abstraction with provider-specific conditionals everywhere.
 
-| Design Principle | Do | Don't |
-|---|---|---|
-| API shape | Composable capability blocks | One giant "do everything" method |
-| Inputs/outputs | Explicit params, structured returns | Hidden global state, reaching into DB |
-| Migration | Extract one block, replace one caller, verify, then migrate rest | Refactor everything at once |
-| Domain logic | Keep auth, policy, error classification in actions | Let service mutate domain state directly |
-| Extraction trigger | Logic repeated across 2+ callers | Logic used once (over-abstraction) |
+## Quality gate
 
-## Designing Service Functions
+Run formatting, lint, typecheck, focused tests, and the relevant broader suite. Search again for duplicate blocks and old symbols. Confirm:
 
-Design as **capability blocks**, not monoliths:
+- public contracts, errors, ordering, transactions, and telemetry remain compatible;
+- service API is smaller than the duplication it replaces;
+- semantic differences remain visible at call sites;
+- no unrelated user changes were overwritten.
 
+Report the ownership boundary, migrated callers, tests run, and any duplication intentionally retained.
 
-```ts
-// Good: composable, each caller chooses what to use
-createManagedSandbox(...)
-prepareRepo(...)
-detectPackageManager(...)
-installDependencies(...)
-runBuildCommand(...)
-startSandboxRuntime(...)
-```
+<!-- skill-evolver:adaptive-start -->
+## Adaptive excellence
 
-
-
-Each function should:
-- Accept all required data as **explicit parameters**
-- Return **structured outputs** (e.g., `{ ready, previewUrl, proxyPort }`)
-- Never reach into database/state directly
-- Make failure explicit (structured results, not swallowed errors)
-
-This lets callers choose strict vs relaxed behavior per flow.
-
-## Migration Checklist
-
-When extracting shared logic:
-
-1. Write the flow in action code first (clear behavior)
-2. Mark repeated operational chunks across callers
-3. Extract **only** repeated, non-domain chunks to service
-4. Replace one caller → verify → replace remaining callers
-5. Keep domain policy in actions (auth, status transitions, error classification)
-6. Run verification: typecheck, lint, confirm all flows still work
-
-## Anti-Patterns
-
-| Anti-Pattern | Problem |
-|---|---|
-| **God service** | One huge function hides all control flow |
-| **Leaky service** | Service mutates database tables directly |
-| **Inconsistent API** | Each function uses different argument styles and error semantics |
-| **Over-abstraction** | Extracting logic used by only one caller |
-
-## Example: Email Service (Simple)
-
-
-```ts
-// emailService.ts — shared mechanics
-export async function sendWelcomeEmail(params: { to: string; name: string }) {
-  const html = `<h1>Welcome ${params.name}</h1>`;
-  await emailProvider.send(params.to, "Welcome", html);
-}
-
-// userSignup.ts — orchestration (owns WHEN to send)
-if (user.marketingOptIn) {
-  await sendWelcomeEmail({ to: user.email, name: user.name });
-}
-
-// adminInvite.ts — orchestration (different business rule, same mechanic)
-await sendWelcomeEmail({ to: invitee.email, name: invitee.name });
-```
-
-
-
-## Mental Model
-
-
-```
-New feature? → Write in action first → See repeated ops? → Extract to service
-                                      → No repetition?  → Keep in action
-```
-
-
-Your architecture in one sentence: **Actions orchestrate domain rules, while the service layer centralizes reusable operational mechanics with a composable, explicit-input API.**
+- Optimize for simpler ownership and less duplication without semantic drift.
+- Use medium freedom to choose boundaries and transaction ownership. Preserve public contracts, errors, behavior, and observability.
+- Require mapped callers/differences, passing characterization/regression tests, and evidence that coupling decreased rather than moved. Revise once when weak.
+- Learn only from accepted architecture decisions, reproduced defects, or measured complexity changes.
+<!-- skill-evolver:adaptive-end -->

@@ -6,8 +6,11 @@ mode, matte quality, baked-in graphics, luminance extremes, motion.
 
 ## The test set
 
-All in `~/Downloads/heygen_relevant_videos/` (720×1290, ~8s, 9:16). Add
-landscape + 1:1 as we grow.
+Keep one complete fixture directory per case in a private `TEST_DATA_ROOT`.
+Each fixture contains its source clip and any prepared transcript/matte inputs.
+Do not commit footage, transcripts, renders, or machine-specific paths to this
+skill. The baseline corpus uses short 9:16 clips; add landscape and 1:1 coverage
+when those formats matter.
 
 | Case            | Scene                                                                      | Stress test                                                                          |
 | --------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
@@ -23,8 +26,11 @@ landscape + 1:1 as we grow.
 ## Usage
 
 ```bash
+: "${TEST_DATA_ROOT:?set TEST_DATA_ROOT to the private fixture root}"
 for case in Sunset_Stroll Nature_Vibe Gym_Grind AI_Insights; do
-  bash scripts/render-and-composite.sh /tmp/ts-${case}
+  work="$(mktemp -d)"
+  cp -R "$TEST_DATA_ROOT/$case/." "$work/"
+  bash scripts/render-and-composite.sh "$work"
 done
 ```
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task to PR"
+  short_description: "Ship one task to a reviewed green pull request"
+  default_prompt: "Use $task-to-pr to take this scoped task through implementation, review, and green CI."

@@ -50,9 +50,8 @@ Spine: Hook (0–15%) → Value/Demo (15–80%) → CTA (80–100%). 5–9 scene
 - **No** CSS `@keyframes`/`transition`, **no** `setTimeout`/`setInterval`/async-in-render, **no** `Math.random()`/`Date.now()` (use `random('seed')`).
 - Structure: `src/index.ts` → `registerRoot`; `src/Root.tsx` → `<Composition>`; scenes via `<Sequence>`/`<Series>`/`<TransitionSeries>`; layers via `<AbsoluteFill>`.
 - Assets in `public/`, via `staticFile`. Audio/Video from `@remotion/media` (`volume` 0–1). `<Img>` not `<img>`.
-- `remotion.config.ts`: `setVideoImageFormat('jpeg')`, `setCodec('h264')`, `setOverwriteOutput(true)`, `setChromiumOpenGlRenderer('angle')`, and reuse the shared browser:
-  `Config.setBrowserExecutable("C:/Users/rajve/.remotion/chrome-headless-shell/win64/chrome-headless-shell-win64/chrome-headless-shell.exe")`.
-- **Pin all `@remotion/*` packages + `react`/`react-dom` to ONE exact version** (no `^`) and pin `zod@4.3.6`. Project lives **outside** `C:\Testing IDE` (avoids the repo's zod-3 mismatch warning). Node 24 OK.
+- `remotion.config.ts`: `setVideoImageFormat('jpeg')`, `setCodec('h264')`, `setOverwriteOutput(true)`, `setChromiumOpenGlRenderer('angle')`. If `REMOTION_BROWSER_EXECUTABLE` names a verified executable, pass it to `Config.setBrowserExecutable()`; otherwise let Remotion resolve or install its browser.
+- **Pin all `@remotion/*` packages plus `react`/`react-dom` to ONE exact compatible version** (no `^`) and use the Zod major required by that release. Use an isolated project directory when a parent repository hoists conflicting packages.
 - **Synthesize all SFX + music in pure Node** (write WAV PCM). Do NOT use `npx remotion ffmpeg` for synthesis — it's a stripped build missing `anoisesrc`/`afade`/`highpass`/etc.
 - Load fonts with explicit weights + a CSS `monospace`/`sans-serif` fallback. Validate with a `still` render before the full render.
 

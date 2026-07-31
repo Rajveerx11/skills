@@ -1,0 +1,6 @@
+interface:
+  display_name: "HyperFrames Registry"
+  short_description: "Install and wire reusable registry items"
+  default_prompt: "Use $hyperframes-registry to find, install, wire, customize, and validate the right registry block or component."
+policy:
+  allow_implicit_invocation: true

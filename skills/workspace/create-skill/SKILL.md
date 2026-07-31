@@ -1,183 +1,135 @@
 ---
 name: create-skill
-description: Create high-quality Claude Code custom skills and slash commands. Use when the user wants to create a new skill, build a custom command, make a slash command, or add a reusable workflow.
-argument-hint: [description of the skill to create]
+description: Create, update, audit, migrate, and validate reusable skills for Codex, Claude Code, or a shared agent-skills repository. Use when the user asks to create a skill, custom command, slash command, reusable agent workflow, skill package, or to improve an existing SKILL.md and its scripts, references, assets, triggers, metadata, or tests.
 ---
 
-# Skill Creation Guide
+# Create Skill
 
-You are an expert at creating Claude Code skills — reusable slash commands and auto-activating knowledge modules. Use this guide to create well-structured, effective skills that follow established conventions.
+Build skills that give advanced models useful domain leverage without replacing judgment with boilerplate.
 
-Read the detailed reference files in `${CLAUDE_SKILL_DIR}` for comprehensive details:
+Read [references/platforms.md](references/platforms.md) when selecting runtime-specific metadata or install paths. Read [references/examples.md](references/examples.md) only when a concrete pattern is needed.
 
-- `reference.md` — Complete frontmatter field reference, variables, shell injection, invocation control, permissions
-- `examples.md` — Real-world skill examples covering task, research, knowledge, and dynamic context patterns
+## Modes
 
-## Skill Creation Workflow
+- **Create**: build a new skill and reusable resources.
+- **Update**: improve an existing skill while preserving its working contracts.
+- **Audit**: diagnose trigger, portability, context, workflow, resource, and validation problems.
+- **Migrate**: make a runtime-specific skill portable across Codex and Claude Code.
 
-### Step 1: Clarify Purpose and Type
+## End-to-end workflow
 
-Before writing anything, determine the skill type:
+### 1. Discover context
 
-| Type | Purpose | Example |
-|------|---------|---------|
-| **Task** | Performs actions with side effects | deploy, commit, publish |
-| **Research** | Gathers and synthesizes information | deep-research, audit |
-| **Knowledge** | Provides reference context | api-conventions, style-guide |
-| **Dynamic** | Injects live context via shell commands | pr-summary, env-check |
+Inspect repository instructions, target agent, skill roots, duplicate names, nearby conventions, expected artifacts, failure modes, and side effects before asking questions. Infer low-risk details. Ask one consolidated clarification only when scope, authority, cost, or irreversible behavior would materially change.
 
-Ask the user if their intent is unclear. A skill that "deploys to production" is a Task. A skill that "explains our API patterns" is Knowledge.
+### 2. Model the skill
 
-### Step 2: Determine Scope
+Write a compact internal contract:
 
-| Scope | Path | When to use |
-|-------|------|-------------|
-| **Personal** | `~/.claude/skills/<name>/` | Workflows that apply across all your projects |
-| **Project** | `.claude/skills/<name>/` | Project-specific conventions shared with the team |
+- outcome the skill must produce;
+- three realistic trigger examples and two near-miss examples;
+- repeated human work to automate;
+- required scripts, references, or assets;
+- freedom class: high, medium, or low;
+- hard safety, schema, platform, or tool constraints;
+- three observable quality gates.
 
-Default to **project scope** unless the user explicitly wants it personal or the skill is clearly project-agnostic.
+Use high freedom for writing, design, strategy, and synthesis. Use medium freedom for mixed workflows. Use low freedom for destructive operations, fragile APIs, exact formats, releases, and security invariants.
 
-### Step 3: Choose Frontmatter Settings
+### 3. Choose scope and portability
 
-Use this decision matrix:
+Prefer a shared portable skill when both agents should use it:
 
-**`name`** (required): Lowercase kebab-case. This becomes the `/slash-command` name.
-
-**`description`** (required): Write a clear, action-oriented description. This is what Claude uses to decide whether to auto-activate the skill. Include trigger phrases the user might say.
-- Good: "Build Trigger.dev background jobs, automations, and workflows in TypeScript. Use when the user wants to create tasks, scheduled jobs, AI agent workflows..."
-- Bad: "Trigger.dev helper"
-
-**`argument-hint`** (optional): Shown in autocomplete. Use square brackets: `[description of what to build]`
-
-**Invocation control fields** — use only when needed:
-- `user-invocable: false` — Skill is auto-activate only, no slash command. Use for pure knowledge/context skills.
-- `auto-activate: false` — Slash command only, never auto-activates. Use for dangerous/destructive operations like deploy or delete.
-- `allowed-tools` — Restrict which tools the skill can use. Use for safety-critical skills.
-- `disallowed-tools` — Block specific tools. Use to prevent a skill from editing files when it should only read.
-
-Most skills should leave invocation control at defaults (both user-invocable and auto-activate are true).
-
-### Step 4: Write the SKILL.md
-
-Follow this structure:
-
-```markdown
----
-name: skill-name
-description: Clear description with trigger phrases...
-argument-hint: [what the user provides]
----
-
-# Title
-
-Role statement — one sentence establishing expertise.
-
-Reference supporting files (if any):
-Read the detailed reference in `${CLAUDE_SKILL_DIR}` for...
-
-## Core Instructions
-The main guidance. Be specific and actionable.
-
-## Critical Rules
-Numbered list of non-negotiable rules (max 10-12).
-
-## Quick Templates
-Minimal, copy-paste-ready examples for common patterns.
-
-## Final Note
-How to use `$ARGUMENTS` and any closing guidance.
+```text
+skill-name/
+├── SKILL.md
+├── agents/openai.yaml
+├── scripts/
+├── references/
+└── assets/
 ```
 
-### Step 5: Add Supporting Files (If Needed)
+For portable `SKILL.md` frontmatter, use only `name` and `description`. Add runtime-specific fields only when the user explicitly wants a single-runtime skill and the current runtime supports them.
 
-Use separate `.md` files in the skill directory for:
-- Detailed API references too long for SKILL.md
-- Multiple code examples that would bloat the main file
-- Content that only needs to be read on-demand (not every invocation)
+Default to project scope for project-specific behavior, global scope for cross-project behavior, and an existing canonical skills repository when it already controls installed copies. Never edit managed system skills, plugin caches, or package-generated vendor files; create an owned fork.
 
-Reference them from SKILL.md using `${CLAUDE_SKILL_DIR}`:
-```markdown
-Read `${CLAUDE_SKILL_DIR}/reference.md` for the complete API reference.
+### 4. Initialize and build resources
+
+For a new Codex-compatible skill, locate the installed `skill-creator` helper and run:
+
+```bash
+python scripts/init_skill.py skill-name --path <target-root> --resources scripts,references --interface "display_name=Skill Name" --interface "short_description=Short useful description" --interface "default_prompt=Use $skill-name to complete the task."
 ```
 
-Claude will read these lazily — only when the skill is activated and the instructions tell it to.
+Request only needed resource directories. Delete placeholders. For updates, patch the smallest complete surface.
 
-**Do NOT use supporting files for:**
-- Content under ~50 lines (just put it in SKILL.md)
-- Content needed on every invocation (put it in SKILL.md)
+- Put deterministic or repeatedly rewritten operations in `scripts/`.
+- Put optional domain detail in `references/`.
+- Put output templates, fonts, icons, and boilerplate in `assets/`.
+- Keep core routing and workflow in `SKILL.md`.
 
-## Critical Rules
+Run every new script on a representative fixture.
 
-1. **SKILL.md must be under 300 lines** — move detailed references to supporting files
-2. **Use kebab-case for skill names** — `my-skill` not `mySkill` or `my_skill`
-3. **Directory name must match the `name` field** — `skills/deploy/SKILL.md` with `name: deploy`
-4. **Description must include trigger phrases** — Claude uses this for auto-activation matching
-5. **Always reference supporting files via `${CLAUDE_SKILL_DIR}`** — never hardcode paths
-6. **Use `$ARGUMENTS` for user input** — this contains everything after the slash command
-7. **Keep templates minimal** — show the pattern, not a complete application
-8. **Don't over-constrain with allowed-tools** — only restrict when there's a real safety concern
-9. **One skill per concern** — don't bundle unrelated functionality into one skill
-10. **Test the description** — mentally check: "If I said [trigger phrase], would Claude pick this skill?"
+### 5. Author `SKILL.md`
 
-## Anti-Patterns to Avoid
-
-- **Giant monolith SKILL.md** — If it's over 300 lines, split into supporting files
-- **Vague descriptions** — "Helps with stuff" won't auto-activate reliably
-- **Hardcoded paths** — Use `${CLAUDE_SKILL_DIR}` for supporting files
-- **Over-engineering frontmatter** — Most skills only need name + description
-- **Duplicating built-in behavior** — Don't create a skill for things Claude already does well
-- **Forgetting the argument-hint** — Users won't know what to type after the slash command
-
-## Quick Templates
-
-### Minimal Task Skill
-```markdown
+```yaml
 ---
-name: deploy
-description: Deploy the application to production. Use when the user wants to deploy, ship, or push to prod.
-argument-hint: [environment or options]
-auto-activate: false
+name: concise-kebab-case
+description: What it does. Use when the user asks for concrete trigger contexts.
 ---
-
-# Deploy Skill
-
-You are an expert at deploying this application safely.
-
-## Process
-1. Run pre-deploy checks
-2. Build the application
-3. Deploy to the target environment
-4. Verify the deployment
-
-## Critical Rules
-1. Always run tests before deploying
-2. Never deploy with uncommitted changes
-3. Confirm with the user before deploying to production
-
-Use `$ARGUMENTS` to determine the target environment. Default to staging if not specified.
 ```
 
-### Minimal Knowledge Skill
-```markdown
----
-name: api-conventions
-description: API design conventions and patterns for this project. Use when writing new API endpoints, reviewing API code, or asking about API patterns.
-user-invocable: false
----
+1. Use imperative instructions for another capable agent.
+2. Lead with outcome, modes, and routing.
+3. Automate context discovery, batching, defaults, checkpoints, and verification.
+4. Treat subjective workflows as adaptable defaults; protect exact contracts.
+5. Ask only for decisions requiring user knowledge or authority.
+6. Link resources relative to the skill directory and state when to read them.
+7. Keep core file under 500 lines; move long variants and examples one level into `references/`.
+8. Never embed secrets, personal runtime logs, temporary files, or generated caches.
+9. Do not add README, changelog, install guide, or process diary inside the skill.
 
-# API Conventions
+### 6. Add agent metadata
 
-## URL Structure
-- Use plural nouns: `/users`, `/orders`
-- Nest for relationships: `/users/:id/orders`
+For Codex discovery, generate `agents/openai.yaml` with the official helper when available. Supply a clear display name, a 25–64 character short description, and a one-sentence default prompt explicitly mentioning `$skill-name`. Quote strings. Add no icon or brand fields without actual assets or values.
 
-## Response Format
-Always return `{ data, error, meta }` envelope.
+### 7. Validate behavior
 
-## Error Handling
-Use standard HTTP status codes. Include error codes for client handling.
+Run the platform validator:
+
+```bash
+python scripts/quick_validate.py <skill-folder>
 ```
 
-See `${CLAUDE_SKILL_DIR}/examples.md` for a dynamic context skill example using shell injection.
+Then verify:
 
-When the user describes a skill to create, use `$ARGUMENTS` as context for what they want. Follow this guide to build the complete skill: SKILL.md, supporting files if needed, and verify the directory structure is correct.
+- name matches folder and description handles positive and negative triggers;
+- every relative reference resolves;
+- scripts pass representative success and failure fixtures;
+- runtime metadata matches the body;
+- a fresh agent can complete a realistic task without hidden context;
+- safety and user authority remain intact.
+
+For substantial changes, forward-test with a fresh agent receiving only the skill and a realistic request. Do not leak the intended solution. Compare artifacts against the quality gates and revise once.
+
+### 8. Install and hand off
+
+Sync approved canonical files only. Back up overwritten globals, exclude runtime learning and caches, verify copied hashes, then report changed paths, targets, test evidence, dependencies, and rollback source.
+
+## Guardrails
+
+- A skill cannot grant authority beyond the user's request.
+- Never make deterministic protocols “creative.”
+- Never copy managed vendor skills into a public repository without checking license and provenance.
+- Never learn from silence, model self-rating, or one unverified result.
+- Prefer one sharp skill over overlapping instructions that compete for context.
+
+<!-- skill-evolver:adaptive-start -->
+## Adaptive excellence
+
+- Optimize for: a concise, portable, tested skill with strong triggers and reusable resources
+- Freedom: Medium. Tailor workflow and resources to task variability; preserve platform syntax, validation, safety, and context efficiency.
+- Autonomy: inspect target runtimes and nearby conventions, generate reusable resources, validate, forward-test, install, and report without unnecessary handoffs.
+- Quality gate: positive and negative trigger cases are clear; all referenced resources and commands resolve; representative forward tests improve results. Revise once when any gate is weak.
+- Learning: after explicit feedback or measurable results, record versioned eval failures and explicit maintainer feedback through `skill-evolver`. Never self-edit from silence, a single unverified outcome, or model self-rating.
+<!-- skill-evolver:adaptive-end -->

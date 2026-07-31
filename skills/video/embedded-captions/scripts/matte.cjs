@@ -23,25 +23,26 @@
  * Reads:  <project>/source.mp4 (any video in the project dir is adopted)
  * Writes: <project>/frames_fg/f_%04d.png (RGBA, subject opaque),
  *         <project>/frames_bg/f_%04d.png, <project>/matte.fps
- * Env:    HYPERFRAMES_ROOT — hyperframes checkout (default ~/Downloads/hyperframes)
+ * Env:    HYPERFRAMES_CLI — executable, command name, or built CLI JavaScript file.
+ *         When omitted, uses the current `npx hyperframes`.
  */
 const path = require("path");
 const fs = require("fs");
-const os = require("os");
 const cp = require("child_process");
 
-function hfCli() {
-  const roots = [
-    process.env.HYPERFRAMES_ROOT,
-    path.resolve(__dirname, "..", "..", ".."), // skills/embedded-captions/scripts → repo root if in-repo
-    path.join(os.homedir(), "Downloads", "hyperframes"),
-  ].filter(Boolean);
-  for (const root of roots) {
-    const cli = path.join(root, "packages", "cli", "dist", "cli.js");
-    if (fs.existsSync(cli)) return cli;
+function hfCommand() {
+  const explicit = process.env.HYPERFRAMES_CLI;
+  if (explicit) {
+    if (/\.(?:c?js|mjs)$/i.test(explicit)) {
+      if (!fs.existsSync(explicit)) throw new Error(`HYPERFRAMES_CLI not found: ${explicit}`);
+      return { command: process.execPath, prefix: [explicit] };
+    }
+    return { command: explicit, prefix: [] };
   }
-  console.error("[matte] cannot find hyperframes cli — set HYPERFRAMES_ROOT to a built checkout");
-  process.exit(3);
+  return {
+    command: process.platform === "win32" ? "npx.cmd" : "npx",
+    prefix: ["hyperframes"],
+  };
 }
 
 function ensureSource(project) {
@@ -212,7 +213,14 @@ async function main() {
   console.log(
     `[matte] hyperframes remove-background (u2net_human_seg${cached ? "" : "; first run downloads ~168 MB"})… model load takes ~1-2 min with no output — not hung`,
   );
-  const r = cp.spawnSync("node", [hfCli(), "remove-background", matteSrc, "-o", mov], {
+  let hf;
+  try {
+    hf = hfCommand();
+  } catch (error) {
+    console.error(`[matte] ${error.message}`);
+    process.exit(3);
+  }
+  const r = cp.spawnSync(hf.command, [...hf.prefix, "remove-background", matteSrc, "-o", mov], {
     stdio: ["ignore", "pipe", "pipe"],
     encoding: "utf8",
   });

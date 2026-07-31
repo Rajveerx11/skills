@@ -62,3 +62,15 @@ Kokoro TTS needs the `kokoro-onnx` + `soundfile` Python packages, and the CLI re
 ## Local BGM fallback when MusicGen/Lyria are unavailable
 
 `bgm` needs Google Lyria (`$GEMINI_API_KEY`/`$GOOGLE_API_KEY`) **or** a local MusicGen stack (`torch + transformers + soundfile`). If neither is present, don't block — reuse an existing brand track and shape it: trim to length and apply fade in/out + a constant duck level (~0.22) via `data-volume`. WAV PCM trim/fade can be done in Node by slicing the `data` chunk and scaling 16-bit samples — no ffmpeg required.
+
+<!-- skill-evolver:adaptive-start -->
+## Professional execution
+
+- **Discover automatically:** inspect requested media task, existing assets/metadata/transcripts, language, target duration, project fps, environment keys, local runtimes, ffmpeg, provider caches, licenses, and prior successful outputs before choosing a provider.
+- **Default intelligently:** follow the documented provider chain, preserve existing approved assets, use local fallback when cloud access is absent, write project-local outputs, and keep originals immutable.
+- **Checkpoint every stage:** retain source, normalized intermediate, provider response/metadata, word timings, waveform or band data, and final asset. Reuse only when input hash, provider settings, language, sample rate, and timing target match.
+- **Protect contracts:** consent, licensing, transcript truth, voice identity, schema, duration, sample rate/channels, word timing, file integrity, and deterministic preprocessing are low-freedom. Never silently synthesize missing speech or replace a licensed asset.
+- **Validate deliberately:** inspect audible quality, clipping/silence, pronunciation, transcript confidence, duration, sync, file decode, sample format, loop seams, and metadata/rights ledger. Use a fallback or stop with a precise blocker when required quality cannot be met.
+- **Finish the handoff:** return provider/fallback used, source and output paths, hashes or stable identifiers, duration/format, timing files, license/consent status, validation results, and unresolved low-confidence segments.
+- **Learn only from evidence:** record provider reliability, approved voices, audio settings, and measured correction rates through `skill-evolver`; never store secrets or infer approval.
+<!-- skill-evolver:adaptive-end -->

@@ -11,7 +11,21 @@ description: >
 
 A HyperFrames slideshow is a normal HyperFrames composition — scenes, clips, GSAP timelines — with one extra ingredient: a **JSON island** that declares which scenes are slides and how they connect. The player's `SlideshowController` reads the island and turns the continuous GSAP timeline into a discrete, navigable deck.
 
-**Read `/hyperframes-core` first** for the base composition contract (clips, tracks, `data-*` attributes, determinism rules). This skill covers only what is new: the island schema, slide writing rules, fragments, branching, validation, and the wrapping component.
+**Read the `hyperframes-core` skill first** for the base composition contract (clips, tracks, `data-*` attributes, determinism rules). This skill covers only what is new: story-to-slide planning, the island schema, slide writing rules, fragments, branching, validation, and the wrapping component.
+
+<!-- skill-evolver:adaptive-start -->
+## Authoring workflow
+
+1. Inspect source material, target audience, desired decision, presentation setting, brand/assets, and existing HyperFrames composition before asking for context already available.
+2. Build a fact ledger. Every metric, quote, customer, market claim, and product state must trace to supplied content or a source; label placeholders.
+3. Reduce the story to complete-sentence claim headlines. Use one claim and one visual per slide; move detail into notes, fragments, branches, or appendix scenes.
+4. For subjective new decks, create three internal directions that differ in composition, typography, graphic device, and motion grammar. Select one using audience fit, story clarity, source truth, accessibility, and render feasibility.
+5. Build one representative slide per visual family, then batch the rest using shared tokens and components.
+6. Author the manifest and scene timelines together so every fragment, hotspot, branch, and note has a purpose.
+7. Lint, preview main line plus one branch, test keyboard/touch navigation, inspect representative renders, fix once, and confirm.
+
+Do not stop at an outline when the user authorized a finished composition. Do not add branches, fragments, 3D, or audio merely because the schema supports them.
+<!-- skill-evolver:adaptive-end -->
 
 ---
 
@@ -180,6 +194,8 @@ Branch slides are real scenes in the same composition timeline. They are listed 
 
 ## Worked example: 3-slide deck with fragments and a branch
 
+All company names and numbers in this example are fictional placeholders. Replace them with verified content.
+
 ### Scene HTML (skeleton)
 
 ```html
@@ -194,7 +210,7 @@ Branch slides are real scenes in the same composition timeline. They are listed 
         {
           "sceneId": "problem",
           "notes": "Walk through each pain point one at a time.",
-          "fragments": [11.0, 15.0],
+          "fragments": [11.0, 15.0, 20.0],
           "hotspots": [
             {
               "id": "h1",
@@ -330,10 +346,9 @@ Branch slides are real scenes in the same composition timeline. They are listed 
     window.__timelines["problem"] = tl;
 
     // Insert positions are absolute composition-timeline times (same as data-start / fragment values).
-    tl.from("#pain-1", { opacity: 0, y: 20, duration: 0.4 }, 11.0);
-    tl.from("#pain-2", { opacity: 0, y: 20, duration: 0.4 }, 15.0);
-    // pain-3 lands at end of slide
-    tl.from("#pain-3", { opacity: 0, y: 20, duration: 0.4 }, 13.0);
+    tl.from("#pain-1", { opacity: 0, y: 20, duration: 0.4 }, 10.6);
+    tl.from("#pain-2", { opacity: 0, y: 20, duration: 0.4 }, 14.6);
+    tl.from("#pain-3", { opacity: 0, y: 20, duration: 0.4 }, 19.6);
   </script>
 </body>
 ```
@@ -342,7 +357,7 @@ Branch slides are real scenes in the same composition timeline. They are listed 
 
 - The island `sceneId` values (`"hook"`, `"problem"`, `"solution"`, `"mkt-math"`) exactly match `data-composition-id` values on scene divs.
 - `mkt-math` appears only in `slideSequences` — it is never in the top-level `slides` array.
-- Fragment times (`11.0`, `15.0`) are within the `problem` scene's `[6, 21]` range (times are absolute composition-timeline positions).
+- Fragment times (`11.0`, `15.0`, `20.0`) are within the `problem` scene's `[6, 21]` range (times are absolute composition-timeline positions).
 - The hotspot `region` (`x: 55, y: 60, w: 40, h: 20`) positions the clickable area in the lower-right quadrant of the problem slide.
 - GSAP timelines are registered on `window.__timelines` and are paused — the HyperFrames engine drives playback; do not call `.play()` at construction time.
 
@@ -394,3 +409,15 @@ The slideshow lint rule checks:
 - No two main-line slides overlap in time.
 
 Fix all violations before previewing. A composition that fails lint will not parse correctly in the player.
+
+Then verify the artifact:
+
+- deck order advances one coherent argument;
+- each slide is readable at presentation distance;
+- fragments reveal in logical order and preserve meaning with reduced motion;
+- every hotspot has a visible label, reachable target, and working return path;
+- main-line and branch navigation work by keyboard and touch;
+- notes, counter, progress, and presenter behavior match the manifest;
+- representative renders contain no clipping, overlap, missing assets, or unintended branch scenes.
+
+Revise the weakest story, navigation, or render dimension once.

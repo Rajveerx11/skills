@@ -1,0 +1,4 @@
+interface:
+  display_name: "Impeccable UI Craft"
+  short_description: "Audit, polish, and harden existing UI"
+  default_prompt: "Use $impeccable to audit and improve this existing interface through the appropriate command workflow."

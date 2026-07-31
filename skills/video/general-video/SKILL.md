@@ -12,7 +12,6 @@ description: >
   hits such as logo stings, kinetic type, stat/chart pops, lower-thirds,
   animated tweets/headlines, or page highlights. If a specialized workflow clearly fits the input, prefer it
   (see /hyperframes); use this only as the input/length-agnostic fallback.
-metadata: { "tags": "orchestrator, general-video, fallback, freeform, composition-authoring" }
 ---
 
 # general-video — general composition authoring
@@ -38,7 +37,7 @@ For specific requests ("add a title card", "fix the timing on scene 3"), skip di
 
 Establish the visual identity first. If the project has a design spec, read it (precedence `frame.md` → `design.md` → `DESIGN.md`; treat it as brand truth — exact colors, fonts, constraints).
 
-**If no spec exists, you MUST read BOTH `hyperframes-creative/references/house-style.md` AND `hyperframes-creative/references/video-composition.md` before choosing any color or font.** `house-style.md` gives the "interpret the prompt / generate real content" opener, lazy-default list, and layer recipe; `video-composition.md` gives the video-medium density / scale / **foreground detailing** (data bars, registration marks, monospace metadata, "8-10 elements, two the user didn't ask for") that separates "produced" from "generated." Reading only one is the most common miss — `video-composition.md` is the one agents skip, and it is exactly the one that prevents flat, centered, web-page-looking output. Do not self-invent a palette and skip these; crossing into `hyperframes-creative` is mandatory here, not an optional branch. From there, also pull a named style/mood → `references/visual-styles.md`, or the interactive picker → `references/design-picker.md`, as needed. The spec/style defines the **brand**, not the composition rules.
+**If no spec exists, you MUST read BOTH `../hyperframes-creative/references/house-style.md` AND `../hyperframes-creative/references/video-composition.md` before choosing any color or font.** `house-style.md` gives the "interpret the prompt / generate real content" opener, lazy-default list, and layer recipe; `video-composition.md` gives the video-medium density / scale / **foreground detailing** (data bars, registration marks, monospace metadata, "8-10 elements, two the user didn't ask for") that separates "produced" from "generated." Reading only one is the most common miss — `video-composition.md` is the one agents skip, and it is exactly the one that prevents flat, centered, web-page-looking output. Do not self-invent a palette and skip these; crossing into `hyperframes-creative` is mandatory here, not an optional branch. From there, also pull a named style/mood → `../hyperframes-creative/references/visual-styles.md`, or the interactive picker → `../hyperframes-creative/references/design-picker.md`, as needed. The spec/style defines the **brand**, not the composition rules.
 
 **Find the angle (vague brief, no spec):** before picking colors, write ONE sentence — what does this name/word/topic evoke, and what visual _world_ (metaphor, setting, instrument, motif) expresses it? E.g. a cybersecurity tool → vault doors / perimeter scan lines / lock tumblers; a meditation app → tide, breath, slow light bloom. Read the _meaning_ of the subject, not just its letters; pick a concrete angle over a literal restyle. This is the cheap substitute for prompt expansion (Step 2) on single-scene pieces, where expansion is correctly skipped — and it is the difference between a designed concept and a generic logo-on-a-gradient.
 
@@ -102,7 +101,7 @@ This maps the skill's full surface (see the `description`) to its references —
 
 | Building…                                                             | Read first (in order)                                                                                                                                                       |
 | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **ALWAYS — every non-trivial piece, on top of your intent row below** | `hyperframes-creative/references/house-style.md` + `references/video-composition.md` (also gated in Step 1 / HARD-GATE; the "produced, not generated" foreground detailing) |
+| **ALWAYS — every non-trivial piece, on top of your intent row below** | `../hyperframes-creative/references/house-style.md` + `../hyperframes-creative/references/video-composition.md` (also gated in Step 1 / HARD-GATE; the "produced, not generated" foreground detailing) |
 | **Kinetic typography / text-forward**                                 | `hyperframes-animation/techniques.md` (kinetic type) + `adapters/gsap-easing-and-stagger.md` + `rules/kinetic-beat-slam.md`                                                 |
 | **Title card / lower-third / overlay / PiP / text-behind-subject**    | `hyperframes-creative/references/composition-patterns.md` + (for the centered/sized frame) `hyperframes-core` → "Root must be sized"                                        |
 | **Logo / brand-mark reveal**                                          | `hyperframes-animation/rules/svg-path-draw.md` (draw-on) + `rules/3d-text-depth-layers.md` + `rules/scale-swap-transition.md`                                               |
@@ -111,7 +110,7 @@ This maps the skill's full surface (see the `description`) to its references —
 | **Audio-reactive / music-driven**                                     | `hyperframes-creative/references/audio-reactive.md` (pre-extract bands; map to motion)                                                                                      |
 | **Narrated / voiceover / captions / subtitles**                       | `hyperframes-media` (`tts`, `transcribe`, caption authoring) → place assets via `hyperframes-core`                                                                          |
 | **Multi-scene / transitions**                                         | `hyperframes-animation/transitions/overview.md` **then** `transitions/catalog.md` (you are not done after the overview — the GSAP recipe is in the catalog)                 |
-| **Modular / sub-compositions**                                        | `hyperframes-core/references/composition-patterns.md` + `references/sub-compositions.md`                                                                                    |
+| **Modular / sub-compositions**                                        | `../hyperframes-core/references/composition-patterns.md` + `../hyperframes-core/references/sub-compositions.md`                                                             |
 
 ## Output checklist → `hyperframes-cli`
 
@@ -130,3 +129,15 @@ This maps the skill's full surface (see the `description`) to its references —
 - An **existing talking-head video** to add captions to → `/embedded-captions`
 - Porting an existing **Remotion** composition → `/remotion-to-hyperframes`
 - Cutting / editing a **finished video file** like an NLE → out of scope (HyperFrames composites HTML and media into a deterministic timeline; it does not edit footage)
+
+<!-- skill-evolver:adaptive-start -->
+## Professional execution
+
+- **Discover automatically:** inspect existing project manifests, compositions, media, design specs, fonts, prior renders, and target-platform clues. Route to a specialist before loading this fallback; for edits, identify the smallest affected composition and skip unnecessary planning.
+- **Default intelligently:** honor explicit scope exactly. For vague briefs, develop distinct internal concepts, select the strongest against audience and purpose, and use the house style, embedded font list, full-frame layout, modular architecture threshold, and GSAP runtime defaults already defined by the domain skills.
+- **Create a resumable plan:** write or refresh a compact artifact manifest containing input fingerprint, chosen concept, dimensions/fps/duration, media sources, composition files, and last passing gate. Reuse validated artifacts; invalidate only downstream work after changes.
+- **Protect contracts:** do not relax root sizing, clip/track/timeline semantics, deterministic media state, title-safe padding, transition rules, asset rights, or CLI validation. Creative freedom applies to story, visual world, layout, and choreography.
+- **Validate proportionally:** trivial edits require targeted lint/inspect plus representative frames; new or multi-scene work requires design adherence, lint, validate, inspect, contrast, animation-map review, render, and visual inspection.
+- **Finish the handoff:** report what changed, assumptions, composition and preview/render paths, duration/fps/dimensions, commands and gate results, reused/generated assets, and anything not verified.
+- **Learn only from evidence:** record approved scene patterns, timing corrections, and reproduced render evidence through `skill-evolver`; never promote model taste alone.
+<!-- skill-evolver:adaptive-end -->

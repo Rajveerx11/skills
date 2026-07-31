@@ -1,0 +1,6 @@
+interface:
+  display_name: "HyperFrames Animation"
+  short_description: "Design deterministic animation and transitions"
+  default_prompt: "Use $hyperframes-animation to choose the smallest suitable motion rules or runtime and build deterministic animation for this scene."
+policy:
+  allow_implicit_invocation: true

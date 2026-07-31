@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Taste Frontend"
+  short_description: "Give frontend work a distinctive visual direction"
+  default_prompt: "Use $design-taste-frontend to replace generic design with a clear anti-slop aesthetic direction and implement it."

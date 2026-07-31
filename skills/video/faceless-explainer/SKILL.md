@@ -1,14 +1,13 @@
 ---
 name: faceless-explainer
-description: faceless-explainer video workflow - arbitrary text (article / notes / topic / brief) -> narrator_scripts.json + audio (voice + BGM) + section_plan.md -> typography / abstract-graphics / diagram / data-viz video. Typical length up to ~3 min (sweet spot ~30-90s); a genuinely longer piece is general-video, not this workflow. Generates its OWN narration (TTS) — it does not sync to a user-supplied / pre-recorded voiceover (that is general-video). No website capture, no real product screenshots. If the text names a product / its site to promote, that is /product-launch-video; when product-vs-topic is unclear, start at /hyperframes-read-first.
-metadata: { "tags": "orchestrator, pipeline, faceless-explainer, text-to-video" }
+description: faceless-explainer video workflow - arbitrary text (article / notes / topic / brief) becomes narrator_scripts.json, audio (voice + BGM), section_plan.md, and a typography / abstract-graphics / diagram / data-viz video. Typical length up to ~3 min (sweet spot ~30-90s); a genuinely longer piece is general-video, not this workflow. Generates its own narration (TTS); it does not sync to a user-supplied or pre-recorded voiceover (that is general-video). No website capture or real product screenshots. If the text names a product or site to promote, use product-launch-video; when product-vs-topic is unclear, route by input and desired artifact.
 ---
 
 # faceless-explainer - dispatch entry
 
 Input is **arbitrary text** (article / notes / topic / brief). Output is a **faceless explainer** video: no captured website, no product screenshots — every visual is invented by the LLM (typography / abstract graphics / diagram / data-viz), chosen per scene by content. The style preset is **auto-selected per input** by the scriptwriting agent (Step 2) from the 5 shipped presets (`block-frame` / `capsule` / `claude` / `pin-and-paper` / `scatterbrain`; default `pin-and-paper` when nothing clearly fits).
 
-> **Confirm the route before Step 0.** This skill explains a **topic / concept** with **no product and no site to capture**. If the text actually **markets a product / names its site** → `/product-launch-video`; there's a **URL to turn into a video** → `/website-to-video`; a **GitHub PR** → `/pr-to-video`; **existing footage** to caption / package → `/embedded-captions` · `/graphic-overlays`. **Out of scope**: timing visuals to a **user-supplied / pre-recorded voiceover** (faceless generates its own TTS → `/general-video`), or live / at-render-time data. Unsure product-vs-topic, or routed here on a vague request? **Read `/hyperframes-read-first` first.**
+> **Confirm the route before Step 0.** This skill explains a **topic / concept** with **no product and no site to capture**. If the text actually **markets a product / names its site** → `/product-launch-video`; there's a **URL to turn into a video** → `/website-to-video`; a **GitHub PR** → `/pr-to-video`; **existing footage** to caption / package → `/embedded-captions` · `/graphic-overlays`. **Out of scope**: timing visuals to a **user-supplied / pre-recorded voiceover** (faceless generates its own TTS → `/general-video`), or live / at-render-time data. Unsure product-vs-topic, or routed here on a vague request? **Use `/hyperframes` for the current routing table first.**
 
 All artifacts go to `PROJECT_DIR = videos/<project-name>/` (created in Step 0); all paths below are relative to it. Dispatch is harness-portable: before the first subagent dispatch, read `<SKILL_DIR>/../hyperframes-core/references/subagent-dispatch.md` once — it maps the dispatch verbs (parallel fan-out / background / wait) to your harness's primitives; a concurrency cap below N means waves of the cap size, never fewer workers. **This file is a binding runbook, not background reading**: execute the steps in order and produce every phase artifact with its designated script or agent role — do not substitute a freestyle pipeline, and do not skip a pause step because the request seems clear. A step you cannot perform → stop and report.
 
@@ -38,9 +37,9 @@ macOS Apple Silicon or Linux x64. System tools: `brew install python@3.11 node f
 
 ## Flow
 
-### Step 0.0 - Confirm the brief (ALWAYS ask one round, then build)
+### Step 0.0 - Resolve the brief (one round only when material)
 
-Before Step 0, **always pause and ask the brief in one message, then wait for the user — never skip this, even for a request that looks complete.** Lead with a recommended default for each field and pre-fill anything the user already gave (confirm it rather than re-asking blindly): the **topic / angle** (the one idea), **length** (default ~60-90s), and — if `/hyperframes-read-first` did not already set them — **aspect** (default 16:9; 9:16 for vertical) and **language**. Style is **not** asked here — the scriptwriting agent auto-picks the preset from the input in Step 2. Proceed to Step 0 only after the user replies; a "go" / "use the defaults" is a valid reply that accepts every default.
+Before Step 0, extract the **topic / angle**, **length**, **aspect**, and **language** from the request and available project context. Do not re-ask known details. If missing information materially changes the outcome, ask one consolidated round with recommended defaults; otherwise proceed and record assumptions in `context.log`. Defaults: one focused idea, ~60-90 seconds, 16:9 unless the platform implies vertical, and the input language. Style is **not** asked here — the scriptwriting agent auto-picks it in Step 2. A request such as "decide", "surprise me", or "use defaults" authorizes immediate continuation.
 
 ### Step 0 - Initialize the video project
 
@@ -62,7 +61,7 @@ npx hyperframes init "$PROJECT_DIR" --non-interactive --skip-skills --example=bl
 
 ### Step 0.5 - API key guidance
 
-Skip if `$PROJECT_DIR/.env` exists or `context.log` is non-empty (= not the first run). Otherwise **first detect what's available** (HeyGen TTS on if `$HEYGEN_API_KEY` / `$HYPERFRAMES_API_KEY` set or `~/.heygen/credentials` exists from `hyperframes auth login`; ElevenLabs / Gemini only if their env keys set), then **always pause and offer the menu — wait for the user; do not proceed on your own even when a workable config is detected** (the user may want to add a key like Gemini). State what's detected, then: paste keys (→ Write `$PROJECT_DIR/.env`, one `KEY=value` per line, overwrite same-name) / "go" (proceed with what's configured — env, `.env`, or `hyperframes auth login`) / "skip" (proceed with local fallbacks for anything unconfigured). Then proceed to Step 1.
+Skip if `$PROJECT_DIR/.env` exists or `context.log` is non-empty (= not the first run). Otherwise detect available providers (HeyGen via `$HEYGEN_API_KEY` / `$HYPERFRAMES_API_KEY` / `~/.heygen/credentials`; ElevenLabs / Gemini via their env keys), record the selected chain without secret values, and continue with configured providers plus documented local fallbacks. Pause only when the user explicitly requires a missing cloud provider or no viable fallback exists. Ask the user to configure the key in their environment or authenticate with the provider; never request that a secret be pasted into chat or echo it into logs.
 
 ### Step 1 - Scaffold (Bash, NO agent, NO capture)
 
@@ -149,12 +148,17 @@ BGM generation runs detached in the background when keys/deps allow, otherwise i
 
 After `design-system/chunks/index.json`, `narrator_scripts.json`, and `audio_meta.json` exist, concatenate all inputs into one dispatch packet (contracts first, static references middle, work items last):
 
+No SFX audio is packaged. Leave `SFX_LIB_DIR` unset for a sound-effect-free run, or set it to an external licensed library containing `manifest.json` and every declared MP3.
+
 ```bash
 # Dispatch packets live in $PROJECT_DIR/.dispatch/ (transient; safe to delete after the run).
 # NEVER use a fixed /tmp path: it persists across runs/projects, so a failed write silently
 # reuses another project's stale packet and contaminates every worker.
 mkdir -p "$PROJECT_DIR/.dispatch"
 DP="$PROJECT_DIR/.dispatch/vd-dispatch.txt"
+if [[ -n "${SFX_LIB_DIR:-}" && ! -f "$SFX_LIB_DIR/manifest.json" ]]; then
+  echo "FATAL: SFX_LIB_DIR has no manifest.json" >&2; exit 1
+fi
 {
   echo "## Design chunks"
   (cd "$PROJECT_DIR" && cat design-system/chunks/index.json \
@@ -162,7 +166,8 @@ DP="$PROJECT_DIR/.dispatch/vd-dispatch.txt"
     design-system/chunks/tokens.css design-system/chunks/easings.js 2>/dev/null)
   echo "## Effects catalog";  cat <SKILL_DIR>/phases/visual-design/effects-catalog.md
   echo "## Design rules";     cat <SKILL_DIR>/phases/visual-design/rules/{typography,color-system,composition,motion-language}.md
-  echo "## SFX library";      cat <SKILL_DIR>/assets/sfx/manifest.json
+  echo "## SFX library"
+  if [[ -n "${SFX_LIB_DIR:-}" ]]; then cat "$SFX_LIB_DIR/manifest.json"; else printf '{}\n'; fi
   echo "## Narrator scripts"; (cd "$PROJECT_DIR" && cat narrator_scripts.json)
   echo "## Audio meta";       (cd "$PROJECT_DIR" && cat audio_meta.json 2>/dev/null)   # Optional; overrides Duration if drift >10%
 } > "$DP"
@@ -192,6 +197,8 @@ Output is `section_plan.md`. `type-roles.md` and component HTML bodies are not i
 After `section_plan.md` exists:
 
 ```bash
+SFX_ARGS=()
+if [[ -n "${SFX_LIB_DIR:-}" ]]; then SFX_ARGS=(--sfx-lib "$SFX_LIB_DIR"); fi
 (cd "$PROJECT_DIR" && node <SKILL_DIR>/scripts/prep.mjs \
   --section-plan ./section_plan.md \
   --narrator-scripts ./narrator_scripts.json \
@@ -200,11 +207,11 @@ After `section_plan.md` exists:
   --capture ./capture \
   --design-system ./design-system \
   --hyperframes . \
-  --sfx-lib <SKILL_DIR>/assets/sfx \
+  "${SFX_ARGS[@]}" \
   --out ./group_spec.json)
 ```
 
-Merges all upstream artifacts into `group_spec.json` (parse `section_plan` anchors, validate effect/component ids, group by `Continuity` with cap=3, build `visual_clips[]` where a multi-scene continue worker becomes one `group_wN.html`, compute Tier-B `transitions[]` between different visual clips, copy assets/fonts/SFX). `capture/assets/` is empty, so asset-copy is a no-op (faceless). Internal logic: header of `prep.mjs`.
+Merges all upstream artifacts into `group_spec.json` (parse `section_plan` anchors, validate effect/component ids, group by `Continuity` with cap=3, build `visual_clips[]` where a multi-scene continue worker becomes one `group_wN.html`, compute Tier-B `transitions[]` between different visual clips, copy assets/fonts and optional user-supplied SFX). `capture/assets/` is empty, so asset-copy is a no-op (faceless). Internal logic: header of `prep.mjs`.
 
 - exit 0 -> read stdout (scenes / groups / total duration / per-group) and append to `context.log`.
 - exit 1 -> stderr names the failing scene + anchor (usually a malformed anchor or unknown effect/transition id); return to Step 4 and re-dispatch visual-design.
@@ -356,7 +363,7 @@ Only **after** the user asks, start a long-lived dev server (it serves the final
 (cd "$PROJECT_DIR" && npx hyperframes play)       # plain http://localhost:<port>
 ```
 
-Flags (custom port, external browser) live in the `hyperframes-cli` skill (`references/preview-render.md`).
+Flags for a custom port or external browser live in the `hyperframes-cli` skill.
 
 ---
 
@@ -393,3 +400,15 @@ Read `$PROJECT_DIR/context.log` and resume from:
     ├── public/  assets/  compositions/  snapshots/
     └── renders/video.mp4
 ```
+
+<!-- skill-evolver:adaptive-start -->
+## Professional execution
+
+- **Discover automatically:** extract the usable brief, claims, audience clues, desired platform, duration hints, brand files, prior project artifacts, and available provider keys before asking questions. Reuse an existing `PROJECT_DIR` only when its request fingerprint matches.
+- **Default intelligently:** when the user delegates choices, use the input's natural structure, 30-90 seconds, the platform-implied orientation, auto-selected style preset, local provider fallbacks, concise captions, and one visual explanation job per scene.
+- **Reduce human coordination:** consolidate only material unknowns into one short round. Do not ask users to select implementation details already covered by deterministic provider/style routing.
+- **Resume safely:** use the documented phase artifacts as checkpoints. Verify each checkpoint's schema and source fingerprint, continue from the first missing or invalid artifact, and rebuild all dependants after narration, duration, orientation, or design-system changes.
+- **Protect contracts:** preserve factual grounding, exact phase order, project-local dispatch packets, concurrency caps, deterministic caption/preflight scripts, audio timing, and final render gates. Visuals must explain the narration, not decorate it or fabricate evidence.
+- **Finish the handoff:** return the approved narration source, chosen style/orientation, artifact manifest, validation/preflight results, final path, media metadata, provider fallbacks used, and explicit remaining uncertainties.
+- **Learn only from evidence:** record retention signals, approved metaphors, timing corrections, and reproduced render failures through `skill-evolver`; never infer success from completion or silence.
+<!-- skill-evolver:adaptive-end -->

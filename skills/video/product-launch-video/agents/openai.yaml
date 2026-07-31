@@ -1,0 +1,6 @@
+interface:
+  display_name: "Product Launch Video"
+  short_description: "Build evidence-grounded product launch videos"
+  default_prompt: "Use $product-launch-video to verify the product, capture authentic evidence, build the launch story, and deliver a validated render."
+policy:
+  allow_implicit_invocation: true

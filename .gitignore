@@ -1,0 +1,45 @@
+# Generated language/runtime caches
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.mypy_cache/
+
+# Local credentials
+**/.env
+**/.env.*
+!**/.env.example
+
+# Skill execution scratch state
+**/.temp-execution-*.js
+**/.consent/
+**/.plan-url
+
+# Private skill runtime state
+skills/workspace/learn-day/data/
+skills/workspace/plan-day/data/
+skills/writing/linkedin-post-writer/.consent
+skills/writing/linkedin-post-writer/memory/
+skills/writing/linkedin-post-writer/.skill-data/
+skills/video/shorts/LEARNINGS.md
+skills/video/shorts/history/
+skills/video/shorts/memory/
+skills/video/shorts/.skill-data/
+skills/video/remotion-video-prompt/LEARNINGS.md
+skills/video/remotion-video-prompt/history/
+skills/video/remotion-video-prompt/memory/
+skills/video/remotion-video-prompt/.skill-data/
+
+# Video conversion test outputs
+skills/video/remotion-to-hyperframes/assets/test-corpus/run-report.json
+skills/video/remotion-to-hyperframes/assets/test-corpus/tier-*/**/node_modules/
+skills/video/remotion-to-hyperframes/assets/test-corpus/tier-*/**/package-lock.json
+skills/video/remotion-to-hyperframes/assets/test-corpus/tier-*/remotion-src/out/
+skills/video/remotion-to-hyperframes/assets/test-corpus/tier-*/hf-src/out/
+skills/video/remotion-to-hyperframes/assets/test-corpus/tier-*/hf.mp4
+skills/video/remotion-to-hyperframes/assets/test-corpus/tier-*/diff/
+skills/video/remotion-to-hyperframes/assets/test-corpus/tier-*/strip/
+skills/video/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/public/
+skills/video/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/assets/
+
+# Local portfolio learning and backups
+.skill-evolver/

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Embedded Captions"
+  short_description: "Create timed, scene-aware cinematic captions"
+  default_prompt: "Use $embedded-captions to caption this talking-head video with the right identity, safe placement, deterministic QA, and a finished render."
+policy:
+  allow_implicit_invocation: true

@@ -3,9 +3,58 @@
 // into the project, validates each cue against manifest.json, and offsets each
 // cue's scene-local t by its scene start_s. Appends to the shared anomalies array
 // and returns the sorted sfx[] for group_spec.
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
-import { join } from "node:path";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
+import { basename, join } from "node:path";
 import { die } from "./prep-log.mjs";
+
+export function loadSfxLibrary(sfxLibDir) {
+  const manifestPath = join(sfxLibDir, "manifest.json");
+  if (!existsSync(manifestPath)) {
+    throw new Error(`--sfx-lib points to ${sfxLibDir} but manifest.json is missing`);
+  }
+
+  let manifest;
+  try {
+    manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+  } catch (error) {
+    throw new Error(`sfx manifest.json parse: ${error.message}`);
+  }
+  if (!manifest || Array.isArray(manifest) || typeof manifest !== "object") {
+    throw new Error("sfx manifest.json must be a JSON object");
+  }
+
+  const sfxByFile = new Map();
+  const sourceFiles = [];
+  for (const [key, entry] of Object.entries(manifest)) {
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+      throw new Error(`sfx manifest entry "${key}" must be an object`);
+    }
+    const file = entry.file;
+    if (
+      typeof file !== "string" ||
+      !file ||
+      basename(file) !== file ||
+      !file.toLowerCase().endsWith(".mp3")
+    ) {
+      throw new Error(`sfx manifest entry "${key}" has an invalid MP3 filename`);
+    }
+    const duration = Number(entry.duration);
+    if (!Number.isFinite(duration) || duration <= 0) {
+      throw new Error(`sfx manifest entry "${key}" has an invalid duration`);
+    }
+    if (sfxByFile.has(file)) {
+      throw new Error(`sfx manifest declares duplicate file "${file}"`);
+    }
+    const source = join(sfxLibDir, file);
+    if (!existsSync(source) || !statSync(source).isFile()) {
+      throw new Error(`sfx manifest entry "${key}" source file missing: ${source}`);
+    }
+    sfxByFile.set(file, { key, duration });
+    sourceFiles.push(file);
+  }
+
+  return { manifestPath, sfxByFile, sourceFiles };
+}
 
 // SFX library is OPT-IN: when the orchestrator passes --sfx-lib the directory is
 // copied into <PROJECT_DIR>/assets/sfx/ and section_plan **SFX:** cues are
@@ -14,34 +63,35 @@ import { die } from "./prep-log.mjs";
 export function resolveSfx({ sfxLibDir, hyperframesDir, scenes, groups, anomalies }) {
   const sfx = [];
   if (sfxLibDir) {
-    const sfxManifestPath = join(sfxLibDir, "manifest.json");
-    if (!existsSync(sfxManifestPath)) {
-      die(`--sfx-lib points to ${sfxLibDir} but manifest.json is missing`);
-    }
-    let sfxManifest;
+    let library;
     try {
-      sfxManifest = JSON.parse(readFileSync(sfxManifestPath, "utf8"));
-    } catch (e) {
-      die(`sfx manifest.json parse: ${e.message}`);
-    }
-    // Build filename → { duration, key } lookup so cues can reference by filename
-    // (matching v1 storyboard syntax: `impact-bass-1.mp3` not the manifest key).
-    const sfxByFile = new Map();
-    for (const [key, entry] of Object.entries(sfxManifest)) {
-      if (entry?.file && isFinite(entry.duration)) {
-        sfxByFile.set(entry.file, { key, duration: entry.duration });
-      }
+      library = loadSfxLibrary(sfxLibDir);
+    } catch (error) {
+      die(error.message);
     }
 
-    // Copy entire SFX directory into <PROJECT_DIR>/assets/sfx/ (mp3 + manifest +
-    // CREDITS). Idempotent: skip files that already exist (e.g. re-runs).
+    const { sfxByFile, sourceFiles } = library;
+    if (sfxByFile.size === 0) {
+      const cueCount = scenes.reduce((sum, scene) => sum + (scene.sfxCues?.length || 0), 0);
+      if (cueCount > 0) {
+        anomalies.push(
+          `section_plan declares ${cueCount} SFX cue(s) but the supplied manifest is empty — all cues dropped`,
+        );
+      }
+      console.log("  sfx library empty: no audio copied");
+      return sfx;
+    }
+
+    // Preflight above proves every declared source exists before any copy starts.
+    // Copy only declared audio plus portable metadata; ignore unrelated files.
     const sfxDestDir = join(hyperframesDir, "assets", "sfx");
     mkdirSync(sfxDestDir, { recursive: true });
     let sfxCopied = 0;
-    for (const ent of readdirSync(sfxLibDir, { withFileTypes: true })) {
-      if (!ent.isFile()) continue;
-      const src = join(sfxLibDir, ent.name);
-      const dest = join(sfxDestDir, ent.name);
+    const filesToCopy = ["manifest.json", ...sourceFiles];
+    if (existsSync(join(sfxLibDir, "CREDITS.md"))) filesToCopy.push("CREDITS.md");
+    for (const file of filesToCopy) {
+      const src = join(sfxLibDir, file);
+      const dest = join(sfxDestDir, file);
       if (!existsSync(dest)) {
         copyFileSync(src, dest);
         sfxCopied++;

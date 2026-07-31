@@ -1,10 +1,10 @@
 # LinkedIn Writing Reference
 
-Loaded at Phase 4 (writing). The orchestration, memory, and learning logic live in `SKILL.md`.
+Load during drafting. Orchestration and external runtime-state rules live in `SKILL.md`.
 
-## Hook patterns that work
+## Hook patterns
 
-The hook is the only thing most people read. Keep it 1–2 lines, ideally under ~10 words. Curiosity-gap and contrarian hooks out-engage everything else.
+The opening is the first editorial promise. Keep it concise enough to scan, but prefer specificity and truth over a fixed word count. Use a pattern only when the body earns it.
 
 - **Specific number** — "We cut test-gen time from 40 min to 90 seconds."
 - **Curiosity gap** — "The bug took 3 days to find. The fix was one character."
@@ -20,8 +20,8 @@ The hook is the only thing most people read. Keep it 1–2 lines, ideally under 
 ## Formats — pick one, match it to the goal
 
 - **Story / build-in-public** — "I spent 3 months on X. Here's what broke." Best for projects and lessons.
-- **Listicle** — "5 things I learned shipping X." Skimmable, high saves.
-- **Contrarian take** — "Everyone says X. They're wrong." High comments — only with a real opinion.
+- **Listicle** — "5 things I learned shipping X." Useful when the points form a real set.
+- **Contrarian take** — "Everyone says X. They're wrong." Use only with a defensible opinion and evidence.
 - **Launch** — problem → what you built → who it's for → proof → CTA. For products/features.
 - **Milestone / gratitude** — wins, hires, anniversaries. Specific, not humblebrag.
 - **Teardown / how-to** — concrete tactical value. High saves and follows.
@@ -40,53 +40,54 @@ The hook is the only thing most people read. Keep it 1–2 lines, ideally under 
 
 ## Hashtags
 
-- **3–5 max.** In 2026 they're a topic signal for the algorithm and a discoverability aid — not a growth hack. More looks spammy and dilutes targeting.
-- **Mix tiers:** 1 broad (#AI, #SoftwareEngineering) + 2–3 niche (#DeveloperTools, #TestAutomation) + optionally 1 branded (#Tessera).
-- Real, searchable tags only. No invented multi-word tags nobody follows. Last line, after a blank line, never inline.
+- Hashtags are optional. Use a small set only when they help readers classify or find the topic.
+- Prefer real, recognizable topic labels over invented multi-word tags.
+- Put them on the last line when used. Verify current platform guidance before claiming algorithmic benefit.
 
 ## Format & polish
 
 - Plain text only — LinkedIn renders no markdown (no `**bold**`, no `#` headers, no `-` bullets). Use line breaks and Unicode bullets (•, →, ✅) sparingly.
 - Emojis: 0–3, purposeful (section markers or tone), never decorative spam.
-- Length: 150–300 words for most posts. Listicles can run longer. Hot takes can be 3 lines.
+- Length follows the idea. Remove lines that do not add evidence, tension, explanation, or payoff.
 - Read the first line alone — does it earn the click? If not, rewrite it.
-- If there's a link, suggest it as a **first comment** (LinkedIn suppresses reach on posts with outbound links), and supply that comment text.
+- If a link would distract from the post or the user's established practice favors a first comment, supply that comment text. Do not assert a reach penalty without current evidence.
 
 ## Anti-patterns — never do these
 
 - ❌ "I'm thrilled/excited/humbled to announce…"
 - ❌ Walls of text with no line breaks
-- ❌ 10+ hashtags or hashtag stuffing
+- ❌ Hashtag stuffing
 - ❌ "Comment 'X' and I'll DM you the link" bait — downranked and distrusted
 - ❌ Vague corporate speak with no specifics
 - ❌ Fabricated metrics, fake stories, invented quotes
 - ❌ Multiple CTAs ("like AND comment AND share AND visit AND subscribe")
-- ❌ Outbound link in the post body when reach is the goal
+- ❌ Unnecessary outbound links that interrupt the post's main action
 
 ## Worked example
 
-Input: "Wrote a post about Tessera, my local-first AI testing IDE, launched coverage in the sandbox runner."
+Synthetic input: "Our deployment tool now validates configuration before a release starts."
 
 ```
-We just taught our AI testing IDE to grade its own homework.
+The cheapest failed deployment is the one that never starts.
 
-Tessera now runs the test cases it generates — in a locked-down
-Docker sandbox, no network — and reports real pass/fail + line coverage.
+This week we added a preflight step to our deployment workflow.
 
-Generating tests is easy. Trusting them is the hard part.
+Before a release can run, it now checks:
+→ required configuration
+→ environment access
+→ migration readiness
+→ rollback instructions
 
-So we closed the loop:
-→ Static analysis maps your code
-→ AI drafts the test cases
-→ The sandbox actually runs them
-→ You see green/red + coverage, locally, no code leaves your machine
+If any check fails, the release stops before touching production.
 
-Most "AI writes your tests" tools stop at "here's some code, good luck."
-The interesting problem was never generation. It was proof.
+The code was not the hard part.
 
-What would make you trust an AI-written test — coverage, or watching it catch a real bug?
+The hard part was deciding which failures must block a deploy and which should
+remain warnings.
 
-#AI #DeveloperTools #SoftwareTesting #BuildInPublic
+What belongs in your deployment preflight?
+
+#DevOps #DeveloperTools #SoftwareEngineering
 ```
 
-Link goes in the first comment: "Try it / see how it works → [link]"
+If the user has a verified demo link, supply concise first-comment text.
