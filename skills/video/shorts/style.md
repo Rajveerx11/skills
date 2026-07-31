@@ -1,37 +1,31 @@
-# style.md — captured video preferences
+# Style preference schema
 
-The user's evolving taste for `/shorts` videos. The skill READS this every run and UPDATES it
-after feedback (Self-update protocol). Seeded below from prior video work; refine as you learn.
-When the user corrects something, change the rule here — don't just remember it for one run.
+Keep repository guidance generic. User-specific brands, voices, rejected treatments, project
+profiles, and feedback history belong in private runtime state:
 
-## Voice & narration
-- **Natural voice, never robotic.** Windows SAPI was rejected as "too much AI, slow, no emotion."
-  Use a natural TTS (HyperFrames `tts`; a warm voice ~1.1x speed reads well).
-- Lines **short and punchy** — copy quality ≈ voice quality. Tighten before adding length.
-- Spell initialisms for TTS: A.I., I.D.E., M.I.T.
+- Windows: `%USERPROFILE%\.skill-data\shorts\preferences.md`
+- macOS/Linux: `~/.skill-data/shorts/preferences.md`
 
-## Pacing & structure
-- 3-act spine: Hook (front-loaded, hard) → Value/Demo → CTA.
-- One focal element per scene, especially for Shorts. Don't shrink whole panels — go large + centered.
-- CTA / end card ≤ ~9–10s; let on-screen text carry detail the VO drops. No long dead holds.
+Read that file when present. Do not create it from silence, copy it into this skill, or commit its
+contents. When absent, infer a one-run style from current project evidence and state assumptions.
 
-## Look
-- Default brand seen so far: **emerald accent on dark** (premium dev-tool aesthetic).
-- Recreate real product UI faithfully from real tokens (exact pill alpha rules, real icon SVGs,
-  tabular-nums, spring count-ups) — looks indistinguishable from the app.
-- Premium finish: subtle film grain (soft-light), localized glow, no full-screen linear gradients
-  on dark (banding).
+Recommended private headings:
 
-## Audio mix
-- Duck music **audibly** under VO (~0.22), not inaudibly low. Fade keyed to real video length.
+- `## Brand`: palette, fonts, logo handling, forbidden treatments
+- `## Voice`: approved voices, speed, pronunciation, rejected voices
+- `## Pacing`: hook density, scene length, CTA preference
+- `## Look`: approved motifs, UI fidelity, grain/glow/transition preferences
+- `## Audio`: music mood, ducking range, SFX density
+- `## Format`: platform/aspect defaults
+- `## Evidence`: dated explicit feedback or measured outcomes supporting each preference
 
-## Format
-- Shorts → 9:16 vertical, tight. Long-form → 16:9. Centered-column scenes recut cheaply between
-  the two with a single global scale.
+Portable baseline when no private state or brand evidence exists:
 
-## Known project profiles
-- **Tessera** (this repo) — local-first AI testing IDE. Brand: emerald + dark, pulled from the
-  app's real CSS tokens. Audience: developers. Confirm exact hex against the live app each run.
-
-> Everything above is a SEED from past Remotion builds. Treat it as defaults, not gospel — the
-> user's reactions in THIS skill override and extend it.
+- grounded product copy; no invented claims;
+- natural, intelligible narration;
+- one focal communication job per scene;
+- 3-act hook/value/CTA structure;
+- project-native colors, fonts, and real UI assets;
+- audible but subordinate music;
+- platform-implied aspect ratio and duration;
+- lint, inspect, render, playback, and publishing-package verification.

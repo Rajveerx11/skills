@@ -1,6 +1,6 @@
-# Code Snippets â€” Paste-Ready
+# Code Snippets - Starting Patterns
 
-These are starting skeletons. Substitute brand colors and copy from intake. The full reference markup for any unclear section lives in the bundled file `${CLAUDE_SKILL_DIR}/reference/full-reference-app.jsx` â€” open it by line range from `structure.md`.
+These are starting skeletons. Adapt brand tokens, copy, semantics, and states to the brief. Resolve `full-reference-app.jsx` relative to this reference directory when exact markup is useful; do not copy its domain claims or architecture blindly.
 
 ---
 
@@ -99,18 +99,18 @@ const NAV_LINKS = [
 ]
 
 const SERVICES = [
-  // 6 entries from intake â€” each { icon, title, text }
+  // 6 entries from intake — each { icon, title, text }
 ]
 
-function Navbar() { /* per structure.md Â§1 */ }
-function Hero() { /* per structure.md Â§2 */ }
+function Navbar() { /* per structure.md §1 */ }
+function Hero() { /* per structure.md §2 */ }
 function Features() { /* 3-card grid; includes SignatureAnim */ }
-function Pillars() { /* per structure.md Â§4 */ }
-function Protocol() { /* per structure.md Â§5 */ }
-function ServicesGrid() { /* per structure.md Â§6 */ }
-function TrustSignals() { /* per structure.md Â§7 */ }
-function ContactForm() { /* per structure.md Â§8 */ }
-function Footer() { /* per structure.md Â§9 */ }
+function Pillars() { /* per structure.md §4 */ }
+function Protocol() { /* per structure.md §5 */ }
+function ServicesGrid() { /* per structure.md §6 */ }
+function TrustSignals() { /* per structure.md §7 */ }
+function ContactForm() { /* per structure.md §8 */ }
+function Footer() { /* per structure.md §9 */ }
 function CountUp({ end, suffix, duration }) { /* per animations.md */ }
 function SignatureAnim() { /* per industry-themes.md */ }
 
@@ -218,13 +218,13 @@ const onDrop = (e) => {
 ## When unclear
 
 Open the reference markup directly:
-- Navbar mobile menu â†’ `App.jsx` lines 143â€“188
-- Hero scroll indicator â†’ ~lines 280â€“300
-- HeatingShuffler â†’ lines 305â€“367
-- MaintenanceRain (water drops) â†’ lines 372â€“590 (paste verbatim then re-skin)
-- RenovationScheduler â†’ lines 595â€“688
-- Protocol sticky stack â†’ lines 990â€“1125
-- ContactForm full â†’ lines 1392â€“1627
-- Footer â†’ lines 1649â€“1769
+- Navbar mobile menu → `App.jsx` lines 143–188
+- Hero scroll indicator → ~lines 280–300
+- HeatingShuffler → lines 305–367
+- MaintenanceRain (water drops) → lines 372–590 (paste verbatim then re-skin)
+- RenovationScheduler → lines 595–688
+- Protocol sticky stack → lines 990–1125
+- ContactForm full → lines 1392–1627
+- Footer → lines 1649–1769
 
 Copy structure, replace copy.

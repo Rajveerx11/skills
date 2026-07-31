@@ -6,14 +6,12 @@
  */
 const path = require("path");
 const fs = require("fs");
-const os = require("os");
 const cp = require("child_process");
 
 function hfResolve(pkg) {
   const roots = [
     process.env.HYPERFRAMES_ROOT,
     path.resolve(__dirname, "..", "..", ".."),
-    path.join(os.homedir(), "Downloads", "hyperframes"),
   ].filter(Boolean);
   for (const root of roots) {
     const cands = [path.join(root, "node_modules", pkg)];

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Reach"
+  short_description: "Fetch current evidence across web platforms"
+  default_prompt: "Use $agent-reach to collect current, source-linked evidence for this request from the strongest available platforms."

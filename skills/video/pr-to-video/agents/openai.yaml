@@ -1,0 +1,6 @@
+interface:
+  display_name: "PR to Video"
+  short_description: "Turn a pull request into an accurate video"
+  default_prompt: "Use $pr-to-video to ingest this pull request, ground every claim, explain its change and impact, and deliver the validated video."
+policy:
+  allow_implicit_invocation: true

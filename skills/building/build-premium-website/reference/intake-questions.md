@@ -1,90 +1,49 @@
-# Intake Questions
+# Website Brief Intake
 
-Use `AskUserQuestion` in batches. Below are the recommended question rounds. Pre-fill from `$ARGUMENTS` and skip what's already known.
+Use this reference only when the prompt and workspace do not already answer a consequential design question. Ask one consolidated round, not a sequence of interviews.
 
-## Round 1 — Company basics
+## Extract first
 
-**Question 1**: "What is the company name?" (free text — use Other field)
-**Question 2**: "What industry / what does the business do?" — single-select, header "Industry":
-- Plumbing / water
-- Electrical
-- HVAC / heating
-- Bakery / food
-- Fitness / wellness
-- Tech / SaaS
-- Landscaping / garden
-- Auto / mechanic
-- Finance / accounting
-- Beauty / spa
-- Real estate
-- Construction
-- (Other will be available automatically)
+Inspect existing copy, assets, routes, metadata, contact pages, and design tokens for:
 
-## Round 2 — Style & tone
+- company/product name and offer;
+- primary audience and conversion action;
+- existing brand voice, colors, typography, and imagery;
+- verified services/features and proof;
+- required pages, language, contact details, and legal constraints.
 
-**Question 1**: "What tone fits the brand?" — single-select, header "Tone":
-- Premium-technical (sleek, precise — the bundled reference tone)
-- Friendly-local (warm, approachable, community)
-- Luxury-minimal (sparse, elegant, high-end)
-- Bold-modern (high-contrast, confident, energetic)
-- Warm-artisanal (handcrafted, textured, story-led)
+Keep an internal split between supplied facts and inferred design defaults.
 
-**Question 2**: "Brand color direction?" — single-select, header "Colors":
-- Use industry default (recommended — auto-pick from `industry-themes.md`)
-- Cool blue + coral (the reference palette)
-- Forest green + rust
-- Charcoal + safety-orange
-- Navy + gold
-- Rose + champagne
-- (Other — user supplies hex codes)
+## Consolidated question
 
-**Question 3**: "Site language?" — single-select, header "Language":
-- English (recommended)
-- Danish
-- Spanish
-- German
-- French
+Ask only the missing items that materially affect the build:
 
-## Round 3 — Services
+> I can proceed with sensible defaults. Before I build, please confirm any of these that matter: primary audience and offer, main CTA, required pages, supplied brand assets/colors, and facts or contact details that must appear.
 
-Ask in free text via Other: "List 4–8 services with a one-line description each (one per line)."
+Do not require a reply when the user already gave enough context or asked the agent to decide.
 
-If the user is brief, generate a reasonable list yourself based on the industry. Map each to a lucide-react icon:
+## Safe defaults
 
-| Industry | Suggested icons |
-|---|---|
-| Plumbing | Droplets, Wrench, Flame, Bath, Hammer, ChefHat |
-| Electrical | Zap, Plug, Lightbulb, Cable, Power, ShieldCheck |
-| HVAC | Flame, Snowflake, Wind, Thermometer, Fan, Home |
-| Bakery | ChefHat, Wheat, Croissant, Cookie, Cake, Coffee |
-| Fitness | Dumbbell, HeartPulse, Activity, Bike, Trophy, Timer |
-| Tech/SaaS | Code, Cpu, Cloud, Database, GitBranch, Terminal |
-| Landscaping | Trees, Leaf, Sprout, Sun, Flower, Shovel |
-| Auto | Car, Wrench, Gauge, Battery, Cog, Fuel |
-| Finance | Wallet, TrendingUp, PiggyBank, Receipt, LineChart, Calculator |
-| Beauty | Sparkles, Scissors, Flower2, Gem, Heart, SprayCan |
-| Real estate | Home, Key, MapPin, Building, Sofa, Bed |
-| Construction | Hammer, HardHat, Ruler, Construction, Drill, Truck |
+When details are absent:
 
-## Round 4 — Trust + contact
+- infer tone and visual direction from industry, audience, offer, and existing assets;
+- choose accessible colors and responsive typography;
+- draft clearly labeled provisional service copy from the supplied offer;
+- omit unknown proof, awards, dates, certifications, client logos, locations, hours, phone numbers, and testimonials;
+- use a contact form with an explicitly mocked state unless a real endpoint exists;
+- choose an image direction based on the audience and product, then use durable authorized assets.
 
-**Question 1**: "Years in business / certifications / memberships?" (Other — free text)
-**Question 2**: "Contact info — phone, email, city/region, hours?" (Other — free text)
-**Question 3**: "Hero image direction (Unsplash search terms)?" — single-select, header "Hero":
-- Auto-pick from industry (recommended)
-- Workshop / behind-the-scenes
-- Finished result / portfolio shot
-- People / team at work
-- Abstract / textural
+Never invent company history, operational status, response time, availability, pricing, or legal claims. Mark launch-critical placeholders clearly in the final handoff.
 
-## Defaults when user is brief
+## Optional art-direction choices
 
-If `$ARGUMENTS` says e.g. "acme bakery" and user gives one-word answers, fall back to:
-- Tone: warm-artisanal
-- Colors: cream + amber + espresso
-- Language: English
-- Services: invent 6 sensible bakery services
-- Trust: "Family-owned since [year]", "Locally sourced", "Open 7 days"
-- Hero: "artisan bakery sourdough bread golden hour"
+Use these only when the user wants to choose:
 
-Never block on intake — the user said "work without stopping for clarifying questions" when this skill was created. Make the call and continue.
+- restrained editorial;
+- premium technical;
+- warm local;
+- bold contemporary;
+- luxury minimal;
+- tactile artisanal.
+
+Translate the chosen direction into product-specific typography, composition, color, imagery, and motion instead of applying a generic theme.

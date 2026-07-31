@@ -1,0 +1,4 @@
+interface:
+  display_name: "Visual Plan"
+  short_description: "Create structured plans with visual review"
+  default_prompt: "Use $visual-plan to create a reviewable implementation plan for this change."

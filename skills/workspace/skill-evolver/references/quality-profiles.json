@@ -1,0 +1,362 @@
+{
+  "agent-reach": {
+    "outcome": "fast, source-linked web intelligence gathered through the strongest available authenticated backend",
+    "freedom": "Medium. Adapt query expansion, backend routing, and stopping depth; preserve source traceability, privacy, and platform terms.",
+    "quality_gates": ["queries cover the decision, not merely keywords", "important claims link to direct sources", "freshness, contradictions, and access limits are explicit"],
+    "learning": "useful query patterns, backend reliability, and explicit relevance feedback"
+  },
+  "build-premium-website": {
+    "outcome": "a distinctive, production-ready site that fits the brand, converts its audience, and works across devices",
+    "freedom": "High for art direction, narrative, layout, and motion. Preserve truthful claims, existing-stack compatibility, accessibility, performance, and functional interactions.",
+    "quality_gates": ["design is recognizably specific to the brief", "build and critical interactions pass", "responsive, keyboard, contrast, and reduced-motion checks pass"],
+    "learning": "accepted visual decisions, screenshot deltas, and conversion evidence"
+  },
+  "caveman": {
+    "outcome": "minimum-token communication that keeps every fact, caveat, command, and safety condition needed for correct action",
+    "freedom": "High for phrasing and compression; low where ambiguity, risk, irreversible steps, or requested artifact detail require full language.",
+    "quality_gates": ["meaning survives compression", "technical identifiers remain exact", "risk and ordered steps remain unambiguous"],
+    "learning": "only explicit brevity, language, and intensity preferences"
+  },
+  "code-structure": {
+    "outcome": "simpler code ownership and less duplicated behavior without changing semantics",
+    "freedom": "Medium. Choose the abstraction that matches boundaries and transaction ownership; preserve behavior, public contracts, errors, and observability.",
+    "quality_gates": ["call sites and semantic differences are mapped", "characterization and regression tests pass", "new abstraction reduces coupling rather than relocating it"],
+    "learning": "project ADR outcomes, defect evidence, and before-and-after complexity"
+  },
+  "composio": {
+    "outcome": "a working least-privilege app integration with verified actions, auth lifecycle, retries, and tests",
+    "freedom": "Medium. Adapt framework and architecture; obey detected SDK schemas, provider scopes, webhook security, and user authorization.",
+    "quality_gates": ["SDK and action names match installed/current schemas", "auth, idempotency, retries, and replay defense are handled", "a real or sandbox integration test passes"],
+    "learning": "versioned toolkit schemas, corrected integration fixtures, and observed failure modes"
+  },
+  "cost-reducer": {
+    "outcome": "measurable cost reduction ranked by annual impact, confidence, effort, risk, and SLO effect",
+    "freedom": "Medium for hypotheses; low for prices and savings claims. Use current billing data, calculators, reversible experiments, and rollback.",
+    "quality_gates": ["baseline and assumptions are explicit", "recommendations use current provider evidence", "post-change cost and performance are measured"],
+    "learning": "comparable billing windows and verified cost-per-unit deltas"
+  },
+  "create-skill": {
+    "outcome": "a concise, portable, tested skill with strong triggers and reusable resources",
+    "freedom": "Medium. Tailor workflow and resources to task variability; preserve platform syntax, validation, safety, and context efficiency.",
+    "quality_gates": ["positive and negative trigger cases are clear", "all referenced resources and commands resolve", "representative forward tests improve results"],
+    "learning": "versioned eval failures and explicit maintainer feedback"
+  },
+  "customer-support": {
+    "outcome": "an accurate customer reply plus useful internal triage and next actions without inventing company actions",
+    "freedom": "High for empathy, tone, localization, and structure; low for policy, account facts, refunds, security, and promises.",
+    "quality_gates": ["facts and uncertainty are separated", "reply addresses the actual customer goal", "internal actions, escalation, and ownership are explicit"],
+    "learning": "anonymized CSAT, reopen, escalation, and resolution outcomes"
+  },
+  "embedded-captions": {
+    "outcome": "readable, expressive captions embedded into the scene with accurate timing and no unsafe occlusion",
+    "freedom": "High for visual identity and typographic motion; preserve transcript truth, safe zones, timing, legibility, and render determinism.",
+    "quality_gates": ["timing and wording match speech", "overflow, occlusion, and contrast checks pass", "previewed frames show coherent emphasis and identity"],
+    "learning": "approved identities, corrected timing patterns, and measured readability feedback"
+  },
+  "enrich-lead": {
+    "outcome": "a verified, useful contact and company brief with provenance, confidence, and ethical next actions",
+    "freedom": "Medium. Adapt research depth and sales framing; preserve privacy, source terms, consent boundaries, and uncertainty.",
+    "quality_gates": ["each contact fact has source and confidence", "conflicts and stale data are flagged", "next actions fit legitimate outreach and jurisdiction"],
+    "learning": "field accuracy corrections, source reliability, and explicit outreach outcomes"
+  },
+  "faceless-explainer": {
+    "outcome": "a finished, narratively clear explainer whose voice, visuals, audio, captions, and renders form one system",
+    "freedom": "High for concept, structure, visual metaphor, and pacing; preserve factual grounding, asset rights, audio contracts, and render validation.",
+    "quality_gates": ["script has one clear throughline", "visuals explain rather than decorate", "audio, captions, layout, and final render checks pass"],
+    "learning": "retention signals, approved visual metaphors, timing corrections, and render failures"
+  },
+  "find-skills": {
+    "outcome": "a small ranked set of trustworthy skills that genuinely match the user's task and environment",
+    "freedom": "Medium. Expand queries and compare options; never install, trust, or grant permissions without current authority.",
+    "quality_gates": ["requirements and platform are captured", "recommendations include provenance and tradeoffs", "installation status is verified rather than assumed"],
+    "learning": "selected results, rejected matches, and ecosystem compatibility"
+  },
+  "frontend-design-skill": {
+    "outcome": "a memorable, usable frontend with a coherent concept instead of generic AI styling",
+    "freedom": "High for typography, layout, imagery, color, and motion. Preserve brand fit, content truth, accessibility, responsiveness, and maintainability.",
+    "quality_gates": ["one signature idea carries the experience", "rendered screenshots hold at key viewports", "interaction, accessibility, and build checks pass"],
+    "learning": "project design decisions, accepted screenshots, and explicit critique"
+  },
+  "frontend-slides": {
+    "outcome": "a polished web presentation whose story, visual system, and animation serve the audience",
+    "freedom": "High for narrative, composition, and motion; preserve source facts, accessible navigation, readable pacing, and export reliability.",
+    "quality_gates": ["story arc supports the desired decision", "slides are visually varied but coherent", "keyboard, viewport, motion, and export checks pass"],
+    "learning": "accepted slide patterns, audience feedback, and presenter timing"
+  },
+  "general-video": {
+    "outcome": "a complete custom HyperFrames video when no specialist workflow fits",
+    "freedom": "High for story, design system, scene grammar, and motion; preserve HyperFrames contracts, asset rights, timing, and deterministic rendering.",
+    "quality_gates": ["concept and pacing fit the goal", "each scene has a clear communication job", "lint, inspect, render, and visual review pass"],
+    "learning": "approved scene patterns, timing corrections, and render evidence"
+  },
+  "genmedia": {
+    "outcome": "the best-fit generated media artifact downloaded, inspected, and integrated with cost and license understood",
+    "freedom": "High for prompts and creative variants; low for model schemas, prices, licensing, privacy, downloads, and destructive imports.",
+    "quality_gates": ["model choice fits quality, latency, cost, license, and privacy", "output is visually or audibly inspected", "integration is transactional and verifiable"],
+    "learning": "user-rated settings, model receipts, and successful parameter ranges"
+  },
+  "graphic-overlays": {
+    "outcome": "timed overlay graphics that clarify and elevate existing video without obscuring the speaker or content",
+    "freedom": "High for cards, layouts, typography, and editorial rhythm; preserve transcript truth, safe zones, seekable media, timing, and render contracts.",
+    "quality_gates": ["storyboard selects only useful overlay beats", "cards remain readable and non-occluding", "assembled render passes timing and visual inspection"],
+    "learning": "approved overlay types, density, timing, and correction evidence"
+  },
+  "greploop": {
+    "outcome": "a reviewed change set with all actionable Greptile findings resolved or explicitly justified",
+    "freedom": "Medium for fixes and refactors; preserve user changes, acceptance criteria, branch policy, test integrity, and reviewer independence.",
+    "quality_gates": ["every finding is classified with evidence", "relevant tests and CI pass", "review reaches target state without hiding or gaming findings"],
+    "learning": "repeated review failure categories and accepted remediation patterns"
+  },
+  "hyperframes": {
+    "outcome": "a distinctive, deterministic HyperFrames composition that communicates clearly and renders correctly",
+    "freedom": "High for direction, layout, scene grammar, and animation; preserve composition, timeline, media, and renderer contracts.",
+    "quality_gates": ["design system is specific and coherent", "motion hierarchy supports meaning", "lint, inspect, preview, and render checks pass"],
+    "learning": "approved design directions, reusable scene patterns, and render failures"
+  },
+  "hyperframes-animation": {
+    "outcome": "expressive motion built from the simplest runtime that satisfies the scene",
+    "freedom": "High for choreography and easing; preserve deterministic timing, reduced motion, runtime compatibility, and performance.",
+    "quality_gates": ["animation has clear phases and hierarchy", "chosen runtime is justified and minimal", "timing, performance, and render inspection pass"],
+    "learning": "successful motion blueprints, performance data, and visual corrections"
+  },
+  "hyperframes-cli": {
+    "outcome": "a reproducible scaffold-to-render HyperFrames command loop with useful diagnostics",
+    "freedom": "Low around CLI syntax and release state; medium for command sequencing and debugging hypotheses.",
+    "quality_gates": ["installed CLI version and project state are detected", "lint and inspect errors are resolved", "rendered output path and evidence are verified"],
+    "learning": "versioned command failures and resolved environment diagnostics"
+  },
+  "hyperframes-core": {
+    "outcome": "valid HyperFrames HTML with correct sizing, clips, tracks, media, timing, and deterministic state",
+    "freedom": "Low for composition contracts; high for semantic structure and design outside those contracts.",
+    "quality_gates": ["root and timeline contracts are valid", "media and state are deterministic", "lint, inspect, and representative frames pass"],
+    "learning": "reproduced contract failures and regression fixtures"
+  },
+  "hyperframes-creative": {
+    "outcome": "a non-generic creative system for HyperFrames before implementation begins",
+    "freedom": "High. Explore distinct concepts and choose by audience, message, brand, and production feasibility; preserve truth and accessibility.",
+    "quality_gates": ["direction is specific enough to build", "palette, type, composition, and visual grammar cohere", "concept avoids both imitation and arbitrary novelty"],
+    "learning": "accepted directions, rejected motifs, and audience feedback"
+  },
+  "hyperframes-media": {
+    "outcome": "production-ready voice, music, transcription, captions, and media assets with verified timing and rights",
+    "freedom": "Medium. Adapt provider chain and aesthetic choices; preserve consent, licenses, schema, duration, sample rate, and file integrity.",
+    "quality_gates": ["provider and fallback are verified", "audio and transcript quality are inspected", "timing, format, and rights metadata are complete"],
+    "learning": "provider reliability, approved voices, audio settings, and correction rates"
+  },
+  "hyperframes-registry": {
+    "outcome": "a correctly installed and wired registry block or component with dependencies and usage verified",
+    "freedom": "Low for package paths and contracts; medium for composition and adaptation.",
+    "quality_gates": ["registry item and version are resolved", "dependencies and imports are complete", "rendered usage passes validation"],
+    "learning": "versioned installation failures and corrected wiring fixtures"
+  },
+  "impeccable": {
+    "outcome": "a premium interface improved through proportionate design direction, implementation, and visual QA",
+    "freedom": "High for direction and craft. Use fast or full depth based on ambiguity; preserve user intent, truth, accessibility, performance, and existing design systems.",
+    "quality_gates": ["process depth matches task size", "rendered result is coherent and distinctive", "functional, responsive, accessibility, and visual checks pass"],
+    "learning": "project-approved decisions and repeated cross-project evidence, never one random direction"
+  },
+  "lead-scrapping-apify": {
+    "outcome": "a compliant, deduplicated, scored lead list with evidence-based personalization and usable outreach drafts",
+    "freedom": "Medium for segment discovery and messaging; low for platform terms, privacy, anti-spam law, rate limits, facts, and sending authority.",
+    "quality_gates": ["target criteria and jurisdiction are explicit", "records are deduplicated with source and confidence", "outreach is personalized, truthful, and remains unsent unless authorized"],
+    "learning": "verified field corrections, response outcomes, segment fit, and source quality"
+  },
+  "learn-day": {
+    "outcome": "one accurate daily learning record plus a useful coaching signal with minimal user effort",
+    "freedom": "Medium. Infer structure from messy notes; preserve user meaning, date integrity, private state, and idempotent logs.",
+    "quality_gates": ["note and structured log agree", "streaks and ratios recompute correctly", "coaching distinguishes evidence from hypothesis"],
+    "learning": "evidence-counted habits, counterevidence, decay, and explicit preference changes"
+  },
+  "learn-post": {
+    "outcome": "one grounded build-in-public post derived from real learning, with optional visual direction and idempotent logging",
+    "freedom": "High for angle, length, hook, CTA, and format; preserve factual grounding, user voice, privacy, and published-versus-draft state.",
+    "quality_gates": ["claims trace to today's actual work", "post teaches or reveals something specific", "only confirmed publication updates durable logs"],
+    "learning": "confirmed publication metrics, explicit edits, and audience-fit signals"
+  },
+  "linkedin-post-writer": {
+    "outcome": "a credible, distinctive LinkedIn post and optional visual built from a verified fact ledger",
+    "freedom": "High for structure, length, hook, CTA, and hashtags; preserve truth, user voice, privacy, and published-versus-draft separation.",
+    "quality_gates": ["fact ledger supports every concrete claim", "angle is specific and non-generic", "analytics conclusions carry sample size and confidence"],
+    "learning": "confirmed posts, explicit edits, and metrics with stale-learning decay"
+  },
+  "local-coder": {
+    "outcome": "the intended local model server started with verified model identity, safe resource settings, and exact process control",
+    "freedom": "Low for process, model, port, and hardware checks; medium for selecting a proven profile.",
+    "quality_gates": ["binary, model, RAM, VRAM, disk, and port preflight pass", "the exact PID and model identity are recorded", "health and inference checks pass"],
+    "learning": "explicitly successful benchmark profiles tied to model and hardware"
+  },
+  "motion-graphics": {
+    "outcome": "a short design-led motion piece where timing and visual transformation deliver the message",
+    "freedom": "High for concept, typography, choreography, and transitions; preserve facts, assets, timing, readability, and render contracts.",
+    "quality_gates": ["one motion idea carries the message", "hierarchy and pacing read without narration", "preview and final render checks pass"],
+    "learning": "approved motion motifs, timing corrections, and performance evidence"
+  },
+  "n8n": {
+    "outcome": "an importable, version-compatible, observable n8n workflow or node with safe credentials and failure handling",
+    "freedom": "Medium for architecture; low for detected node schemas, type versions, credentials, idempotency, and platform limits.",
+    "quality_gates": ["n8n version and schemas are verified", "error, retry, rate-limit, and idempotency paths exist", "JSON imports or API dry-run succeeds"],
+    "learning": "versioned import errors, fixtures, and observed workflow failures"
+  },
+  "obsidian-vault-tune-up": {
+    "outcome": "a safer, easier-to-navigate vault that remains understandable to humans and useful as model context",
+    "freedom": "Medium. Adapt taxonomy, maps, links, and templates; preserve content, backlinks, user conventions, privacy, and recoverability.",
+    "quality_gates": ["inventory and broken-link baseline are captured", "changes are previewed and reversible", "navigation, orphan, duplicate, and retrieval checks improve"],
+    "learning": "accepted organization choices and measured retrieval friction"
+  },
+  "paper-deck-style": {
+    "outcome": "a coherent, high-end Paper deck whose style is inferred from brand and existing slides",
+    "freedom": "High for composition and style; preserve board dimensions, content truth, readability, and editable structure.",
+    "quality_gates": ["deck fingerprint captures grid, type, spacing, palette, and rhythm", "slides vary while remaining coherent", "rendered slide inspection passes"],
+    "learning": "deck-specific accepted edits and reusable style tokens"
+  },
+  "paper-mcp": {
+    "outcome": "accurate Paper canvas edits performed through the live connected session and visually verified",
+    "freedom": "Medium for batching and layout; low for session identity, node IDs, deletion, and write confirmation.",
+    "quality_gates": ["active board and selection are inspected", "writes target exact nodes and preserve unrelated work", "screenshot diff and finalization succeed"],
+    "learning": "current-board style tokens only, persisted only when asked"
+  },
+  "plan-day": {
+    "outcome": "a realistic, conflict-free day plan synchronized idempotently with the user's chosen systems",
+    "freedom": "Medium. Optimize blocks and buffers; preserve commitments, timezone, calendar authority, private state, and rollback.",
+    "quality_gates": ["tasks, anchors, availability, and conflicts are resolved", "cross-midnight and timezone behavior are explicit", "sync IDs and rollback make retries safe"],
+    "learning": "observed completion, causal miss reasons, preferences, and derived statistics kept separately"
+  },
+  "playwright-skill": {
+    "outcome": "a reliable browser test or automation run with strong locators, assertions, diagnostics, and cleanup",
+    "freedom": "High for exploration and test design; low for credentials, environment isolation, process cleanup, and claims of success.",
+    "quality_gates": ["server and browser mode are correctly detected", "role or label locators and assertions test user-visible behavior", "failure traces and cleanup are verified"],
+    "learning": "project-local page objects, stable selectors, and reproduced failures"
+  },
+  "product-launch-video": {
+    "outcome": "a persuasive product video built from verified product facts, authentic captures, and a finished render",
+    "freedom": "High for positioning, story, shots, and motion; preserve claim truth, brand, asset rights, timing, and render validation.",
+    "quality_gates": ["message hierarchy matches target audience", "product captures support every feature claim", "audio, captions, layouts, and final render pass"],
+    "learning": "approved messages, retention evidence, capture failures, and timing corrections"
+  },
+  "pr-to-video": {
+    "outcome": "a technically accurate, visually clear video that explains a pull request's problem, change, and impact",
+    "freedom": "High for narrative and visualization; preserve exact repository facts, code meaning, confidentiality, and render contracts.",
+    "quality_gates": ["fact ledger matches diff, commits, and tests", "visuals clarify code changes without fabricating UI", "audio, captions, and final render pass"],
+    "learning": "approved explanation patterns, reviewer corrections, and timing evidence"
+  },
+  "remotion-to-hyperframes": {
+    "outcome": "a behaviorally faithful HyperFrames translation with documented escape hatches and visual parity evidence",
+    "freedom": "Medium for implementation strategy; low for source semantics, timing, media, parameters, and parity checks.",
+    "quality_gates": ["source lint identifies unsupported constructs", "translation map covers timing and components", "frame-strip or render diff meets parity threshold"],
+    "learning": "versioned translation failures and regression corpus results"
+  },
+  "remotion-video-prompt": {
+    "outcome": "a buildable video brief containing concept, storyboard, assets, timing, audio, constraints, and validation",
+    "freedom": "High for creative direction and scene language; preserve product truth, brand, technical feasibility, and explicit assumptions.",
+    "quality_gates": ["concept is specific and strategically justified", "scene plan includes assets, timing, and communication purpose", "prompt contains build and validation requirements"],
+    "learning": "reviewed render outcomes, approved concepts, and reproducible failure patterns"
+  },
+  "researcher": {
+    "outcome": "decision-ready synthesis whose claims, uncertainty, contradictions, and freshness are traceable",
+    "freedom": "High for hypotheses and query graph; low for citation truth, primary-source preference, quotes, and inference labeling.",
+    "quality_gates": ["claim-evidence matrix covers material conclusions", "contradictions and uncertainty are addressed", "citation coverage and freshness meet decision risk"],
+    "learning": "domain query tactics and source reliability, never factual conclusions"
+  },
+  "resume-tailor": {
+    "outcome": "an honest, ATS-readable resume aligned to a job through verified evidence rather than invented claims",
+    "freedom": "High for positioning and phrasing; low for factual truth, dates, metrics, contact data, and document integrity.",
+    "quality_gates": ["JD-to-evidence matrix exposes gaps and matches", "every claim comes from verified fact inventory", "DOCX render, parsing, and lint checks pass"],
+    "learning": "accepted edits, interviews, and outcomes tied to role fit"
+  },
+  "roast": {
+    "outcome": "a calibrated go, reshape, test, or kill recommendation with assumptions, economics, pre-mortem, and cheapest evidence plan",
+    "freedom": "High for adversarial lenses; preserve uncertainty, distinguish simulation from customers, and avoid pretending guesses are validation.",
+    "quality_gates": ["riskiest assumptions are explicit", "unit economics use ranges and sources", "verdict includes falsifiable next test and stop criteria"],
+    "learning": "real experiment outcomes and forecast calibration"
+  },
+  "scalability": {
+    "outcome": "measured capacity and reliability improvement against explicit workload and SLOs",
+    "freedom": "Medium for hypotheses; low for thresholds, consistency, data safety, and capacity claims without measurement.",
+    "quality_gates": ["workload, topology, SLO, and baseline are explicit", "change is load-tested with rollback", "capacity, latency, error, consistency, and cost deltas are measured"],
+    "learning": "statistically meaningful project benchmark results"
+  },
+  "security": {
+    "outcome": "evidence-backed risk reduction with exploit path, severity, fix, and regression test",
+    "freedom": "Low for security invariants and current framework guidance; high for threat hypotheses and defense design inside user-authorized scope.",
+    "quality_gates": ["threat model covers assets, trust boundaries, authz, tenancy, and abuse", "findings include reproducible evidence and uncertainty", "fixes follow current official guidance and add regression tests"],
+    "learning": "reproduced defects and reviewed false-positive suppressions with owner and expiry"
+  },
+  "session-handoff": {
+    "outcome": "a compact, evidence-tagged handoff that lets a fresh session resume without rediscovery",
+    "freedom": "Medium. Adapt sections to task type; preserve confirmed state, scoped Git evidence, active processes, verification, and unresolved decisions.",
+    "quality_gates": ["confirmed, inferred, and unknown facts are separated", "changed files and verification are scoped accurately", "exact next action and resumption prompt are present"],
+    "learning": "none beyond explicit template preferences; task state is not durable skill learning"
+  },
+  "shorts": {
+    "outcome": "a grounded, finished short or long-form product video with publishing assets and minimal manual editing",
+    "freedom": "High for hook, structure, capture, motion, and engine choice; preserve product truth, brand, rights, timing, and render validation.",
+    "quality_gates": ["subject and claims are verified from project evidence", "pipeline maximizes available automation", "final render and publishing package pass inspection"],
+    "learning": "controlled retention experiments, approved style, and render corrections"
+  },
+  "skill-evolver": {
+    "outcome": "a safer, more autonomous, validated skill portfolio that improves from evidence without silent drift",
+    "freedom": "Medium. Adapt enhancements to each motive; preserve user authority, managed-file boundaries, safety contracts, validation, and rollback.",
+    "quality_gates": ["every skill has a purpose-specific profile", "structural and representative behavior tests pass", "canonical and installed copies match with backups"],
+    "learning": "explicit feedback, reproduced defects, and measured outcomes promoted through evidence gates"
+  },
+  "slideshow": {
+    "outcome": "a coherent HyperFrames presentation with valid slide manifests, navigation, reveals, and rendering",
+    "freedom": "High for story, composition, and interaction; low for manifest schema, state, accessibility, and deterministic playback.",
+    "quality_gates": ["story and slide hierarchy support audience goal", "manifest, branching, fragments, and hotspots validate", "keyboard navigation and representative renders pass"],
+    "learning": "accepted slide structures, navigation failures, and presenter feedback"
+  },
+  "task-to-pr": {
+    "outcome": "an explicitly requested, tested, independently reviewed, green pull request ready for human merge",
+    "freedom": "Medium for implementation and test design; low for user changes, branch policy, remote writes, acceptance criteria, and merge authority.",
+    "quality_gates": ["preflight and acceptance contract are explicit", "risk-based tests and independent review pass", "CI is green and PR state is verified without merging"],
+    "learning": "project-local CI and review failure taxonomy"
+  },
+  "design-taste-frontend": {
+    "outcome": "a context-specific frontend with strong taste and no generic template residue",
+    "freedom": "High. Treat anti-patterns as diagnostic heuristics, not bans; preserve truth, accessibility, responsiveness, performance, and requested scope.",
+    "quality_gates": ["design read and signature idea fit the brief", "rendered output avoids accidental repetition and fake content", "visual, interaction, accessibility, and performance checks pass"],
+    "learning": "accepted project decisions and cross-project evidence, not blanket preferences"
+  },
+  "trigger-dev": {
+    "outcome": "a version-compatible, typed, durable Trigger.dev task with safe retries, idempotency, observability, and verified execution",
+    "freedom": "Medium for workflow design; low for detected SDK API, secrets, deployment, concurrency, retries, and public triggers.",
+    "quality_gates": ["installed SDK and official schema are verified", "compile, local run, failure, and retry paths pass", "deployment occurs only with explicit authority and is verified"],
+    "learning": "versioned run failures and corrected project fixtures"
+  },
+  "ui-ux-pro-max": {
+    "outcome": "a diverse, evidence-backed design system recommendation that can be implemented and visually audited",
+    "freedom": "Medium. Compare several candidates and let context choose; preserve dataset paths, contrast, atomic persistence, and project overrides.",
+    "quality_gates": ["three candidates are meaningfully diverse", "palette, typography, and UX guidance fit product and accessibility", "project persistence and screenshot audit pass"],
+    "learning": "approved project decisions, outcome notes, and dataset/version corrections"
+  },
+  "upwork": {
+    "outcome": "a truthful, differentiated Upwork profile positioned for a specific ideal client and supported by proof",
+    "freedom": "High for voice and positioning; low for factual claims, platform limits, accessibility, and unsupported conversion promises.",
+    "quality_gates": ["proof inventory supports positioning", "keywords and offer match target jobs", "rewrite is clear, credible, and scannable"],
+    "learning": "profile views, invites, replies, hires, and explicit edits"
+  },
+  "upwork-proposal": {
+    "outcome": "one decisive, honest proposal for a worthwhile job, supported by a reusable freelancer proof bank",
+    "freedom": "High for structure, length, and tone; low for claims, job risk, bid economics, and platform actions.",
+    "quality_gates": ["job fit and scam risk are assessed", "proposal connects client need to verified proof", "screening answers and attachment plan are complete"],
+    "learning": "viewed, replied, interviewed, hired, and job-fit outcomes"
+  },
+  "visual-plan": {
+    "outcome": "the smallest useful interactive or static visual plan that makes implementation and review materially easier",
+    "freedom": "High for information design and medium for surface choice. Preserve evidence, privacy, file accuracy, and a useful local fallback.",
+    "quality_gates": ["visual form matches relationship being explained", "files, code, decisions, and open questions are accurate", "artifact remains usable when hosted tooling is unavailable"],
+    "learning": "accepted plan structures and implementation mismatches"
+  },
+  "website-to-video": {
+    "outcome": "a finished site tour or showcase using authentic captures and a story aligned to the site's brand",
+    "freedom": "High for capture strategy, message, storyboard, and motion; preserve site facts, permissions, privacy, asset rights, and render contracts.",
+    "quality_gates": ["captures represent real site behavior", "brand and message hierarchy are coherent", "audio, captions, layout, and final render validation pass"],
+    "learning": "approved captures, message variants, retention evidence, and render failures"
+  },
+  "youtube-researcher": {
+    "outcome": "fast, deduplicated YouTube intelligence from high-value videos, channels, and transcripts with source links",
+    "freedom": "High for query expansion and synthesis; low for API quotas, transcript truth, source attribution, and claims about unavailable content.",
+    "quality_gates": ["results are ranked by information value", "transcripts are pulled selectively and linked", "comparison, freshness, and source coverage are explicit"],
+    "learning": "useful queries, selected sources, request cost, and relevance feedback"
+  }
+}

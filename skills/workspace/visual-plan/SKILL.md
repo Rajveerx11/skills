@@ -1,11 +1,6 @@
 ---
 name: visual-plan
-description: >-
-  Turn ordinary text plans into rich interactive visual plans with diagrams,
-  file maps, annotated code, open questions, and UI/prototype review when
-  useful.
-metadata:
-  visibility: exported
+description: Create structured Agent-Native Plans with diagrams, file maps, annotated code, decision blocks, UI wireframes, and interactive prototypes. Use when the user explicitly asks for a visual, interactive, UI, prototype, or Agent-Native plan, or an established workflow requires a visual review artifact. Do not auto-trigger for ordinary implementation plans or code changes that a concise Markdown plan can handle.
 ---
 
 # Agent-Native Plans
@@ -105,32 +100,25 @@ surface.
   a correction to an earlier draft inside the plan itself. Re-read the approved
   plan before major steps.
 
-## Create A Structured Agent-Native Plan — Never Inline
+## Choose Local, Hosted, Or Chat Delivery
 
-The deliverable is ALWAYS a structured Agent-Native Plan, not a chat-only plan.
-The hosted Plan MCP connector (`plan` server, or legacy `agent-native-plans`) is
-the default collaboration and commenting surface; it is not a reason to reject
-the planning pattern as an external dependency or rented layer. Plans are
-portable source artifacts (`plan.mdx`, optional `canvas.mdx` /
-`prototype.mdx`, JSON, and HTML export), and ownership-sensitive workflows can
-use local-files mode or a self-hosted/custom Plan app URL without abandoning the
-skill's review discipline. Do not advise the user to skip `/visual-plan` because
-the default surface is hosted; choose the right Plan mode for the user's
-ownership, privacy, sharing, and branding needs.
+Repository files, source code, private plans, and pasted internal context default
+to local MDX. Do not upload that content to the hosted Plan service without
+explicit user approval covering the material and visibility.
 
-By default, create the plan via the Plan MCP connector. NEVER hand the plan over
-as inline chat content — no Markdown prose, ASCII sketch, table, or fenced
-wireframe. If the connector's tools are missing, do NOT fall back to inline
-output: the usual cause is a connector that did not finish connecting this
-session (it registers zero tools), not auth. Stop and give the user the exact
-restore step for their current client: in Codex/Codex Desktop run
-`npx -y @agent-native/core@latest reconnect https://plan.agent-native.com --client codex`
-and start a new Codex session; in Claude Code run `/mcp` and choose
-Authenticate/Reconnect (or run the same reconnect command with
-`--client claude-code` and restart Claude). Auth is stored per client
-config/session, so one client's reconnect does not make another running client
-load tools. Never reinstall from scratch just to fix auth. Publish once the tool
-is reachable. Local-files privacy mode (after Tool Guidance) is the exception.
+- **Local MDX (default for code/repository work):** write portable `plan.mdx`
+  plus optional `canvas.mdx` / `prototype.mdx`, validate locally, and return the
+  local review URL and source path.
+- **Hosted Plan:** use only when the user explicitly asks to publish/share a
+  hosted plan or approves hosted collaboration after being told what content
+  will leave the local workspace and who can access it.
+- **Chat fallback:** when local tooling is unavailable, return the same
+  structured plan as concise Markdown in chat. Preserve decisions, file maps,
+  verification, and open questions. Do not block useful planning on a connector.
+
+Plans remain portable source artifacts regardless of delivery. Never pass an
+existing plan as hosted `planText`, publish repository context, or change
+visibility based on inferred consent.
 
 ## Core Workflow
 
@@ -139,14 +127,16 @@ is reachable. Local-files privacy mode (after Tool Guidance) is the exception.
    clarifying questions as needed before generating the plan. If a source plan
    already exists, gather its exact text from the user's paste, a referenced
    file, or recent visible agent context; do not invent source text.
-2. Call `get-plan-blocks` for the authoritative block catalog — do not author
-   from memorized tags. Then call the mode-matched create tool:
+2. Select delivery using **Choose Local, Hosted, Or Chat Delivery**. For local
+   MDX, resolve the block catalog without sending plan content, author source
+   files, and run local validation. For an explicitly approved hosted plan, call
+   `get-plan-blocks`, then call the mode-matched create tool:
    `create-visual-plan` for document-first plans (architecture, backend, data,
    refactor, API), `create-ui-plan` for UI-first plans, `create-prototype-plan`
    for prototype-first plans, `create-plan-design` for design-first plans,
    `create-visual-questions` only when the user explicitly asks for a visual
-   intake questionnaire. When a source plan already exists,
-   pass it as `planText` and preserve the original plan's useful intent while
+   intake questionnaire. When a source plan already exists, pass it as hosted
+   `planText` only after hosted-content approval; preserve its useful intent while
    producing a standalone plan document, not a revision memo.
 3. For UI/product plans, compose the top canvas first with the primary
    wireframes and annotated states, then write the document with native blocks
@@ -161,7 +151,7 @@ is reachable. Local-files privacy mode (after Tool Guidance) is the exception.
    and put `diagram`, `data-model`,
    `api-endpoint`, `diff`, `file-tree`, `code`, and `annotated-code` blocks
    directly next to the relevant prose.
-4. Surface the returned Plans link or inline MCP App and ask the user to review.
+4. Surface the local or hosted review link plus source path and ask the user to review.
    Always include the actual URL in chat so the next step is a click in CLI or
    other text-only hosts. When the host exposes an embedded browser/preview panel
    and a tool can open arbitrary URLs there, open the returned plan URL
@@ -306,8 +296,8 @@ directory before authoring a plan.
 
 ## Tool Guidance
 
-- `create-visual-plan`: start one structured visual plan per agent task/run, or
-  import an existing text plan by passing `planText`; `content` may include no
+- `create-visual-plan`: start one explicitly approved hosted visual plan per
+  agent task/run, or import approved text by passing `planText`; `content` may include no
   visual surface, canvas only, or canvas + prototype.
 - `create-ui-plan`: start a UI-first plan when the work is primarily product UI.
 - `create-prototype-plan`: start a prototype-first plan with a functional top
@@ -340,13 +330,14 @@ skill — never hand-edit one stored plan. Turn feedback into better guidance.
 
 ## Local-Files Privacy Mode
 
-Use local-files privacy mode when the user explicitly asks for no DB writes,
-no hosted Plan database writes, no Plan MCP publish, fully local files, offline/private
-planning, repo-owned/source-controlled planning artifacts, or when
-`AGENT_NATIVE_PLANS_MODE=local-files` is set. Also use it when a user or repo
-policy says a plan must stay under their own brand, domain, source control, or
-infrastructure. In this mode the plan data must never be sent to the Plan MCP
-server or Plan app action surface. Schema-only block catalog lookup is allowed
+Use local-files privacy mode by default whenever planning reads repository
+files, source code, private documents, pasted internal plans, or other
+non-public workspace context. Also use it when the user asks for no DB writes,
+no hosted Plan database writes, no Plan MCP publish, fully local files,
+offline/private planning, repo-owned/source-controlled planning artifacts, when
+`AGENT_NATIVE_PLANS_MODE=local-files` is set, or when policy requires local
+ownership. In this mode plan data must never be sent to the Plan MCP server or
+Plan app action surface. Schema-only block catalog lookup is allowed
 because it sends no plan content: use the MCP `get-plan-blocks` tool if it is
 already available, or run
 `npx @agent-native/core@latest plan blocks --out plan-blocks.md` and read that
@@ -469,8 +460,8 @@ Sharing and commenting require an account: public/shared plans are viewable by
 anyone with the link, but commenting on them needs an agent-native account.
 
 For fully offline, no-account use, run the Plans app locally and sync plans to
-your repo as MDX. This local mode is a separate advanced path, not the default
-hosted flow.
+your repo as MDX. Local MDX remains the default for repository and private
+context; hosted flow requires explicit selection.
 
 If a Plans tool returns `needs auth`, `Unauthorized`, or `Session terminated`,
 do not keep retrying the tool. Stop and give the user the reconnect step for the
@@ -484,5 +475,16 @@ client. Reconnect re-authenticates WITHOUT reinstalling and finds the entry by
 URL regardless of connector name. Never reinstall from scratch just to fix auth.
 Continue once the connector is available.
 
-Hosted default: connect `https://plan.agent-native.com/_agent-native/mcp`. Do
+When hosted delivery is explicitly selected, connect
+`https://plan.agent-native.com/_agent-native/mcp`. Do
 not put shared secrets in skill files.
+
+<!-- skill-evolver:adaptive-start -->
+## Adaptive excellence
+
+- Optimize for: the smallest useful interactive or static visual plan that makes implementation and review materially easier
+- Freedom: High for information design and medium for surface choice. Preserve evidence, privacy, file accuracy, and a useful local fallback.
+- Autonomy: inspect available context first, infer low-risk details, choose strong defaults, and finish the authorized workflow end to end. Ask only when a choice materially changes outcome, risk, cost, or irreversible state.
+- Quality gate: visual form matches relationship being explained; files, code, decisions, and open questions are accurate; artifact remains usable when hosted tooling is unavailable. Revise once when any gate is weak.
+- Learning: after explicit feedback or measurable results, record accepted plan structures and implementation mismatches through `skill-evolver`. Never self-edit from silence, a single unverified outcome, or model self-rating.
+<!-- skill-evolver:adaptive-end -->

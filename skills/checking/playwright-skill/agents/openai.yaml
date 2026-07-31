@@ -1,0 +1,4 @@
+interface:
+  display_name: "Playwright Browser Automation"
+  short_description: "Exercise web flows and capture browser evidence"
+  default_prompt: "Use $playwright-skill to test this browser flow and return reproducible evidence."

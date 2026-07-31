@@ -79,8 +79,8 @@ technique, transition in→out, VO line, SFX/beat, engine.**
 
 ## 8. Remotion-fallback shots (only if any §6 row is tagged)
 For each `[REMOTION FALLBACK]` shot: <why HyperFrames can't do it> + <the exact Remotion approach>.
-Build it via the `remotion-video-prompt` flow as its own project OUTSIDE `C:\Testing IDE`, pin all
-`@remotion/*` + react/react-dom to one exact version + `zod@4.3.6`, render to MP4/transparent WebM,
+Build it via the `remotion-video-prompt` flow as an isolated project when parent dependencies conflict; pin all
+`@remotion/*` plus react/react-dom to one exact compatible version and use its required Zod major; render to MP4/transparent WebM,
 then composite into the HyperFrames timeline as a `<video muted playsinline>` clip on a transition
 seam. If no row is tagged, delete this section.
 

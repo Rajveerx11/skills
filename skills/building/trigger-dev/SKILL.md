@@ -1,119 +1,75 @@
 ---
 name: trigger-dev
-description: Build Trigger.dev background jobs, automations, and workflows in TypeScript. Use when the user wants to create tasks, scheduled jobs, AI agent workflows, queued background processing, cron jobs, or any long-running async work with Trigger.dev. Triggers on imports from @trigger.dev/sdk or mentions of trigger.dev.
-argument-hint: [description of what to build]
+description: Build, test, deploy, or debug durable Trigger.dev background tasks and scheduled workflows in TypeScript. Use for @trigger.dev/sdk or @trigger.dev/build code, queued/long-running jobs, cron tasks, retries, idempotency, concurrency, waits, realtime, Trigger.dev configuration, run inspection, or Trigger.dev deployment.
 ---
 
-# Trigger.dev Skill
+# Trigger.dev
 
-You are an expert at building production-grade Trigger.dev v4 background tasks, workflows, and automations in TypeScript.
+Deliver a typed, durable task that behaves correctly across retries, duplicate triggers, long waits, and deployment boundaries.
 
-Read the detailed reference files in `${CLAUDE_SKILL_DIR}` for comprehensive code patterns:
+## Detect and verify
 
-- `core-reference.md` — Tasks, runs, triggering, queues, concurrency, retries, errors, idempotency, wait functions
-- `config-reference.md` — trigger.config.ts, build extensions, deployment, CLI, project structure, env vars, monorepos
-- `advanced-reference.md` — AI integration, streams, realtime, middleware, locals, lifecycle hooks, metadata, tags, scheduled tasks
+1. Read repository instructions, package manager, lockfile, installed Trigger.dev packages, `trigger.config.*`, configured task directories, environment conventions, and existing task IDs/queues.
+2. Use installed package types and current official Trigger.dev documentation for the detected version. Do not mix `latest` examples into a pinned project.
+3. Read [core-reference.md](core-reference.md), [config-reference.md](config-reference.md), or [advanced-reference.md](advanced-reference.md) only for the feature in scope; verify version-sensitive APIs before use.
+4. Search the codebase for task IDs, trigger call sites, idempotency keys, schedules, and consumers before adding anything.
 
-## Setup Checklist
+## Define durability
 
-If starting a new Trigger.dev project or adding to an existing one, refer to https://trigger.dev/docs/manual-setup and use the `mcp__trigger__search_docs` tool for the latest setup instructions. Core steps:
+State the task contract:
 
-1. Install packages: `npm add @trigger.dev/sdk@latest` and `npm add -D @trigger.dev/build@latest`
-2. Create `trigger.config.ts` at project root with `defineConfig({ project: "<ref>", dirs: ["./src/trigger"] })`
-3. Add `TRIGGER_SECRET_KEY` to `.env`
-4. Create task files in the configured `dirs` directory
-5. Run `npx trigger.dev@latest dev` for local development
-6. Deploy with `npx trigger.dev@latest deploy`
+- validated JSON-serializable payload and output;
+- caller and authorization boundary;
+- expected volume, latency, machine needs, queue/concurrency policy;
+- retryable versus permanent failures;
+- idempotency scope and duplicate result;
+- timeout, cancellation, wait/checkpoint behavior;
+- logs, metadata, tags, alerting, and recovery path.
 
-## Core Patterns
+Use schema validation at task boundaries. Never put secrets or sensitive payloads into metadata, tags, or logs.
 
-### Basic Task
-```typescript
-import { task } from "@trigger.dev/sdk";
+## Implement
 
-export const myTask = task({
-  id: "my-task",
-  run: async (payload: { data: string }, { ctx }) => {
-    return { result: "done" };
-  },
-});
-```
+- Use a stable unique task ID and export discoverable tasks.
+- Reuse existing queues and conventions when they match.
+- Add bounded retries with backoff for transient dependencies. Fail permanent validation/business errors without retry.
+- Create idempotency keys from stable business identifiers before sends, charges, creates, or child triggers. Verify scope semantics against the installed SDK.
+- Use Trigger.dev waits/checkpoints instead of process sleeps for durable delays.
+- Pass tenant/user context explicitly and enforce it again inside consequential tasks.
+- Design fan-out with bounded concurrency and partial-failure collection.
+- Emit structured logs and enough metadata to locate the business object without exposing secrets.
 
-### Schema-Validated Task
-```typescript
-import { schemaTask } from "@trigger.dev/sdk";
-import { z } from "zod";
+## Test locally
 
-export const myTask = schemaTask({
-  id: "my-task",
-  schema: z.object({ name: z.string(), age: z.number() }),
-  run: async (payload) => { /* payload is typed and validated */ },
-});
-```
+Run format, lint, typecheck, and project tests. In Trigger.dev development mode or an isolated environment, test:
 
-### Scheduled Task (Cron)
-```typescript
-import { schedules } from "@trigger.dev/sdk";
+- valid and invalid payloads;
+- success, retryable failure, permanent failure, cancellation, and timeout;
+- duplicate trigger/idempotency behavior;
+- concurrency saturation and child-task failure when relevant;
+- schedule/timezone edge cases;
+- resumed waits and output serialization.
 
-export const dailyCleanup = schedules.task({
-  id: "daily-cleanup",
-  cron: "0 0 * * *",
-  run: async (payload) => {
-    // payload.timestamp, payload.lastTimestamp, payload.timezone
-  },
-});
-```
+Record task ID and run IDs. Inspect logs and final status rather than assuming a trigger succeeded.
 
-### Trigger from Backend
-```typescript
-import { tasks } from "@trigger.dev/sdk";
-import type { myTask } from "~/trigger/my-task";
+## Deploy boundary
 
-const handle = await tasks.trigger<typeof myTask>("my-task", { data: "hello" });
-```
+Do not deploy, create a schedule, trigger a production task, cancel runs, or alter environment variables unless requested. When deployment is authorized:
 
-### Trigger from Inside a Task
-```typescript
-const result = await otherTask.triggerAndWait({ data: "hello" });
-if (result.ok) console.log(result.output);
-```
+1. use the project's pinned CLI/tooling;
+2. deploy the smallest environment;
+3. verify the deployed task/version;
+4. trigger a safe smoke run;
+5. inspect status, output, logs, and retry count;
+6. report rollback or disable steps.
 
-## Critical Rules
+Return changed paths, detected versions, task IDs, durability choices, test/run evidence, and any external configuration still required.
 
-1. **Task IDs must be unique** across the entire project
-2. **Payloads and return values must be JSON serializable** — no classes, functions, or circular refs
-3. **Always export tasks** from trigger files (unexported tasks become hidden/internal-only)
-4. **Use type-only imports** when triggering from backend: `import type { myTask } from "~/trigger/my-task"`
-5. **trigger.config.ts must be at the project root** — it cannot be nested
-6. **Use `AbortTaskRunError`** to fail without retrying on permanent errors
-7. **Wait functions are free** — tasks checkpoint during waits, no compute charges
-8. **Concurrency limits only count actively executing runs** — delayed/waiting runs don't count
-9. **Max 10 tags per run**, max 256KB metadata per run, max 1000 items per batch
-10. **Use `idempotencyKeys.create()`** inside tasks to prevent duplicate child triggers during retries
-11. **Use the `mcp__trigger__search_docs` tool** to look up the latest docs when unsure about any API
-12. **Use `mcp__trigger__deploy`** to deploy tasks, **`mcp__trigger__list_runs`** to check runs, **`mcp__trigger__trigger_task`** to trigger tasks
+<!-- skill-evolver:adaptive-start -->
+## Adaptive excellence
 
-## Machine Presets
-
-| Preset | vCPU | RAM |
-|--------|------|-----|
-| micro | 0.25 | 0.25 GB |
-| small-1x (default) | 0.5 | 0.5 GB |
-| small-2x | 1 | 1 GB |
-| medium-1x | 1 | 2 GB |
-| medium-2x | 2 | 4 GB |
-| large-1x | 4 | 8 GB |
-| large-2x | 8 | 16 GB |
-
-## Key SDK Imports
-
-```typescript
-import {
-  task, schemaTask, schedules, batch, tasks, runs, queues,
-  tags, metadata, wait, auth, idempotencyKeys, logger, streams,
-  AbortTaskRunError, configure, query,
-} from "@trigger.dev/sdk";
-import { ai } from "@trigger.dev/sdk/ai";
-```
-
-Use `$ARGUMENTS` to understand what the user wants to build. Read the reference files for detailed patterns before writing code.
+- Optimize for a version-compatible, typed, durable task with safe retries, idempotency, observability, and verified execution.
+- Use medium freedom for workflow design; use low freedom for detected SDK APIs, secrets, deployment, concurrency, retries, and public triggers.
+- Require current schemas, passing compile/local/failure/retry paths, and explicit verified deployment authority. Revise once when weak.
+- Learn only from versioned run failures and corrected project fixtures.
+<!-- skill-evolver:adaptive-end -->

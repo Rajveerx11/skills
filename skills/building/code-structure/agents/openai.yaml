@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Structure"
+  short_description: "Extract shared mechanics without behavior drift"
+  default_prompt: "Use $code-structure to remove this duplication while preserving every caller's behavior."

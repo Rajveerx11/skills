@@ -1,0 +1,4 @@
+interface:
+  display_name: "Learn Day"
+  short_description: "Track learning, shipping, and weekly progress"
+  default_prompt: "Use $learn-day to log learning and shipped work for this day."

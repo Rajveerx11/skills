@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Design"
+  short_description: "Design and ship a distinctive working interface"
+  default_prompt: "Use $frontend-design-skill to design and implement this interface with a strong visual concept."

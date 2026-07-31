@@ -1,0 +1,6 @@
+interface:
+  display_name: "HyperFrames Media"
+  short_description: "Prepare voice, music, transcripts, and media"
+  default_prompt: "Use $hyperframes-media to prepare and validate the voice, music, transcription, captions, or media assets this project needs."
+policy:
+  allow_implicit_invocation: true

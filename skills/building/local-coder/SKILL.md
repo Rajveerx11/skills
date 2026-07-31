@@ -1,52 +1,66 @@
 ---
 name: local-coder
-description: Launch the local Qwen3-Coder-30B-A3B coding model via llama.cpp and open its WebUI in the browser. Use when the user wants to run their local model, start llama.cpp, launch the local LLM, run Qwen coder locally, spin up the local AI chat, or open the local coding model UI. Trigger phrases include "run my local model", "start local coder", "launch llama.cpp", "fire up Qwen", "/local-coder".
-argument-hint: [optional: ctx size, e.g. 16384, or n-cpu-moe override]
-auto-activate: false
+description: Start, verify, reopen, or troubleshoot the user's local Qwen3-Coder model served by llama.cpp. Use when the user asks to launch the local coding model, start llama-server, open its WebUI, expose its OpenAI-compatible local endpoint, change the local context/port profile, or diagnose startup and resource failures.
 ---
 
-# Local Coder — launch Qwen3-Coder-30B-A3B + WebUI
+# Local Coder
 
-You start the user's locally-installed llama.cpp server with the Qwen3-Coder-30B-A3B model (MoE-offload tuned for their RTX 4060 8 GB laptop) and open the built-in WebUI.
+Use the bundled `launch.ps1`; it owns the tested model path and hardware profile. Starting it consumes substantial RAM/GPU and is authorized only by an explicit launch request.
 
-## What this runs
+## Run
 
-- llama.cpp: `C:\Users\rajve\llamacpp\llama-server.exe` (CUDA 13.3 build, on PATH)
-- Model: `C:\Users\rajve\llamacpp\models\Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf`
-- Tuning: `-ngl 99 --cpu-moe` (attention on the 8 GB GPU, experts in system RAM), 32K context, flash attention on, Q8_0 KV cache, jinja tool-calling template on.
-- Serves the WebUI + OpenAI-compatible API at `http://127.0.0.1:8080`.
+Resolve this skill's directory from the loaded `SKILL.md`, then execute:
 
-## How to run it
-
-Run the launcher with the PowerShell tool. **Use a long timeout (300000 ms)** — first load reads ~18 GB from disk and can take 1–3 minutes:
-
-```
-powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Users\rajve\.claude\skills\local-coder\launch.ps1"
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "<skill-directory>\launch.ps1"
 ```
 
-Optional overrides (only if the user asks):
-- Smaller context (less VRAM / faster load): append `-Ctx 16384`
-- More speed by keeping some experts on GPU (only if RAM/VRAM allows): append `-NCpuMoe 44` (lower N = more experts on GPU = faster but more VRAM; risk of OOM)
-- Don't open a browser: append `-NoBrowser`
+Use a command timeout of at least 300 seconds. The launcher is idempotent: it reuses a healthy server and refuses a port owned by a different process.
 
-The script is idempotent: if the server is already listening on the port it just re-opens the WebUI instead of starting a second copy.
+Supported overrides:
 
-## After it launches
+```powershell
+# Lower memory profile
+powershell -NoProfile -ExecutionPolicy Bypass -File "<skill-directory>\launch.ps1" -Ctx 16384
 
-Tell the user:
-- WebUI is open at `http://127.0.0.1:8080`
-- Coding agents (Cline / Aider / OpenCode) point at `http://127.0.0.1:8080/v1` (OpenAI-compatible)
-- Stop the server with: `Get-Process llama-server | Stop-Process`
+# Alternate port without opening a browser
+powershell -NoProfile -ExecutionPolicy Bypass -File "<skill-directory>\launch.ps1" -Port 8081 -NoBrowser
+```
 
-## Critical rules
+The launcher also accepts `-LlamaDir`, `-ServerPath`, and `-ModelPath`, or the `LLAMA_CPP_DIR`, `LLAMA_SERVER_PATH`, and `LLAMA_MODEL_PATH` environment variables. Prefer these overrides over editing the script.
 
-1. Always run `launch.ps1` — do NOT hand-type `llama-server` flags; the tuned, tested config lives in the script.
-2. Always use a PowerShell tool timeout of at least 300000 ms so the model has time to load.
-3. The model needs ~18 GB of free system RAM. If the script warns about low RAM, tell the user to close Chrome / heavy apps before retrying.
-4. If the script reports the model file is missing, it is still downloading — check `C:\Users\rajve\llamacpp\models\download.log` and do not launch until the `.gguf` file is present.
-5. If the server exits early, read the printed log tail (`...err.log`) and report the actual error (usually OOM → suggest `-Ctx 16384` or freeing RAM).
-6. Do not change the model path or flags unless the user explicitly asks.
+Do not change `-NCpuMoe`, model, binary, or hardware flags unless the user requests tuning and understands the VRAM risk.
 
-## Final note
+## Verify
 
-This is a launch action with side effects (starts a long-running GPU/RAM-heavy server). It is slash-command only (`/local-coder`) and does not auto-activate. Just run the script and report the WebUI URL — keep output short.
+After launch:
+
+1. Require a successful launcher exit.
+2. Confirm the listener's Win32 process uses the exact server executable and normalized exact `-m`/`--model` path.
+3. Query `http://127.0.0.1:<port>/health`.
+4. Query `/v1/models` and confirm the intended model is exposed.
+5. When the user needs API proof, run one tiny non-destructive completion request and report latency; otherwise avoid consuming extra compute.
+6. Record the URL, port, process ID when available, model identity, selected context, and log path printed by the launcher.
+
+- WebUI: `http://127.0.0.1:<port>`
+- OpenAI-compatible base URL: `http://127.0.0.1:<port>/v1`
+
+## Diagnose
+
+- Missing binary/model: report the exact checked path. Inspect `models\download.log` when present.
+- Low RAM or early exit: read only the relevant tail of the printed error log. Suggest closing heavy apps or `-Ctx 16384` before changing offload flags.
+- Port conflict: identify the owning process; do not stop it. Offer another port.
+- Timeout: check process state, `/health`, and logs before retrying. Do not start a duplicate.
+
+Never kill all `llama-server` processes by name. To stop the launched server, identify its exact PID/port first and obtain explicit stop authorization.
+
+Return the verified URLs and profile, or the shortest decisive error plus a safe next action.
+
+<!-- skill-evolver:adaptive-start -->
+## Adaptive excellence
+
+- Optimize for the intended local server running with verified model identity, safe resources, and exact process control.
+- Use low freedom for model, binary, port, process, and hardware checks; use medium freedom only among proven profiles.
+- Require binary/model/resource/port preflight, exact PID and model identity, plus health and inference evidence. Revise once when weak.
+- Learn only from explicit benchmark results tied to this model and hardware.
+<!-- skill-evolver:adaptive-end -->

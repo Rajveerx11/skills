@@ -99,3 +99,15 @@ See [discovery.md](./references/discovery.md) for details on filtering by type a
 ## Contributing a new block or component
 
 To author a NEW registry item (caption style, VFX block, transition, lower third, or a reusable component) and ship it as an upstream PR — not install an existing one — follow the full idea → scaffold → build → validate → preview → ship workflow in [contributing.md](./references/contributing.md). Copy-paste starter templates (caption / VFX / component / `registry-item.json`) are in [templates.md](./references/templates.md).
+
+<!-- skill-evolver:adaptive-start -->
+## Professional execution
+
+- **Discover automatically:** locate project root, registry manifest, installed items, versions, destination conventions, package manager, composition architecture, and dependency state before installing anything.
+- **Default intelligently:** search before authoring, choose the narrowest compatible item, use documented install location, preserve local customizations, and reuse a demo pattern as the first wiring fixture.
+- **Make installation recoverable:** capture the pre-install file/dependency set, dry-run or inspect generated changes when supported, avoid duplicate registration, and keep a concise list of files added or changed.
+- **Protect contracts:** item names/versions, registry paths, imports, dependency declarations, data attributes, timeline registration, and package commands are low-freedom. Adapt content and styling only after the shipped demo works unchanged.
+- **Validate in two passes:** first render the untouched demo; then render the customized integration. Run lint/inspect and verify imports, assets, variables, duration, and no duplicated IDs or timelines.
+- **Finish the handoff:** report resolved item/version, install command, files/dependencies changed, wiring location, customization points, validation output, and rollback steps.
+- **Learn only from evidence:** record versioned installation failures and corrected wiring fixtures through `skill-evolver`; never generalize from an undocumented registry snapshot.
+<!-- skill-evolver:adaptive-end -->

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Remotion to HyperFrames"
+  short_description: "Port Remotion compositions with parity checks"
+  default_prompt: "Use $remotion-to-hyperframes to port this existing Remotion composition, stop on unsupported behavior, and prove visual parity."
+policy:
+  allow_implicit_invocation: false

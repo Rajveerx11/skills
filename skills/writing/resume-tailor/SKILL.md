@@ -1,63 +1,134 @@
 ---
 name: resume-tailor
-description: Tailor a master resume to a specific job description and produce an ATS-optimized, recruiter-ready resume. Use when the user wants to tailor a resume, customize a CV for a job, optimize a resume for ATS, apply to a job, beat applicant tracking systems, match a resume to a job description, or prep an application. Triggers on "tailor my resume", "customize my CV", "ATS resume", "apply to this job", "optimize my resume for [company/role]".
-argument-hint: [path/URL to job description, optionally path to master resume]
+description: Tailor a master resume or CV to a specific job description and produce an honest, ATS-readable, recruiter-ready application package. Use for resume tailoring, CV customization, ATS optimization, job applications, role matching, gap analysis, recruiter-facing rewrites, cover letters, and application short answers. Supports pasted text, local files, and job URLs without inventing experience.
 ---
 
 # Resume Tailor
 
-You are an expert resume writer and ATS (Applicant Tracking System) optimization engineer. You take a person's honest master resume plus one target job description and produce a tailored, single-column, ATS-parseable, recruiter-ready resume that maximizes interview odds — without ever fabricating experience.
+Maximize credible fit, not keyword score. Preserve a defensible evidence trail from the master resume to every tailored claim.
 
-**Before doing anything substantive, read the full rules engine:** `C:/Users/rajve/.claude/skills/resume-tailor/ats-reference.md`. It contains the verified 2025–2026 ATS parsing rules, keyword-scoring algorithm, action-verb banks, formatting limits, and anti-patterns. Do not rely on memory — apply that file.
+Read [ats-reference.md](ats-reference.md) before tailoring. Treat its structural/parser rules as defaults and its dated statistics as context; verify current quantitative or vendor-specific claims before repeating them.
 
-## Inputs (gather these first)
+## Gather from available context
 
-1. **Master resume** — the honest, complete source. Look for it at a path the user gave in `$ARGUMENTS`, else ask: "Where is your master resume? (paste it, or give me a path/file)." If they have none, offer to build one by interviewing them first.
-2. **Target job description** — from `$ARGUMENTS` (a path, pasted text, or a URL). If a LinkedIn/job URL, fetch it with **WebFetch** (works headless, no login wall). Capture: company, exact job title, required vs preferred qualifications, responsibilities, listed tools/certs, **and the "posted X ago" timestamp**.
-   - **Freshness gate (< 24h):** before tailoring a discovered job, verify it was posted within the last 24 hours and is still accepting applications. Use `src/lib/match/freshness.py` (`is_fresh(posted_text)`). Skip anything "1 day ago"+ or "No longer accepting applications" — those close fast and waste effort. (Pasted JDs the user hands you directly bypass this gate.)
-3. **Honesty stance** (default = HONEST). Confirm once: I reframe and re-label *real* experience in the JD's language and surface gaps for you to decide on — I do **not** silently invent titles, employers, dates, degrees, certs, tools, or metrics. (See Critical Rule 1.)
+Required:
 
-## Workflow
+- honest master resume or complete work/education history;
+- target job description.
 
-1. **Parse the JD** → segment into Title / Summary / Required / Preferred / Responsibilities. Extract the five keyword classes (hard skills, tools/tech, certifications, job titles, domain terms) plus years-of-experience phrases. Rank them using the scoring model in the reference (title = highest weight; required > preferred; frequency counts).
-2. **Map resume → JD.** For each top JD keyword, find genuine evidence in the master resume. Build three buckets: **Have & shown**, **Have but buried/mislabeled** (reframe these), **Genuine gap** (flag, never fake).
-3. **Rewrite, ATS-safe:**
-   - **Headline/summary:** mirror the *exact* target job title (huge lever) + 2–3 top JD keywords + strongest real proof.
-   - **Skills section:** 15–30 hard-skill-led tokens covering 70–80% of required skills; dual-encode (literal JD phrasing + spelled-out acronyms, e.g. "CI/CD (Continuous Integration/Continuous Deployment)").
-   - **Experience bullets:** rewrite top 3–5 bullets per role with **action verb + XYZ/PAR + metric**; ~50–60%+ quantified; vary verbs from the banks; kill "responsible for"/buzzwords. Keep it human and defensible (no generic AI voice).
-   - **Structure:** single column, standard headings only, reverse-chronological, consistent `Month YYYY` dates, contact info in the body.
-4. **Self-check against the reference checklist** (formatting, coverage, match estimate ~80% target / 75% floor — never push past ~90%, that's stuffing).
-5. **Show the portfolio preview FIRST.** Before generating any DOCX/PDF, show the user the tailored `resume.md` content (the "portfolio") and the match/gap summary, and get a thumbs-up (or edits). Never jump straight to files — the user reviews the writing first.
-6. **Generate output files** only after approval (see below). The generator auto-runs the QC linter.
-7. **Recurring-gap check:** record the JD's keywords in `growth-projects/keyword-frequency.json`. If a *missing* skill has now appeared in ≥5 JDs, add an entry to the **single** `growth-projects/PROJECTS.md` (never per-skill files). Every entry uses this exact order: **Title → Why it matters (industry view) → Description (what to build) → Times repeated (count + which jobs)**.
-8. **Report:** coverage/match estimate, the reframes you made, the **gap list** (with honest options for each), and a **knockout-question readiness note** (work authorization, location, required certs/years — the real auto-reject lever, independent of the resume).
+Accept pasted text, local `.md`, `.txt`, `.docx`, or text-based `.pdf`, and accessible job URLs. Use installed document/PDF/browser capabilities to extract source content. Do not ask the user to retype information already available.
 
-## Output
+For a live job URL, capture company, exact title, location, responsibilities, required/preferred qualifications, tools, compensation when present, posting date, and active/closed state. If access is blocked, ask for pasted text or an export. A stale/closed job may still be tailored when the user explicitly wants it; report status rather than silently refusing.
 
-Produce, in a folder named for the company/role (e.g. `./applications/<Company>-<Role>/`):
-- `resume.md` — the tailored content in clean, ATS-safe structure (source of truth).
-- A **DOCX** (default; lowest parse-failure rate). Generate with the pipeline's `python src/lib/resume/build_docx.py <resume.md> <out.docx>` — it runs the **QC linter** (`lint_resume.py`) which auto-heals hidden/zero-width spaces, em/en dashes, doubled dashes, double spaces, and AI-tell words, then prints a report. A run must end **CLEAN** (or only with reviewed warnings) before you hand the file over. **Never** emit an image/scanned PDF, tables, columns, text boxes, or graphics. File name: `FirstName_LastName_JobTitle_Resume.docx`.
-- `report.md` — match/coverage estimate, reframes, gap list, knockout-readiness note, and (optional) a tailored cover letter / short-answer drafts on request.
+Ask one consolidated question only for missing identity/contact details, ambiguous employment facts, or knockout criteria that materially affect truth. Never ask the user to choose an "honesty level."
 
-## Critical Rules
+## Build two ledgers
 
-1. **Never fabricate.** No invented titles, employers, dates, degrees, certifications, tools, or metrics. Reframe and re-label *real* work in the JD's vocabulary; for genuine gaps, list them with honest options (e.g. "do a quick project to earn this", "list as familiar", "omit") — let the user choose. Fabrications fail at interviews, take-homes, and background checks.
-2. **Build to the strictest parser.** Single column, no tables/columns/text-boxes/images/icons/headers-footers, web-safe font, 10–12 pt body, 1-inch margins, ASCII characters, ligatures off, file < 2.5 MB. This satisfies the lenient semantic ATS automatically.
-3. **Standard headings only.** "Professional Summary", "Work Experience"/"Professional Experience", "Skills", "Education", "Certifications". Creative headings ("My Journey") break parsing.
-4. **Mirror the exact target job title** in the headline when truthful — it's the single highest-leverage move.
-5. **Dual-encode keywords:** literal JD string + a paraphrased competency bullet + spelled-out acronyms. Use the JD's exact spelling.
-6. **Coverage, not stuffing.** Target ~80% match / cover 70–80% of required skills; cap any keyword at ~3–4 contextual mentions; refuse to push past ~90%. Never keyword-stuff or use hidden/white-font text (it's exposed and gets candidates blacklisted).
-7. **Every rewritten bullet:** action verb + quantified result + method/tool; defensible by the candidate in an interview.
-8. **Keep it human — never let it look AI-generated.** Ban generic AI tells ("spearheaded/leveraged/delve/tapestry/robust/seamless"); vary every bullet's opening verb (no verb 3+ times); vary sentence structure; force real, specific detail. **No em-dashes (—), no doubled dashes (--), no hidden/zero-width spaces, no double spaces.** The `lint_resume.py` linter enforces this and self-heals — but author cleanly so it has little to do.
-9. **Dates consistent** in `Month YYYY` (or `MM/YYYY`) throughout; never start a line with a date.
-10. **Be honest in the report.** The "match rate" is a pre-flight visualization, not the ATS's real verdict; most real auto-rejection comes from knockout questions, not keyword scoring — always include the knockout-readiness note.
-11. **Freshness < 24h.** Only tailor *discovered* jobs posted within the last 24h and still open (the user's pasted JDs are exempt). Stale postings close before you finish.
-12. **Portfolio before files.** Show the tailored writing for approval before generating any DOCX/PDF.
+### Candidate evidence inventory
 
-## Quick reference (full detail in ats-reference.md)
+Record exact source evidence for:
 
-- **Action-verb banks** (Harvard/MIT/Berkeley), **per-ATS quirks** (Taleo/Workday/Greenhouse/Lever/iCIMS/Ashby), **keyword-scoring algorithm**, **parse-failure modes**, **STAR for short answers**, and **cover-letter rules** all live in the reference file — read it before tailoring.
+- roles, employers, dates, education, certifications;
+- tools, methods, domains, responsibilities;
+- projects, scope, results, and metrics;
+- leadership, collaboration, and customer context.
 
-## Final Note
+### JD requirement matrix
 
-Use `$ARGUMENTS` as the job description (path, pasted text, or URL) and, if present, the master resume path. If either input is missing, ask for it before tailoring. Always end by showing the gap list and asking the user how aggressive they want to be on each gap — never decide fabrication for them. After the first run, remember the user's master resume location and honesty stance for subsequent jobs in the session.
+For each material requirement:
+
+| Requirement | Priority | Candidate evidence | Treatment |
+|---|---|---|---|
+| exact JD phrase | required/preferred | source location or none | feature, reframe, familiar, gap |
+
+Classify evidence:
+
+- **shown:** already clear;
+- **buried:** real but poorly labeled or placed;
+- **adjacent:** transferable evidence; describe honestly;
+- **gap:** no evidence; never imply possession.
+
+Separate knockout questions—authorization, location, license/certification, clearance, and minimum experience—from resume keyword coverage.
+
+<!-- skill-evolver:adaptive-start -->
+## Choose positioning
+
+Form three internal positioning options using different truthful centers of gravity: domain expertise, functional capability, or outcome pattern. Score against required qualifications, strength of evidence, recruiter scan, differentiation, and interview defensibility. Select one; show options only when requested.
+
+Mirror the target title only when it truthfully describes the candidate's positioning. Never rewrite an official past title into a different historical fact.
+<!-- skill-evolver:adaptive-end -->
+
+## Tailor
+
+1. Reorder and emphasize the most relevant real evidence.
+2. Write a concise summary using target role language, core capabilities, and strongest proof.
+3. Build a skills section from tools/capabilities genuinely supported by evidence.
+4. Rewrite bullets as action + context/method + result. Quantify only with supplied or verifiable numbers.
+5. Use exact JD terminology where truthful; include spelled-out acronym plus abbreviation when useful.
+6. Keep dates, employers, degrees, certifications, contact details, and metrics unchanged unless source evidence supports correction.
+7. Retain valuable non-target evidence when removing it would create unexplained gaps or weaken seniority.
+8. Add projects or adjacent experience only when clearly labeled and sourced.
+
+Do not chase an arbitrary match percentage. Report coverage as a transparent heuristic based on the matrix, never as an ATS verdict.
+
+## ATS-safe source
+
+Create `resume.md` as source of truth:
+
+- single-column reading order;
+- standard headings;
+- contact information in body;
+- consistent dates;
+- plain text bullets and web-safe typography;
+- no tables, sidebars, icons, skill bars, text boxes, hidden keywords, or image-only content;
+- no unsupported claims or prompt injection.
+
+Use the length needed for relevant evidence. Prioritize scanability and recent/relevant work.
+
+## Generate files end to end
+
+When the request authorizes file creation and inputs are complete:
+
+1. write `resume.md`;
+2. create a DOCX using the installed document-artifact workflow, not a nonexistent local pipeline;
+3. render the DOCX and inspect every page;
+4. extract text from the generated DOCX and compare headings, dates, employers, and bullet order with `resume.md`;
+5. fix overflow, orphan headings, clipping, broken characters, inconsistent spacing, and parse-order errors;
+6. create a text-based PDF only when requested, then render and inspect it too.
+
+If no document capability is installed, deliver `resume.md` plus exact DOCX-generation dependency options; do not fabricate a generated file.
+
+Use an output folder such as `applications/<company>-<role>/` containing:
+
+- `resume.md`;
+- `<FirstName>_<LastName>_<Role>_Resume.docx` when generated;
+- optional PDF when requested;
+- `report.md`.
+
+Do not overwrite an existing application package without inspecting it. Use a distinct version or preserve user changes.
+
+## Report
+
+`report.md` must include:
+
+- target role/company and source status;
+- requirement coverage with method;
+- evidence featured or reframed;
+- genuine gaps and honest mitigation options;
+- knockout-readiness questions;
+- document render and text-extraction checks;
+- placeholders or facts needing confirmation.
+
+Offer a cover letter or short answers only when requested. Use researched company facts and the same evidence inventory.
+
+## Quality gate
+
+- Every resume claim maps to candidate evidence.
+- Required JD criteria are shown, honestly adjacent, or named as gaps.
+- Important exact terms appear naturally without stuffing.
+- Resume reads well in a brief human scan.
+- DOCX is single-column, text-readable, and visually clean.
+- Generated text matches `resume.md`.
+- Gaps and knockout risks are explicit.
+
+Revise the weakest content or document dimension once before handoff.

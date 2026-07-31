@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cost Reducer"
+  short_description: "Find and prove safe measurable cost savings"
+  default_prompt: "Use $cost-reducer to rank and verify the highest-value savings in this system."

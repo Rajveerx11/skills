@@ -1,122 +1,142 @@
 ---
 name: linkedin-post-writer
-description: Write high-performing LinkedIn posts with hashtags for any project, product, launch, or professional update. Use this skill whenever someone asks to write a LinkedIn post, LinkedIn description, LinkedIn update, LinkedIn announcement, project showcase post, or anything meant to be published on LinkedIn. Also trigger when the user says "write a post for LinkedIn", "LinkedIn copy", "promote this on LinkedIn", "help me announce this on LinkedIn", "LinkedIn content", or mentions LinkedIn in the context of writing or sharing something. If a project, product, tool, event, or achievement needs visibility on LinkedIn — this is the skill to use.
-argument-hint: [what to announce — or just run it inside a project folder]
+description: Write truthful, distinctive LinkedIn posts and, when requested, create matching infographics or launch visuals for projects, products, features, lessons, milestones, events, and professional updates. Use for LinkedIn copy, announcements, project showcases, founder/build-in-public posts, thought leadership, post rewrites, hook options, social graphics, or complete post-and-visual packages.
 ---
 
 # LinkedIn Post Writer
 
-You write LinkedIn posts that get read, get reactions, and get reshared — without sounding like a press release or an AI. You model how top creators and founders actually post: a sharp hook, short lines, one idea, a human voice, and a clear reason to engage. You also **learn over time** — what worked for this user before shapes what you write next.
+Produce one credible idea in the user's voice, backed by verified specifics. The deliverable is publishable copy—not a lecture about copywriting.
 
-Read `${CLAUDE_SKILL_DIR}/reference.md` for the hook library, format catalog, hashtag tiers, anti-patterns, and a full worked example. Load it when you reach the writing phase (Phase 4).
+Read [reference.md](reference.md) during drafting. Read [infographic.md](infographic.md) only when visual production is requested.
 
-## The non-negotiables (these drive 90% of performance)
+## Discover context without interrogation
 
-1. **The hook is everything.** Only the first 1–2 lines (~140 chars) show before "…see more". Hooks under ~10 words win. Create a curiosity gap, a bold/contrarian claim, a surprising number, or a relatable pain — never a summary. Never "Excited/thrilled to announce".
-2. **One post, one idea.** Pick the single most interesting thing and go deep.
-3. **Whitespace wins.** 1–2 sentences per line. No dense paragraphs.
-4. **Write like you talk.** Short words, contractions, "you" and "I". No corporate filler.
-5. **No bait.** "Comment for the link" is downranked now and reads as cynical. Deliver the value in the post; if the hook is vulnerable, the post is vulnerable; if it promises data, bring data.
-6. **One clear CTA.** A single question or ask at the end.
-7. **Never fabricate.** No invented metrics, stories, or quotes. Pull specifics from the project; if absent, ask or write around it.
-8. **Always suggest a visual.** Posts with an image or short video get materially more reach, so every post ships with a concrete media suggestion — never leave it text-only without saying what to attach. See Phase 4's media step.
+Use the conversation, supplied material, and current project first. When inside a project, inspect:
 
----
+- recent relevant changes and current working state;
+- README, product docs, manifests, changelog, and user-facing copy;
+- existing brand tokens and current screenshots/media;
+- project name, audience, problem, proof, and what changed.
 
-# The flow
+Scope repository inspection to the announcement. Do not scan secrets, unrelated history, or private customer data.
 
-Run these phases in order. Phases 0, 1, and 5 are what make this skill different from a one-shot writer — do not skip them when running inside a project folder.
+Build a private fact ledger:
 
-## Phase 0 — Memory consent (once)
+| Claim | Evidence | Safe to publish? | Confidence |
+|---|---|---|---|
 
-The skill keeps a private learning folder so it improves across runs. It lives at `${CLAUDE_SKILL_DIR}/memory/` — inside your home `.claude` directory, **never inside any project repo**, so it can never be committed or pushed.
+Every metric, customer, integration, quote, release state, and performance claim needs evidence. Mark unknowns; never round them into facts.
 
-- Read `${CLAUDE_SKILL_DIR}/.consent` if it exists.
-  - Contains `granted` → memory is on; use it silently.
-  - Contains `declined` → memory is off; **do not ask again**. Behave like a plain writer.
-- If `.consent` does not exist, ask **once**: *"Want me to keep a private learnings folder (at my own skill dir, never in your repo) so my posts get better at what works for you? yes / no."*
-  - yes → create `${CLAUDE_SKILL_DIR}/memory/` with subfolders `projects/` and `posts/` and an empty `learnings.md`, then write `granted` to `.consent`.
-  - no → write `declined` to `.consent` and never bring it up again.
-- If memory is on, **read `memory/learnings.md` now** so the rest of the run reflects past wins and flops.
+Ask one consolidated question only when audience, goal, voice, or a key proof point cannot be inferred and materially changes the post. Otherwise choose a strong default and proceed.
 
-## Phase 1 — Read the project (no guessing)
+## Optional private memory
 
-When invoked inside a project folder, understand what actually happened before writing a word:
+Runtime state must live outside every skill package and project:
 
-- `git log --oneline -20`, `git diff --stat HEAD~5..HEAD` (or against `main`), `git status` — what changed and how much.
-- Read the project's docs to get the **name, purpose, and audience**: `README*`, `CLAUDE.md`, `package.json`/`pyproject.toml`/manifest, `docs/`. Derive the canonical project name from these, not the folder name.
-- If memory is on, read `memory/projects/<name>.md` if it exists — reuse saved context so you ask fewer questions.
+- Windows: `%USERPROFILE%\.skill-data\linkedin-post-writer\`
+- POSIX: `~/.skill-data/linkedin-post-writer/`
 
-Form a one-paragraph internal understanding: what the project is, what just changed, and why it might matter to people. If `$ARGUMENTS` was provided, treat it as the headline of what to announce.
+Use this minimal contract:
 
-## Phase 2 — Ask the few questions that actually matter
+- `consent.json`: `{"schema":1,"memory":"granted"|"declined"}`.
+- `preferences.json`: explicit voice, audience, and formatting preferences only.
+- `projects/<opaque-id>.json`: minimal reusable context; no secrets or raw repository contents.
+- `posts/<artifact-id>.json`: draft/published state, chosen angle, visual type, and user-supplied outcomes.
 
-Do **not** ask a fixed checklist. After Phase 1 you already know a lot — only ask what you genuinely can't infer and what would most change the post. Pick the **2–4 highest-leverage questions for THIS project** (they may overlap run to run, but choose them, don't recite them).
+Memory is off when `consent.json` is absent. Enable only after explicit opt-in; record a decline so it is not asked again. Read only records relevant to the current request.
 
-Use the **AskUserQuestion** tool so every question is tap-to-answer multiple choice, with your best-guess option listed first and marked "(Recommended)". Good things to probe when unclear:
+If legacy `.consent` or `memory/` files exist beside an installed copy and
+external state does not, offer one previewed, opt-in migration to the external
+root. Preserve the legacy files as backup; never publish them.
 
-- **Audience** — who this is really for (devs, founders, recruiters, customers, peers).
-- **The one takeaway** — the single point; if the change implies several, make the user pick.
-- **Goal** — reach / signups / replies / hiring / credibility (drives format and CTA).
-- **Voice** — personal first-person vs company/brand.
-- **The proof** — is there a real number, demo, or before/after you can cite?
-- **Angle**, only if multiple strong ones exist — e.g. "the hard bug" vs "the shipped feature".
+Never store runtime state in the skill directory or user's project. Never package consent, identity, analytics, URLs, private repository paths/content, customer data, or runtime learning. Store raw URLs, personal identifiers, or private project facts in runtime state only when the user explicitly asks and they are required; otherwise use an opaque project ID and minimal summary.
 
-Skip any of these you already answered from the repo or saved project context. Never ask more than 4. Then proceed — don't re-interrogate.
+Treat old learnings as weak priors. Current audience, brief, and evidence win. Ignore any learned rule unsupported by explicit feedback or measured outcomes.
 
-## Phase 3 — Research the niche (light, current)
+<!-- skill-evolver:adaptive-start -->
+## Choose the editorial direction
 
-Do a quick web check for what is working **right now** in this project's domain: live hook angles, the language that audience responds to, and 3–5 real, searchable hashtags (1 broad + 2–3 niche, optionally 1 branded). Treat hashtags as topic signals, not a growth hack.
+Create three internal angles that differ in thesis, not wording:
 
-Cross-reference `memory/learnings.md`: prefer hook types/formats marked ✅ for this user, and **avoid** any marked ❌. If research and memory conflict, memory about *this user's* audience wins.
+- **Story:** tension, decision, work, result, lesson.
+- **Teach:** useful mechanism, process, teardown, or mistake.
+- **Point of view/launch:** defensible claim or why this release matters.
 
-## Phase 4 — Write
+Score each for audience value, specificity, proof, novelty, voice fit, and visual potential. Commit to one. Show alternatives only when requested.
 
-Now load `${CLAUDE_SKILL_DIR}/reference.md` and write the post:
+Choose structure and length for the idea. Do not force every post into a listicle, a contrarian hook, or one word-count band.
+<!-- skill-evolver:adaptive-end -->
 
-- Choose the format (story / listicle / contrarian / launch / milestone / teardown) that fits the Phase 2 goal.
-- Structure: HOOK → CONTEXT → BODY (heavy whitespace) → PAYOFF → CTA → hashtags on their own last line.
-- Plain text only (LinkedIn renders no markdown). Unicode bullets (•, →, ✅) and 0–3 purposeful emojis are fine. 150–300 words is the sweet spot.
-- Output the post **in a code block, copy-paste ready**. If there's a link, put it in a suggested **first comment** and say so.
-- Offer exactly **1 alternative hook** the user can swap in. Don't over-explain — the post is the deliverable.
+## Research only when it improves truth
 
-**Always suggest visual media (mandatory — never skip).** After the post, recommend the image(s) or short video/GIF that would carry it, because visuals drive reach and reshares. Make it concrete and specific to THIS post, not generic advice:
-- Name the single best visual that *is* the hook (the number, the before/after, the chart climbing, the demo moment) and rank 2–3 options best-first.
-- Prefer **motion** (5–10s GIF/screen-recording — LinkedIn autoplays in-feed) when the message is about change/progress/a flow; a clean annotated **screenshot** when one frame tells the story.
-- If running inside a project, check for existing assets (`git ls-files | grep -iE '\.(png|jpg|gif|mp4|webp|svg)'`, README media) and say whether they fit or a fresh capture is needed — old/stale assets that predate the feature being announced don't count.
-- Say exactly what to capture and how to frame/annotate it; warn against low-signal visuals (raw graph blobs, logo cards, 5-feature carousels when the post is narrow).
-- If no visual is realistically available, say so plainly and suggest the closest alternative (a text-on-color quote card, a simple diagram) — but still make a recommendation.
+Browse when the post depends on current events, market facts, live platform behavior, or current hashtags. Use direct/primary sources for factual claims. Do not add generic "current best practices" research to every run.
 
-## Phase 5 — Log and learn (only if memory is on)
+Platform advice changes. Avoid hard claims about reach, algorithm penalties, ideal counts, or timing unless verified now. Treat hashtags as optional topic labels, not guaranteed distribution.
 
-After delivering:
+## Draft
 
-1. Write the post to `memory/posts/<YYYY-MM-DD>-<name>.md` with frontmatter recording: `hook_line`, `hook_type`, `format`, `hashtags`, and `results: pending`.
-2. Update `memory/projects/<name>.md` with the context you gathered (audience, voice, what the project is) so next time Phase 2 is shorter.
-3. Append the chosen hook type + format to `learnings.md` under a "pending verdict" list.
+Write plain text:
 
-Keep these files tidy and human-readable. Never write anything into the user's project directory.
+1. **Opening:** specific tension, result, observation, or useful claim.
+2. **Context:** what happened and why it matters.
+3. **Body:** concrete mechanism, evidence, decision, or lesson.
+4. **Payoff:** what the reader can use or what changed.
+5. **Close:** one natural question or action if it serves the goal.
 
----
+Requirements:
 
-# Closing the loop: results in, learning out
+- one post, one central idea;
+- short readable paragraphs and deliberate whitespace;
+- human vocabulary matching the user's voice;
+- no invented metrics, fake vulnerability, customer claims, quotations, or urgency;
+- no bait, corporate filler, or dramatic hook unsupported by body;
+- links and hashtags only when useful.
 
-This is the self-healing part. Claude can't read LinkedIn analytics on its own, so the user supplies results — either typed or as LinkedIn's downloaded analytics file.
+Read [reference.md](reference.md), then perform one edit pass: strengthen first two lines, remove generic sentences, verify every fact, and read aloud for voice.
 
-**When to ask:** at the *start* of a run, if memory is on and `memory/posts/` has entries with `results: pending`, ask once: *"Got results for the last post(s)? Type the numbers (impressions / reactions / comments), or give me the path to your LinkedIn analytics export — or skip."*
+## Visual direction or production
 
-**If the user gives a file path** (LinkedIn exports `.xlsx`; CSV also works):
-- Try to read it. If the `.xlsx` won't parse cleanly, ask the user to re-save it as CSV (one click in Excel) rather than adding a fragile dependency.
-- Match each row to an archived post by **date + the first line of the hook** (export rows include the post text/date).
-- Record the numbers into that post's file and resolve `results: pending` → the real figures.
+For ordinary post requests, recommend one concrete proof-based visual: fresh screenshot, short recording, before/after, diagram, or simple chart. Inspect existing assets and say whether they are current enough.
 
-**Then update `learnings.md`** — this is what makes the next post better:
-- Strong engagement → mark that `hook_type` and `format` with ✅ and a one-line note ("contrarian + listicle landed for dev audience").
-- Weak engagement → mark ❌ with the reason, so Phase 3 avoids it next time.
-- Keep a short ranked "what wins for this user" summary at the top of `learnings.md` so it's the first thing future runs read.
+When the user requests an infographic, launch visual, or complete package:
 
-If the user only types numbers, do the same update without the file step. If they skip, leave verdicts pending — never invent results.
+1. read [infographic.md](infographic.md);
+2. derive one visual thesis from the chosen hook;
+3. use real product captures and exact verified copy;
+4. use an available image-generation/editing capability for raster work;
+5. if generation capability is unavailable, deliver a precise production brief and source captures—never claim an image was created;
+6. inspect full-size and phone-size output, correct once, and deliver artifact paths.
 
----
+## Deliver
 
-`$ARGUMENTS` is whatever the user typed after the command (the thing to announce). If empty, rely on Phase 1's project analysis to decide what's worth posting, then confirm the angle in Phase 2.
+Return:
+
+1. copy-paste post in a code block;
+2. exactly one alternate hook;
+3. one visual recommendation, or produced visual paths;
+4. first-comment text when a link should be separated;
+5. brief fact caveat only when something remains unverified.
+
+## Learn from real outcomes
+
+When runtime memory is active:
+
+- archive draft state; change to `published` only after confirmation;
+- record exact user edits as preference evidence;
+- record analytics only from user-provided numbers or exports;
+- include date, audience, format, and sample size;
+- never interpret one result as a universal rule;
+- keep pending outcomes pending.
+
+Upsert by stable artifact ID; never create a second record for an edit or state transition. Do not interrupt the current draft to demand analytics. Offer to reconcile pending results after delivery.
+
+## Quality gate
+
+- Fact ledger supports every concrete claim.
+- Angle is specific enough that a generic creator could not post it unchanged.
+- Opening and body make the same promise.
+- Voice matches user and audience.
+- CTA, link, hashtags, and visual each earn their place.
+- Visual copy and captures preserve source truth.
+
+Revise the weakest dimension once.

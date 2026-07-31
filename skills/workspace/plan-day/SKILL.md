@@ -1,95 +1,129 @@
 ---
 name: plan-day
-description: Self-learning daily scheduler and productivity coach. Plans tomorrow from vague tasks, time-blocks the day around soft recurring anchors, proposes the schedule for confirmation, writes an Obsidian daily note, and mirrors blocks into Google Calendar (events by default, tasks on request). Also wraps the day (check off + roll over) and learns patterns over time to push the user toward growth. Use when the user says "plan my day", "plan tomorrow", "/plan-day", "wrap my day", "what should I do tomorrow", or wants to schedule, review, or improve how they spend their time.
-argument-hint: [empty = plan tomorrow | wrap = close out today | review = weekly growth read | setup = first-time profile]
+description: Turn vague tasks into a realistic time-blocked day, reconcile calendar conflicts, write an approved Obsidian plan, mirror blocks idempotently to a connected calendar, wrap completed work, roll unfinished items forward, and improve estimates from evidence. Use when the user asks to plan today or tomorrow, time-block tasks, wrap or review a day, synchronize an Obsidian daily plan with a calendar, or improve scheduling habits.
 ---
 
-# Plan-Day — Self-Learning Daily Coach
+# Plan Day
 
-You are the user's daily scheduling coach. You turn vague intentions into a realistic, time-blocked day across **Obsidian** (source of truth) and **Google Calendar** (live mirror), learn from how the day actually goes, and continuously nudge the user toward growth — never backward.
+Create a realistic day the user can execute, keep Obsidian and calendar state consistent, then learn from planned-versus-actual evidence.
 
-**One-line spec:** A coach that schedules the day, learns from reality, and pushes the user forward.
+Read [scheduling.md](scheduling.md) for planning and synchronization mechanics, [templates.md](templates.md) for schemas, and [learning.md](learning.md) before promoting durable patterns.
 
-## Routing — pick mode from the argument
+## Modes
 
-| Argument | Mode | What you do |
-|----------|------|-------------|
-| (empty) or `plan` / `tomorrow` | **Plan** | Ask → time-block → propose → on approval write Obsidian + sync Calendar |
-| `wrap` / `done` / `eod` | **Wrap** | Check off completed, log planned-vs-actual, roll over unfinished, update learnings |
-| `review` / `week` | **Review** | Weekly growth read: trends + 1–2 push-forward suggestions |
-| `setup` / `init` | **Setup** | First-time profile interview (anchors, vault, calendar, timezone) |
+- **Plan**: draft, revise, approve, write, and synchronize a day.
+- **Wrap**: record actuals, check off work, and stage unfinished items.
+- **Review**: calculate weekly execution and estimation patterns.
+- **Setup**: configure vault, timezone, working hours, anchors, and calendar.
+- **Repair**: reconcile note, log, and calendar state without duplicating events.
 
-If the profile (`data/profile.md`) is missing or still has placeholders, run **Setup** first regardless of argument.
+Infer mode from the request. Empty invocation means plan tomorrow in the configured timezone.
 
-## Paths (all relative to this skill directory)
+## Private runtime state
 
-- **Profile:** `data/profile.md` — fixed config, set once. Read it every run.
-- **Learnings:** `data/LEARNINGS.md` — self-updating memory. Read every run; append after each Wrap.
-- **Logs:** `data/logs/YYYY-MM-DD.json` — planned-vs-actual per day. The raw fuel for learnings.
-- **Daily notes:** written directly in `vault_path`, named per `daily_note_format` (default `DD-MM-YY(ddd)`, e.g. `15-06-26(Mon).md`). Use the profile's `daily_folder` only if set.
+Never store personal schedules or profiles in this repository or an installed skill folder.
 
-Today's date is provided in your environment context. "Tomorrow" = today + 1 unless the user names a different day.
+- Default state root: `%USERPROFILE%\.skill-data\plan-day` on Windows or `$HOME/.skill-data/plan-day` elsewhere.
+- Profile: `profile.md`
+- Durable patterns: `LEARNINGS.md`
+- Logs: `logs/YYYY-MM-DD.json`
+- Staged rollovers: `staged-rollovers.json`
+- Human daily plan: profile-selected Obsidian vault.
 
-## Core principles (non-negotiable)
+If legacy `data/` state exists and external state does not, offer a one-time copy. Preserve the legacy directory as backup and exclude it from publishing.
 
-1. **Propose → confirm.** Never write to Obsidian or Calendar until the user approves the draft. Show the timeline, take plain-language tweaks ("push basketball 30 min", "make X a task"), redraft, then write.
-2. **Calendar default = event.** Mirror every timed block as a Google Calendar **event**. Only create a **task** when the user explicitly flags that item as a task.
-3. **Soft anchors, not rigid blocks.** Recurring daily events from the profile are *movable pegs* with a ±30–60 min tolerance. Keep them near their usual time but slide within tolerance to make the day fit.
-4. **Obsidian is the source of truth; Calendar mirrors it.** All edits flow through the daily note. Regenerate calendar from the note.
-5. **Idempotent sync.** Each task carries a stable `id` in the note frontmatter. Re-runs **update** the matching calendar event (match by stored `gcal_event_id`), never duplicate. New items create; removed items delete.
-6. **Learning-aware planning.** Before showing a draft, apply `LEARNINGS.md` — better duration estimates, smarter slotting, proactive nudges ("Sandbox usually takes you ~45 min, not 2 hrs — add a second task after?").
-7. **Push forward, never guilt.** Frame slips as next steps, not failures. Always end with momentum.
+## Autonomous workflow
 
-## Mode details
+### Plan
 
-Read the matching reference before acting:
-
-- **Plan / Wrap / Review mechanics:** `scheduling.md`
-- **Self-learning loop (logging, pattern distillation, feedback):** `learning.md`
-- **Obsidian note + Calendar payload + profile + log templates:** `templates.md`
-
-### Plan (default)
-1. Read `profile.md` + `LEARNINGS.md`.
-2. Ask **3–5 dynamic questions** — only what's *new* tomorrow (tasks, hard-time meetings, deadlines, top priority, energy). Do NOT re-ask the soft anchors; they come from the profile.
-3. Merge soft anchors + new tasks. Time-block a realistic day (priorities, deadlines, buffers, learned peak-focus windows, learned duration estimates). See `scheduling.md`.
-4. **Show the draft timeline** with `(anchor)` / `(event)` / `(task)` / `★top` markers. Surface 0–2 learning-based nudges.
-5. Take tweaks → redraft until the user says go.
-6. On approval: write the Obsidian daily note (`templates.md`), then create the Calendar events/tasks via MCP. Report a concise summary (`✅ Wrote note → N items / Calendar: X events, Y tasks`).
+1. Read profile, durable learnings, staged rollovers, existing target-date note, and stored calendar ids.
+2. Extract tasks, deadlines, fixed commitments, priority, duration clues, and desired task/event types already present in the request or workspace.
+3. When calendar read access exists, inspect target-date conflicts before drafting. Read-only discovery needs no confirmation.
+4. Ask one compact batch only for missing decisions that materially affect the schedule.
+5. Build the timeline using [scheduling.md](scheduling.md): fixed items, soft anchors, dependencies, learned durations, energy windows, working hours, transitions, and slack.
+6. Show the complete draft with conflicts, assumptions, unscheduled overflow, and zero to two evidence-backed nudges.
+7. Do not write the note or calendar until the user approves the draft.
+8. On approval, upsert the Obsidian note first. Fingerprint each canonical block with `scripts/sync_fingerprint.py`. Synchronize calendar entries by stable task id and stored provider id: update changed items, create new items, delete only items removed from the approved plan.
+9. Read back the note and calendar result. Report written path, created/updated/deleted counts, unscheduled work, and any provider failure.
 
 ### Wrap
-1. Read today's note + its log.
-2. Ask what got done (or accept what the user volunteers).
-3. Tick checkboxes in the note. Record planned-vs-actual into `logs/YYYY-MM-DD.json`.
-4. Roll unfinished tasks into a staged list for tomorrow's Plan.
-5. Update `LEARNINGS.md` per `learning.md`. End with one forward nudge.
+
+1. Read today's note and structured log.
+2. Map volunteered status to stable task ids; ask only about unresolved high-priority items.
+3. Patch managed checkboxes and actual fields without overwriting freeform notes.
+4. Stage unfinished items with priority, deadline, and rollover count. Never roll recurring anchors as tasks.
+5. Update durable patterns only under [learning.md](learning.md) evidence thresholds.
+6. End with the most useful next action, not a guilt summary.
 
 ### Review
-Aggregate recent logs → trends (estimation accuracy, what gets done vs skipped, energy patterns, overcommit days) → a short growth read with **1–2 concrete suggestions**. Optionally fold confirmed patterns into the profile/learnings.
+
+Run:
+
+```powershell
+python scripts/review_schedule.py "<state-root>\logs" --end 2026-07-31
+```
+
+Use deterministic metrics for completion, rollovers, and estimate accuracy. Use model judgment to explain causes, uncertainty, and one or two experiments. Do not infer a preference from missed tasks without a confirmed reason.
 
 ### Setup
-Interview the user once and write `data/profile.md` from the template. Required: vault path + daily folder, timezone, target calendar (offer a dedicated "Tessera Schedule" calendar to keep the main one clean), soft anchors with usual times + tolerance, working hours, focus areas, default reminder lead time. Confirm before writing.
 
-## Google Calendar (MCP)
+Discover timezone, candidate vaults, and available calendars before asking. Collect:
 
-Use the connected Google Calendar MCP tools — no re-auth needed:
-- `mcp__claude_ai_Google_Calendar__list_calendars` — resolve the target calendar id (do this once, store id in profile).
-- `mcp__claude_ai_Google_Calendar__create_event` — default for every block.
-- `mcp__claude_ai_Google_Calendar__update_event` / `delete_event` — idempotent re-sync.
-- Build start/end from the block times in the profile timezone. Store the returned event id back into the note frontmatter.
+- vault and optional daily folder;
+- timezone and working hours;
+- target calendar and reminder default;
+- hard commitments and soft anchors with tolerances;
+- focus areas, energy constraints, and planning horizon.
 
-If a "task" is requested, prefer a Google Task if a Tasks tool is available; otherwise create an all-day or untimed calendar entry clearly labeled `[task]` and note the fallback to the user.
+Create external state only after confirmation. Resolve and store provider calendar id once.
 
-## Critical Rules
+### Repair
 
-1. Never write to Obsidian or Calendar before explicit approval (except Wrap check-offs the user confirmed).
-2. Default every block to a Calendar **event**; only the user's explicit "make it a task" creates a task.
-3. Always read `profile.md` + `LEARNINGS.md` before planning; never re-ask profile anchors.
-4. Keep sync idempotent via stored ids — never create a duplicate event on re-run.
-5. Soft anchors flex ±30–60 min only; never silently drop one without telling the user.
-6. Convert any relative dates to absolute before writing.
-7. Frame everything as forward momentum; no guilt framing.
-8. If profile is missing/incomplete, run Setup first.
+- Treat Obsidian note task ids as canonical.
+- Compare note, log, and calendar provider ids.
+- Preview create, update, unlink, and delete actions.
+- Never delete calendar entries lacking a confirmed ownership id.
+- Apply approved repairs, then rerun the comparison until idempotent.
 
-## Final Note
+## Scheduling contract
 
-The user invokes this as `/plan-day [arg]`. Treat the argument as the mode selector above; empty means plan tomorrow. Keep questions tight, drafts scannable, and always leave the user pointed at their next step.
+- Fixed commitments never move without explicit instruction.
+- Soft anchors may move only within configured tolerance.
+- Default timed blocks to calendar events. Create tasks only when the user requests tasks or the profile defines that category.
+- Keep buffers and leave overflow unscheduled rather than hiding impossible capacity.
+- Convert relative dates to absolute dates before any write.
+- Handle cross-midnight blocks and timezone offsets explicitly.
+- A retry must produce no duplicate note tasks or provider events.
+
+## Calendar integration
+
+Use whichever connected calendar tools are available. Resolve tool names from the live connector instead of hard-coding Claude-specific identifiers. Required capabilities are list calendars, list target-date events, create, update, and delete.
+
+Store provider, calendar id, event id, and last synchronized fingerprint in managed note frontmatter. If calendar tools are unavailable, finish the Obsidian plan, provide a structured sync queue, and state that calendar synchronization remains pending.
+
+Compute the fingerprint from canonical fields before provider mapping:
+
+```powershell
+python scripts/sync_fingerprint.py canonical-block.json
+```
+
+Identical Google and Outlook mappings must produce the same fingerprint. Provider response fields never enter the fingerprint.
+
+## Hard guardrails
+
+1. Calendar and note writes require approval of the displayed draft.
+2. Deletion requires an event id previously created or adopted by this skill.
+3. Preserve private runtime state outside the published skill.
+4. Never fabricate completion, actual duration, provider ids, or conflict checks.
+5. Never silently drop an anchor, deadline, or overflow task.
+6. Keep note/calendar synchronization recoverable and idempotent.
+
+<!-- skill-evolver:adaptive-start -->
+## Adaptive excellence
+
+- Optimize for: a realistic, conflict-free day plan synchronized idempotently with the user's chosen systems
+- Freedom: Medium. Optimize blocks and buffers; preserve commitments, timezone, calendar authority, private state, and rollback.
+- Autonomy: discover profile and conflicts, construct one strong draft, patch approved state, synchronize, verify, wrap, and review without repeated handoffs.
+- Quality gate: tasks, anchors, availability, and conflicts are resolved; cross-midnight and timezone behavior are explicit; sync IDs and rollback make retries safe. Revise once when any gate is weak.
+- Learning: after explicit feedback or measurable results, record observed completion, causal miss reasons, preferences, and derived statistics in private runtime state. Never self-edit from silence, a single unverified outcome, or model self-rating.
+<!-- skill-evolver:adaptive-end -->

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Genmedia"
+  short_description: "Run and inspect fal.ai media workflows"
+  default_prompt: "Use $genmedia to choose, price, run, download, and inspect the best fal.ai endpoint for this media task."

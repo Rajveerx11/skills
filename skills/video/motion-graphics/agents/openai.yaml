@@ -1,0 +1,6 @@
+interface:
+  display_name: "Motion Graphics"
+  short_description: "Build short design-led motion pieces"
+  default_prompt: "Use $motion-graphics to plan, source, build, render, and verify a concise motion-led piece for this message."
+policy:
+  allow_implicit_invocation: true

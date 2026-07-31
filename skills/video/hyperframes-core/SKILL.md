@@ -127,3 +127,15 @@ Use `hyperframes-cli` for command details.
 - [ ] `npx hyperframes validate` passes (0 console errors)
 - [ ] `npx hyperframes inspect` passes, or overflow is intentionally marked
 - [ ] Projects with sub-compositions: `npx hyperframes snapshot --at <midpoints>` and eyeball each frame
+
+<!-- skill-evolver:adaptive-start -->
+## Professional execution
+
+- **Discover automatically:** inspect composition roots, IDs, data attributes, tracks, clips, sub-compositions, media, variables, timeline registration, and renderer diagnostics before changing structure.
+- **Default intelligently:** use explicit pixel dimensions, one paused timeline per composition, stable IDs, local deterministic assets, scalar defaults in markup, and the simplest single-file or modular architecture that meets documented thresholds.
+- **Make changes resumable:** preserve a before-state or focused fixture for structural edits; change one contract surface at a time so lint/inspect failures remain attributable.
+- **Protect contracts:** root sizing, data attribute types, clip/track timing, child isolation, variable resolution, media readiness, deterministic initial state, and timeline registration are low-freedom. Never trade them for terser markup.
+- **Validate deliberately:** lint and inspect; seek boundary, peak, and final frames; render twice when determinism is in question; verify sub-composition offsets, variable overrides, and audio/video duration against declared timing.
+- **Finish the handoff:** report composition graph, IDs, variables, media dependencies, changed contract surfaces, exact validation evidence, and any untested runtime combination.
+- **Learn only from evidence:** add a regression fixture for reproduced contract defects, then record it through `skill-evolver`; never harden a rule from speculation.
+<!-- skill-evolver:adaptive-end -->

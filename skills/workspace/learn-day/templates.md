@@ -91,7 +91,7 @@ scorecard:
 - (single highest-leverage move for next week)
 ```
 
-## Profile — `data/profile.md` (written at Setup)
+## Profile — `<state-root>/profile.md` (written at Setup)
 
 ```markdown
 ---
@@ -116,7 +116,7 @@ curriculum_doc: "Desktop/Learning-Hub/Personal-Brand-and-SaaS-Learning-Hub.md"
 Set once at Setup. The skill reads this every run. Edit by re-running `/learn-day setup` or by hand.
 ```
 
-## Daily log — `data/logs/YYYY-MM-DD.json`
+## Daily log — `<state-root>/logs/YYYY-MM-DD.json`
 
 ```json
 {
@@ -127,10 +127,29 @@ Set once at Setup. The skill reads this every run. Edit by re-running `/learn-da
     { "item": "Hook-Story-Offer framework", "kind": "article", "track": "Copywriting" }
   ],
   "watched": 2,
-  "shipped": 1,
-  "posts": [{ "platform": "LinkedIn", "topic": "Why I'm building in public" }],
+  "shipped": [
+    {
+      "artifact_id": "post-linkedin-20260623-3a15c8c649d2",
+      "type": "post",
+      "platform": "LinkedIn",
+      "status": "published",
+      "topic": "Why I'm building in public",
+      "hook": "I stopped hiding the unfinished version.",
+      "url": null,
+      "source_ref": "learn-day:2026-06-23:building-in-public",
+      "created_at": "2026-06-23T10:00:00+05:30",
+      "scheduled_at": null,
+      "published_at": "2026-06-23T18:30:00+05:30",
+      "updated_at": "2026-06-23T18:30:00+05:30"
+    }
+  ],
   "product_progress": "Outlined the n8n template pack",
   "hard": "Hook writing took 40 min",
   "streak_days": 3
 }
 ```
+
+Use the same artifact schema as `learn-post`. Allowed status values are
+`draft`, `scheduled`, and `published`. Only unique `artifact_id` values with
+`status: published` count as shipped or extend the shipping streak. Upsert by
+`artifact_id`, then `source_ref`; never increment counters blindly.

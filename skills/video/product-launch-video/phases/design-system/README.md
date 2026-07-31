@@ -210,7 +210,7 @@ grep -rhoE "font-size:[^;]+" <ds-dir>/chunks/components/*.html <ds-dir>/chunks/t
 **`caption-skin.html` verification** (§4 rule 6, required): every preset should provide one. Run:
 
 ```bash
-node skills/product-launch-video/scripts/captions.mjs html \
+node skills/faceless-explainer/scripts/captions.mjs html \
   --hyperframes <ds-dir> --groups <caption_groups.json> \
   --tokens <ds-dir>/chunks/tokens.css --out <ds-dir>/compositions/captions.html
 ```

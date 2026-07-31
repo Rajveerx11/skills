@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Evolver"
+  short_description: "Audit, enhance, validate, and sync skills"
+  default_prompt: "Use $skill-evolver to re-evaluate and safely release this skill portfolio."

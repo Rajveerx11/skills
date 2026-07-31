@@ -1,0 +1,6 @@
+interface:
+  display_name: "Faceless Explainer"
+  short_description: "Turn source text into a finished explainer video"
+  default_prompt: "Use $faceless-explainer to turn this source into a grounded, narrated visual explainer and deliver the validated render."
+policy:
+  allow_implicit_invocation: true

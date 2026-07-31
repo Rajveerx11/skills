@@ -1,0 +1,4 @@
+interface:
+  display_name: "Upwork Proposal Writer"
+  short_description: "Evaluate jobs and write truthful proposals"
+  default_prompt: "Use $upwork-proposal to assess this job, select my strongest verified proof, and write one tailored proposal."

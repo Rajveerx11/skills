@@ -1,82 +1,123 @@
 ---
 name: learn-post
-description: Turn what you learned today into a high-performing, build-in-public LinkedIn post — then log it back into learn-day as the day's shipped post. Pulls context from today's learn-day Obsidian note (or from what you explain), asks clarifying questions only if needed, researches current LinkedIn best practices, and writes a ready-to-post, copy-paste post optimized to grow your network and make you noticeable. Use when the user says "/learn-post", "write a LinkedIn post about what I learned", "turn today's learning into a post", "post this on LinkedIn", or wants to ship the day's learning as content.
-argument-hint: [what you learned today — or empty to pull today's learn-day note]
+description: Turn today's real learning or shipped work into an authentic build-in-public LinkedIn post, then optionally log the confirmed draft or publication into the user's learn-day system. Use for "/learn-post", "write a LinkedIn post about what I learned", "turn today's learning into a post", or "ship today's learning". Produces grounded copy, one alternate hook, and a specific visual direction without inventing results.
 ---
 
-# Learn-Post — Daily Learning → LinkedIn (build-in-public)
+# Learn Post
 
-You turn the user's daily learning into a LinkedIn post that gets read, gets reactions, and grows their network — in an authentic **build-in-public** voice, never corporate, never AI-sounding. This is the **"ship" half of the watch→ship loop**: the post you write here is what closes out the day in `learn-day`.
+Turn one real learning into one useful, human post. Reduce ceremony: discover today's context, choose the strongest angle, write the post, then offer an idempotent log update.
 
-You model how top creators post: a sharp hook, short lines, one idea, a human voice, a clear reason to engage. The angle is almost always *"here's what I learned + my honest take/struggle"* — relatable, specific, generous.
+## Resolve companion context
 
-**Companion skill:** `learn-day` (logs daily learning + weekly reports). This skill consumes its context and writes back to it. Read `learn-day`'s profile at `~/.claude/skills/learn-day/data/profile.md` for the vault path, folders, tracks, goal, and platform focus.
+Use the current conversation and explicit arguments first. If needed, discover the installed `learn-day` and `linkedin-post-writer` skills from the active skill catalog or user-owned global skill roots. Do not hardcode `.claude` paths when a loaded skill directory or catalog entry is available.
 
-**Deep writing reference (load at Phase 3):** `~/.claude/skills/linkedin-post-writer/reference.md` — hook library, format catalog, hashtag tiers, anti-patterns, worked example. Reuse it; don't reinvent it.
+Read:
 
-## The non-negotiables (drive 90% of performance)
+- `learn-day` profile/config only to locate the vault, learning folder, tracks, goal, and voice;
+- today's note using the current local date and the configured naming pattern;
+- the LinkedIn writing reference during drafting, if installed.
 
-1. **The hook is everything.** Only the first 1–2 lines (~140 chars) show before "…see more". Hooks under ~10 words win. Curiosity gap, bold/contrarian claim, surprising number, or relatable pain — never a summary. Never "Excited/thrilled to announce".
-2. **One post, one idea.** Pick the single most interesting thing from today's learning and go deep.
-3. **Whitespace wins.** 1–2 sentences per line. No dense paragraphs.
-4. **Write like you talk.** Short words, contractions, "you"/"I". No corporate filler, no AI tells ("delve", "in today's fast-paced world", "game-changer").
-5. **Be generous, not braggy.** Build-in-public works when you *teach what you just learned* or *share the real struggle* — give the reader the takeaway, don't just narrate your day.
-6. **No bait.** "Comment for the link" is downranked. Deliver value in the post.
-7. **One clear CTA.** A single question or ask at the end that invites replies (replies > likes for reach + network growth).
-8. **Never fabricate.** No invented metrics, stories, or quotes. Pull specifics from the learning; if absent, ask or write around it.
-9. **Always suggest a visual.** A concrete image/screenshot/short-clip recommendation specific to this post — visuals materially boost reach.
+Never search unrelated vault notes or private files. If no companion skill/profile exists, continue from user-provided context rather than blocking.
 
-## The flow
+## Build a fact ledger
 
-### Phase 0 — Get the context (no guessing)
-1. Read `learn-day`'s profile (path above) → vault path, `learning_folder`, tracks, goal, `platform_focus`, voice.
-2. Pull **today's learning context**, in priority order:
-   - If `$ARGUMENTS` is non-empty → that's what they learned today; treat it as the seed.
-   - Else read **today's learn-day note** at `<vault_path>/<learning_folder>/Learn-DD-MM-YY(ddd).md` (today's date) → use its "What I studied" + takeaways + "what was hard".
-   - Else **ask** the user: *"What did you learn today? Give me the messy version — I'll shape it."*
-3. Form a one-paragraph internal understanding: what they learned, which track, why it could matter to their audience (technical builders / founders learning AI + automation).
+Extract:
 
-### Phase 1 — Clarify only if needed
-You usually have enough after Phase 0. Ask **only** the 1–3 highest-leverage questions, via **AskUserQuestion** (tap-to-answer, best-guess option first, marked "(Recommended)"). Skip anything you can already infer. Good probes when unclear:
-- **The one takeaway** — if the learning has several angles, make them pick the sharpest.
-- **Angle** — teach-it ("here's how X works") vs struggle ("I spent 2 hrs stuck on…") vs contrarian ("everyone says X, but…").
-- **Proof** — a real number, a screenshot, a before/after they can cite?
-- **Goal** — replies/network (default) vs reach vs credibility.
+- what was studied, built, tested, or changed;
+- the moment of confusion, surprise, failure, or breakthrough;
+- concrete proof: code, screenshot, result, before/after, or source;
+- why it matters to the user's actual audience;
+- facts safe to publish versus private details.
 
-Never ask more than 3. Then write — don't re-interrogate.
+Mark uncertain facts and omit them. Never invent metrics, duration, quotes, customers, or emotional stakes.
 
-### Phase 2 — Research current best practices (light, current)
-Quick web check for what's working **right now** on LinkedIn for build-in-public / learning content: live hook patterns, formatting norms, and 3–5 real searchable hashtags (1 broad + 2–3 niche, e.g. #BuildInPublic #AIautomation #n8n). Prefer reply-driving formats. Treat hashtags as topic signals, not a growth hack.
+If neither arguments nor today's note contains enough substance, ask one question: what did you learn or ship today, in messy form?
 
-### Phase 3 — Write
-Load the deep reference (path above) and write:
-- Pick the format (story / teach / contrarian / listicle / "lessons from") that fits the angle + goal.
-- Structure: **HOOK → CONTEXT → BODY (heavy whitespace) → PAYOFF/takeaway → CTA → hashtags on their own last line.**
-- Plain text only (LinkedIn renders no markdown). Unicode bullets (•, →, ✅) and 0–3 purposeful emojis ok. **150–300 words** sweet spot.
-- Output the post **in a code block, copy-paste ready.**
-- Offer exactly **1 alternative hook** to swap in.
-- **Suggest a concrete visual** (the one screenshot / 5–10s screen-recording / before-after that *is* the hook) — never leave it text-only without a recommendation.
+<!-- skill-evolver:adaptive-start -->
+## Choose the angle
 
-### Phase 4 — Close the watch→ship loop (the integration)
-After delivering the post, **offer**: *"Want me to log this as today's shipped post in learn-day?"* If yes:
-1. Update today's learn-day note (`<vault>/<learning_folder>/Learn-DD-MM-YY(ddd).md`):
-   - Add to the `shipped:` frontmatter list: `{ type: post, platform: LinkedIn, topic: "<hook topic>", url: "" }`.
-   - Add a line under **"## What I shipped ✅"** with the topic.
-   - Bump `watch_ship.shipped` and `streak_days` accordingly.
-2. Update `~/.claude/skills/learn-day/data/logs/YYYY-MM-DD.json` (today): increment `shipped`, append to `posts[]`. Create the file from learn-day's template shape if missing.
-3. Confirm: *"✅ Logged as today's ship — streak now N days."*
+Create three internal angles:
 
-If today's learn-day note doesn't exist yet, offer to run `/learn-day` first, or write a minimal note so the ship is recorded.
+- **Teach:** explain one useful mechanism or practice.
+- **Build in public:** show the real attempt, friction, and result.
+- **Point of view:** make a defensible claim learned from the work.
 
-## Critical Rules
-1. The hook decides everything — spend the most effort there; never lead with a summary or "Excited to announce".
-2. One idea per post; teach or be vulnerable — generosity drives build-in-public reach.
-3. Plain text, heavy whitespace, human voice; strip every AI/corporate tell.
-4. Never fabricate metrics, stories, or quotes — pull from the real learning or ask.
-5. Always end with one reply-inviting CTA and one concrete visual suggestion.
-6. Convert relative dates to absolute when reading/writing learn-day files.
-7. Closing the loop is opt-in — offer, don't auto-write to the vault without a yes.
-8. Keep the post the deliverable — don't over-explain your reasoning around it.
+Score them for specificity, audience value, proof, novelty, and authenticity. Choose one. Do not make the user select unless two angles remain tied or they explicitly ask for variants.
+<!-- skill-evolver:adaptive-end -->
 
-## Final Note
-`$ARGUMENTS` = what the user learned today (optional; if empty, pull today's learn-day note, else ask). The post you produce is the day's "ship" — always offer to log it back so the watch→ship streak stays honest. Pair this with `/learn-day` (log) and `/learn-day week` (weekend report).
+## Write
+
+Use a structure that fits the chosen angle rather than a fixed template:
+
+1. first one or two lines earn attention with a specific tension, result, or insight;
+2. context establishes why this mattered;
+3. body teaches or reveals the concrete mechanism;
+4. payoff states what changed in the user's thinking or practice;
+5. one natural closing question or action, only when it adds value.
+
+Keep plain text suitable for LinkedIn. Use whitespace for rhythm. Avoid corporate filler, fake vulnerability, generic motivational lessons, bait, and inflated claims. Length follows the idea; remove any line that does not advance it.
+
+Current platform tactics change. Research them only when the user asks for current optimization or when making time-sensitive claims about LinkedIn behavior. Prefer official/platform sources and label uncertainty.
+
+## Deliver
+
+Return:
+
+1. copy-paste post in a code block;
+2. exactly one alternate hook;
+3. one specific visual recommendation tied to the hook;
+4. optional first-comment text if an outbound link belongs there.
+
+Use an existing screenshot, diagram, or short screen recording when it proves the learning. Do not recommend generic quote cards when real evidence exists.
+
+## Log safely
+
+Logging is a separate write action. Offer it after delivering; never make posting or publication implicit.
+
+Use one shared artifact record in the learn-day note and daily JSON:
+
+```yaml
+artifact_id: post-linkedin-YYYYMMDD-<12-char-hash>
+type: post
+platform: LinkedIn
+status: draft
+topic: "short stable topic"
+hook: "current first line"
+url: null
+source_ref: "learn-day:YYYY-MM-DD:<stable-topic-seed>"
+created_at: "ISO-8601 timestamp"
+scheduled_at: null
+published_at: null
+updated_at: "ISO-8601 timestamp"
+```
+
+Allowed `status`: `draft`, `scheduled`, `published`. Unknown timestamps and URL stay `null`, never empty strings or fabricated values.
+
+Generate `artifact_id` once from SHA-256 of `lowercase platform + "\n" + YYYY-MM-DD + "\n" + source_ref`, using the first 12 lowercase hexadecimal characters. Prefer the source note's durable learning/topic ID in `source_ref`; otherwise normalize the original topic seed once. Hook edits, scheduling, publication, URL updates, and metric updates must reuse the existing `artifact_id`.
+
+Only `published` counts toward `watch_ship.shipped` and streaks by default. Draft and scheduled records remain visible pipeline artifacts but do not count as shipped. Changing an existing published record back to a non-published state requires explicit confirmation because counts may decrease.
+
+If the user confirms:
+
+1. re-read today's note before editing;
+2. find an existing record by `artifact_id`, then `source_ref`; never use mutable hook text as primary identity;
+3. upsert one schema-identical record in note frontmatter and daily JSON;
+4. preserve `created_at`; update only changed fields and `updated_at`;
+5. add a human-readable line under "What I shipped" only when status becomes `published`; keep draft/scheduled items in the template's content-pipeline section;
+6. recompute counts from unique published artifact IDs rather than incrementing blindly;
+7. preserve unknown URL and metrics as `null`/pending, never zero;
+8. verify both stores contain one matching record and counts agree.
+
+If today's note does not exist, use `learn-day` to create the normal note or ask permission before creating a minimal one. Report exact files changed and final state.
+
+## Quality gate
+
+- Every concrete claim traces to today's note, supplied context, artifact, or source.
+- Post contains one idea and at least one detail only this user could credibly say.
+- Hook and body make the same promise.
+- Voice sounds like the user, not a creator template.
+- Visual proves or explains the idea.
+- Draft, scheduled, and published states remain distinct.
+- Re-running logging upserts one stable artifact record; only published records count.
+
+Revise the weakest dimension once before delivery.

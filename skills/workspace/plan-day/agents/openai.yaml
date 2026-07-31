@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Day"
+  short_description: "Build and sync a realistic daily schedule"
+  default_prompt: "Use $plan-day to turn these tasks into a realistic approved schedule."

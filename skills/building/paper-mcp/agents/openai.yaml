@@ -1,0 +1,4 @@
+interface:
+  display_name: "Paper MCP"
+  short_description: "Edit the open Paper board through local MCP"
+  default_prompt: "Use $paper-mcp to inspect and edit my open Paper board, then verify the result visually."

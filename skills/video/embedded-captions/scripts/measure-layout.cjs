@@ -16,15 +16,12 @@
  */
 const path = require("path");
 const fs = require("fs");
-const os = require("os");
 
-// Locate hyperframes' bundled puppeteer. render-and-composite.sh exports
-// HYPERFRAMES_ROOT; standalone we also try the in-repo path + ~/Downloads, and
-// accept ANY puppeteer@* the bun store holds (not a pinned version).
+// Locate Puppeteer from an optional development dependency root or the nearby
+// installation layout. Accept any puppeteer@* the Bun store holds.
 const HF_ROOTS = [
   process.env.HYPERFRAMES_ROOT,
   path.resolve(__dirname, "../../.."), // skills/embedded-captions/scripts → repo root if in-repo
-  path.join(os.homedir(), "Downloads", "hyperframes"),
 ].filter(Boolean);
 let puppeteer = null;
 for (const root of HF_ROOTS) {

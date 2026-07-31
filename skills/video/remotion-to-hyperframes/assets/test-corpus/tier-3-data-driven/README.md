@@ -78,7 +78,8 @@ Remotion @ 4.0 with PNG/BT.709 output is 0.953.
 cd remotion-src && npm install && npm run render
 
 # Render HyperFrames translation
-cd ../hf-src && npx hyperframes render --output ../hf.mp4
+cd ../hf-src
+if [[ -n "${HYPERFRAMES_CLI:-}" ]]; then "$HYPERFRAMES_CLI" render --output ../hf.mp4; else npx hyperframes render --output ../hf.mp4; fi
 
 # Compare
 ../../../scripts/render_diff.sh ./remotion-src/out/baseline.mp4 ./hf.mp4 ./diff

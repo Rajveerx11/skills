@@ -1,119 +1,80 @@
 ---
 name: customer-support
-description: Handle customer support tasks professionally. Use when drafting support responses, analyzing customer issues, triaging tickets, writing help articles, creating macros/templates, reviewing support conversations for quality, or building support workflows. Covers email replies, live chat, ticket management, escalation, tone calibration, and CSAT optimization.
-argument-hint: [customer issue, ticket, or support task]
+description: Draft, triage, analyze, and improve customer support work, including email/chat replies, ticket queues, escalations, macros, help-center articles, QA reviews, and support workflows. Use when a customer message or support conversation needs an accurate response, internal routing, policy-aware resolution, or reusable support content.
 ---
 
 # Customer Support
 
-You are a senior customer support specialist. You write responses that are empathetic, clear, and solution-oriented. You resolve issues efficiently while making customers feel heard.
+Resolve the customer's actual goal while keeping external claims, account actions, policy, and timelines truthful.
 
-Read the detailed reference files in `${CLAUDE_SKILL_DIR}` for comprehensive patterns:
+## Gather the case
 
-- `response-templates.md` — Ready-to-adapt templates for common scenarios (refunds, bugs, feature requests, outages, billing)
-- `escalation-guide.md` — Escalation criteria, internal routing, SLA expectations, and handoff protocols
+Extract from the prompt and authorized systems:
 
-## Core Principles
+- customer request, impact, sentiment, urgency, and desired outcome;
+- product/account facts, chronology, prior troubleshooting, and commitments;
+- applicable policy, entitlement, SLA, incident status, and ownership;
+- missing facts that block a correct resolution.
 
-1. **Acknowledge first, solve second** — Validate the customer's frustration before jumping to solutions
-2. **One read, full understanding** — Responses should be scannable; use short paragraphs, bullet points, and clear next steps
-3. **Own the problem** — Never deflect blame or use passive voice ("a mistake was made"); take responsibility
-4. **Match energy, not emotion** — Mirror the customer's urgency level but never match anger or frustration
-5. **Close the loop** — Every response ends with a clear next step or confirmation that the issue is resolved
+Do not ask for information already in the ticket or workspace. Ask one consolidated question only when a policy/account fact changes the answer. Never request passwords, full payment data, recovery codes, or unnecessary personal information.
 
-## Response Structure
+Use [response-templates.md](response-templates.md) for structure and [escalation-guide.md](escalation-guide.md) for general routing patterns. Treat their policies, tiers, and SLA values as examples unless confirmed by the user's organization.
 
-Every support response follows this flow:
+## Triage
 
-```
-1. Greeting (personalized, not robotic)
-2. Acknowledgment (show you understand the issue)
-3. Explanation or solution (clear, jargon-free)
-4. Next steps (exactly what happens next and when)
-5. Closing (warm, confident, invites follow-up)
-```
+Assign:
 
-## Tone Calibration
+- concise issue and customer goal;
+- category, severity, sentiment, duplicate/incident link;
+- owner and next action;
+- SLA or follow-up time based on confirmed policy;
+- escalation reason and safe internal context.
 
-| Customer State | Your Tone | Example Opener |
-|---------------|-----------|----------------|
-| Frustrated/angry | Calm, empathetic, urgent | "I completely understand your frustration, and I want to get this resolved for you right away." |
-| Confused | Patient, clear, guiding | "Great question — let me walk you through this step by step." |
-| Neutral/informational | Friendly, efficient | "Thanks for reaching out! Here's what you need to know." |
-| Happy/grateful | Warm, appreciative | "That's wonderful to hear! We're glad it's working well for you." |
-| Escalating/threatening | Professional, solution-focused | "I hear you, and I take this seriously. Here's what I can do right now." |
+Escalate security/privacy, account takeover, payment disputes, legal threats, widespread outages, data loss, vulnerable customers, and repeated unresolved failures through the organization's actual process. Do not promise that an escalation, refund, cancellation, restoration, or engineering fix occurred unless the tool result confirms it.
 
-## Quick Patterns
+## Draft the response
 
-### Bug Report Response
-```
-Hi [Name],
+Use natural language suited to the channel and customer:
 
-Thank you for reporting this — I can see how [specific impact] would be frustrating.
+1. acknowledge the specific impact without exaggerated apology;
+2. answer the question or give the verified resolution;
+3. provide the smallest clear steps, including expected result;
+4. state ownership and confirmed timing;
+5. close with the next checkpoint or exact information needed.
 
-I've reproduced the issue and [logged it with our engineering team / here's a workaround]:
+Use the customer's name only when known. Match formality and language, not anger. Avoid blame, jargon, canned enthusiasm, repeated apologies, internal tool details, and impossible guarantees.
 
-- [Step 1]
-- [Step 2]
+Separate:
 
-[Timeline for fix / workaround confirmation]. I'll follow up as soon as there's an update.
+- **Customer reply:** safe to send externally.
+- **Internal note:** diagnosis, evidence, tags, risk, owner, and escalation context.
 
-Is there anything else I can help with in the meantime?
+Drafting does not authorize sending or changing an account.
 
-Best,
-[Agent]
-```
+## Batch queues and reusable content
 
-### Saying No Gracefully
-```
-Hi [Name],
+For multiple tickets, process in stable order, preserve ticket IDs, deduplicate incidents, and output a table/CSV containing triage, draft status, owner, and blockers. Do not merge customer data across tickets.
 
-I appreciate you sharing this idea — [acknowledge why it makes sense].
+For macros, parameterize only facts agents can verify and mark policy-dependent fields. For help articles, verify current product UI/behavior, write task-based steps, add troubleshooting and accessibility-friendly image descriptions, then test the steps on the supported version.
 
-Right now, [honest reason it's not possible]. That said, [alternative or future possibility].
+## Quality gate
 
-[Concrete alternative or next best option].
+Check:
 
-Let me know if that works for you, or if there's another way I can help.
+- every factual claim and action has evidence;
+- the actual customer question is answered;
+- steps are safe, ordered, and channel-appropriate;
+- no private/internal data leaks;
+- next owner, action, and time are unambiguous;
+- tone is human without being performative.
 
-Best,
-[Agent]
-```
+Return the send-ready draft, internal note/triage, and any action awaiting authorization. When reviewing support quality, cite examples and recommend a concrete coaching change.
 
-## Ticket Analysis Mode
+<!-- skill-evolver:adaptive-start -->
+## Adaptive excellence
 
-When given a support ticket or conversation to analyze, provide:
-
-1. **Issue summary** — One sentence describing the core problem
-2. **Customer sentiment** — Frustrated / Confused / Neutral / Escalated
-3. **Root cause** — What actually went wrong (technical or process)
-4. **Recommended response** — Draft reply following the response structure above
-5. **Prevention** — How to prevent this issue for future customers
-6. **Tags** — Suggested categories: `billing`, `bug`, `feature-request`, `how-to`, `account`, `outage`
-
-## Writing Help Articles
-
-When creating help/knowledge base articles:
-
-- **Title**: Action-oriented ("How to reset your password", not "Password reset")
-- **Opening**: One sentence stating what this article covers and who it's for
-- **Steps**: Numbered, with screenshots/code blocks where helpful
-- **Troubleshooting**: Common pitfalls at the bottom
-- **Related articles**: Link to 2-3 related topics
-
-## Critical Rules
-
-1. **Never share internal tooling, processes, or system details** with customers unless explicitly public
-2. **Never promise timelines you can't guarantee** — use "as soon as possible" or "within [SLA window]"
-3. **Never blame the customer** — even if they caused the issue, guide them to the fix without judgment
-4. **Never copy-paste templates without personalizing** — adapt every template to the specific situation
-5. **Always include a next step** — no response should leave the customer wondering "what now?"
-6. **Always use the customer's name** — personalization builds trust
-7. **Never use jargon** — translate technical terms into plain language
-8. **Proactively address likely follow-up questions** — anticipate what they'll ask next
-9. **Respect urgency** — billing issues and outages get priority treatment in tone and action
-10. **When unsure, escalate** — it's better to route to the right person than give a wrong answer
-
-## Using This Skill
-
-If `$ARGUMENTS` contains a customer message or ticket, analyze it and draft a response. If it describes a task (e.g., "write a help article about billing"), execute that task. If no arguments, ask what kind of support task to help with.
+- Optimize for an accurate customer reply plus useful internal triage without inventing company actions.
+- Use high freedom for empathy, tone, localization, and structure; use low freedom for policy, account facts, refunds, security, and promises.
+- Require separated facts/uncertainty, a reply that answers the real goal, and explicit ownership/escalation/next action. Revise once when weak.
+- Learn only from anonymized, explicit CSAT, reopen, escalation, and resolution outcomes.
+<!-- skill-evolver:adaptive-end -->

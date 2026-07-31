@@ -1,0 +1,4 @@
+interface:
+  display_name: "Upwork Profile"
+  short_description: "Position and rewrite evidence-led profiles"
+  default_prompt: "Use $upwork to audit my profile, choose the strongest truthful positioning, and rewrite the highest-leverage sections."

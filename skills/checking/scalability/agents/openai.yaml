@@ -1,0 +1,4 @@
+interface:
+  display_name: "Scalability"
+  short_description: "Find and prove the real system bottleneck"
+  default_prompt: "Use $scalability to diagnose this workload and verify the smallest effective scaling change."

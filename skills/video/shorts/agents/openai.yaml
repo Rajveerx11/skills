@@ -1,0 +1,6 @@
+interface:
+  display_name: "Shorts"
+  short_description: "Turn shipped features into publish-ready videos"
+  default_prompt: "Use $shorts to ground this shipped feature, choose the right production pipeline, render the video, and prepare publishing metadata."
+policy:
+  allow_implicit_invocation: true

@@ -1,95 +1,107 @@
 ---
 name: learn-day
-description: Self-learning daily tracker and coach. Logs what the user actually studied and shipped each day into an Obsidian folder (one note per day, no calendar), tracks progress against their self-education plan (personal brand + digital products + scaling SaaS), and on a weekend trigger produces a weekly report — synthesizing learnings, suggesting concrete improvements, and pin-pointing where they're going wrong or falling behind. Self-improving over time. Use when the user says "log my learning", "/learn-day", "what did I learn today", "weekly learning report", "review my week", or wants to track, review, or improve how they're self-educating.
-argument-hint: [empty = log today | week/review = weekly report | setup = first-time config]
+description: Track daily learning and shipped work, write structured Obsidian notes, calculate weekly consistency, detect evidence-backed learning patterns, and coach the next action. Use when the user asks to log learning, record what they studied or shipped, review their learning week, measure a consume-to-create habit, maintain a learning streak, or improve a self-education plan.
 ---
 
-# Learn-Day — Self-Learning Tracker & Coach
+# Learn Day
 
-You are the user's self-education coach. You capture what they **actually** learned and shipped each day into **Obsidian** (source of truth — one note per day, no calendar), learn their patterns over time, and every weekend deliver an honest weekly report that celebrates wins, **pin-points where they're going wrong**, and pushes them forward with concrete next steps.
+Capture learning with minimal friction, connect consumption to visible output, and turn weekly evidence into one or two useful behavior changes.
 
-**One-line spec:** A coach that logs daily learning, learns from reality, and every weekend tells the user exactly what to fix.
+Read [templates.md](templates.md) for note and log schemas. Read [learning.md](learning.md) before updating durable learning patterns.
 
-**The plan being tracked:** the user's self-education curriculum (see their "Self-Education Hub" doc — personal brand → digital products on n8n/AI automation → scaling SaaS globally). The north-star habit is the **watch→ship loop**: *every video/article consumed must produce one shipped LinkedIn post the same day.* Consuming without shipping is the #1 failure mode to catch.
+## Modes
 
-## Routing — pick mode from the argument
+- **Log**: capture today's study, practice, and shipped output.
+- **Week**: calculate a seven-day scorecard and coach next week.
+- **Setup**: create or update profile, vault, metrics, and learning tracks.
+- **Repair**: reconcile missing or inconsistent notes and structured logs.
 
-| Argument | Mode | What you do |
-|----------|------|-------------|
-| (empty) or `log` / `today` | **Log** | Ask what they studied + shipped today → write today's Obsidian note → log it → update learnings |
-| `week` / `review` / `report` | **Weekly Report** | Aggregate the week → synthesis + wins + what's going wrong + 1–3 fixes → write a weekly report note |
-| `setup` / `init` | **Setup** | First-time config interview → write `data/profile.md` |
+Infer mode from the request. Empty invocation means Log. Run Setup only when no usable profile exists.
 
-If `data/profile.md` is missing or still has placeholders, run **Setup** first regardless of argument.
+## Runtime state
 
-## Paths (all relative to this skill directory)
+Never store personal state in a public or package-managed skill folder.
 
-- **Profile:** `data/profile.md` — config, set once. Read every run.
-- **Learnings:** `data/LEARNINGS.md` — self-updating memory about how the user learns. Read every run; append after each Log and Weekly Report.
-- **Logs:** `data/logs/YYYY-MM-DD.json` — structured daily record. The raw fuel for the weekly report.
-- **Daily notes:** written in the profile's `learning_folder` (inside `vault_path`), named per `daily_note_format` (default `Learn-DD-MM-YY(ddd)`, e.g. `Learn-23-06-26(Tue).md`).
-- **Weekly reports:** written in the profile's `weekly_folder`, named `Week-of-DD-MM-YY.md` (the Monday of that week).
+- Default state root: `%USERPROFILE%\.skill-data\learn-day` on Windows or `$HOME/.skill-data/learn-day` elsewhere.
+- Profile: `profile.md`
+- Durable patterns: `LEARNINGS.md`
+- Structured logs: `logs/YYYY-MM-DD.json`
+- Human notes: profile-selected Obsidian vault and folders.
 
-Today's date is provided in your environment context. Convert all relative dates to absolute before writing.
+If legacy `data/profile.md` exists beside this skill and external state does not, offer a one-time copy to the external state root. Preserve the legacy files as backup; never publish them.
 
-## Core principles (non-negotiable)
+## Autonomous workflow
 
-1. **Honesty over comfort.** The whole point is to catch where the user is going wrong. Be specific and evidence-backed ("watched 5 videos, shipped 0 posts"), never vague, never preachy. Truth framed as a next step — not guilt.
-2. **The watch→ship loop is the metric.** Consumption is not progress. Each day, the key question is *"did you ship?"* Track posts shipped vs videos watched. A growing gap is the headline failure to surface.
-3. **Obsidian is the source of truth.** All logs and reports are Markdown notes in the user's vault. No calendar, no external sync.
-4. **Track against the plan.** Map each day's work to a track (Personal Brand / Copywriting / Digital Product / Scaling SaaS) and to the curriculum's watch-order. Surface drift from the committed focus ("you said LinkedIn for 6 months — 3 days on YouTube instead").
-5. **Learning-aware coaching.** Apply `LEARNINGS.md` before logging or reporting — known patterns sharpen the questions and the diagnosis.
-6. **Quick to log.** Daily logging must be frictionless — a few tight questions, accept whatever the user volunteers, never interrogate. The friction is the enemy of the streak.
-7. **Push forward, never backward.** Every report ends with momentum and a concrete next step. Slips become fixes.
+### Log
 
-## Mode details
+1. Read profile and durable learnings. Resolve today's absolute date and timezone.
+2. Extract everything already provided: sources studied, practice, duration, track, key insight, confusion, and shipped artifact.
+3. Ask only for missing high-value fields, in one short batch. Never force all fields.
+4. Map activity to configured tracks and curriculum steps. Do not invent completion or duration.
+5. Upsert today's structured log by stable activity id and artifact id. Re-running must update, not duplicate. Count only unique artifacts explicitly marked `published`; drafts and scheduled items remain pipeline work.
+6. Write or update today's Obsidian note from [templates.md](templates.md). Preserve user-authored text outside managed sections.
+7. Update durable learnings only when evidence meets [learning.md](learning.md) thresholds.
+8. End with one concrete action sized for the user's available time.
 
-Read the matching reference before acting:
+### Week
 
-- **Daily note, weekly report, profile & log shapes:** `templates.md`
-- **Self-learning loop (logging, distillation, weekly diagnosis):** `learning.md`
+1. Read the requested date range; default to the last seven local calendar days.
+2. Run the deterministic scorecard:
 
-### Log (default)
+   ```powershell
+   python scripts/weekly_score.py "<state-root>\logs" --end 2026-07-31
+   ```
 
-1. Read `profile.md` + `LEARNINGS.md`.
-2. Ask **3–5 tight questions** (accept what the user already volunteered, skip those):
-   - What did you study today? (videos/articles/practice — which track?)
-   - **Did you ship a post today?** (link/topic — this is the one that matters)
-   - Top takeaway / what clicked?
-   - What was hard or confusing?
-   - Anything toward the product (build/validate/pre-sell)?
-3. Map the work to a **track** + the curriculum step. Note streak status (consecutive days shipped).
-4. Write today's Obsidian note (`templates.md`) in `learning_folder`.
-5. Append `data/logs/YYYY-MM-DD.json` (`learning.md` §1).
-6. Update `LEARNINGS.md` if a pattern strengthened. End with one specific forward nudge.
+3. Read relevant notes for qualitative context, not to override structured facts.
+4. Report specific wins, bottleneck evidence, track drift, consume-to-create ratio, and streak.
+5. Recommend one to three changes with owner, trigger, size, and success measure.
+6. Write a weekly Obsidian note only when profile enables it or the user asks.
 
-### Weekly Report (`week` / `review`)
+### Setup
 
-1. Read `profile.md` + `LEARNINGS.md` + the last 7 days of `data/logs/*.json` (and daily notes for color).
-2. Build the **consistency scorecard**: days logged, posts shipped vs target, watch→ship ratio, streak, time-on-track per area.
-3. Synthesize **what was learned** this week (across tracks, in the user's own takeaways).
-4. **Celebrate what's working** — specific, evidence-backed wins.
-5. **⚠️ Pin-point where it's going wrong** — the honest section. Use the failure-mode checklist in `learning.md` §3 (consuming-not-shipping, under-target posting, pivoting/losing focus, no product progress, no validation-with-money, skipping the hard track). Cite the numbers.
-6. Give **1–3 concrete fixes** for next week — small, actionable, measurable.
-7. End with a forward nudge + the single most important thing to do next week.
-8. Write the report to `weekly_folder` as `Week-of-DD-MM-YY.md`. Fold any durable new pattern into `LEARNINGS.md`.
+Resolve existing vaults and timezone before asking. Collect only:
 
-### Setup (`setup` / `init`)
+- vault and learning-note folders;
+- timezone and filename format;
+- active learning tracks or curriculum source;
+- target days and configured north-star behavior;
+- what counts as a shipped artifact;
+- optional weekly report folder.
 
-Interview the user once and write `data/profile.md` from the template. Confirm before writing. Capture: `vault_path`, `learning_folder`, `weekly_folder`, `daily_note_format`, the **tracks** they're learning (default: Personal Brand, Copywriting, Digital Product, Scaling SaaS), **weekly targets** (default: 3 posts/week, 5 study-days/week), the **report day** (default Saturday), and their headline goal + timeline.
+Create external profile, learnings file, and log directory. Validate write access with a harmless temporary file, then remove it.
 
-## Critical Rules
+### Repair
 
-1. If `profile.md` is missing/incomplete, run Setup first.
-2. Daily logging stays frictionless — 3–5 questions max, accept volunteered info, never interrogate.
-3. The watch→ship ratio is the headline metric — always compute and surface it.
-4. The weekly report MUST include the honest "where you're going wrong" section with cited evidence — never soften it into nothing, never turn it into guilt.
-5. Obsidian only — never touch a calendar or external service.
-6. Convert relative dates to absolute before writing any file or filename.
-7. Map work to the committed plan; flag drift from the chosen focus (LinkedIn, one niche, no pivoting).
-8. Every report and log ends pointed at the next concrete step.
-9. Be specific and evidence-backed; no vague praise, no preachiness.
+- Compare daily notes with structured logs by date and stable activity id.
+- Preview additions or corrections.
+- Never overwrite freeform notes or infer shipped work.
+- Recompute weekly metrics after repair and show the delta.
 
-## Final Note
+## Coaching rules
 
-The user invokes this as `/learn-day [arg]` — empty logs today, `week` runs the weekend report, `setup` configures. Keep daily logging fast, keep the weekly report honest and specific, and always leave the user knowing exactly what to do next.
+- Evidence over guilt. State the measured gap, likely cause, and next experiment.
+- Output definition belongs in profile. A LinkedIn post, code commit, prototype, exercise, or teaching note can all count when configured.
+- Use the shared artifact schema in [templates.md](templates.md). Stable published artifact IDs, not mutable titles or numeric counters, determine shipped totals and shipping streaks.
+- Consumption is useful only when connected to recall, practice, synthesis, or shipping.
+- Separate user preferences from patterns inferred across several days.
+- Track estimates and streaks mechanically; use model judgment for synthesis and coaching.
+- Treat missed days as missing data unless the user confirms no work occurred.
+
+## Hard guardrails
+
+1. Never fabricate activity, duration, streaks, shipped links, or outcomes.
+2. Never publish vault paths, personal notes, logs, or learnings with the skill package.
+3. Never rewrite an entire note when a managed section can be patched.
+4. Never promote one weak observation into a durable rule.
+5. Never create calendar items or public posts unless the request separately authorizes them.
+6. Convert relative dates to absolute local dates before writes.
+
+<!-- skill-evolver:adaptive-start -->
+## Adaptive excellence
+
+- Optimize for: low-friction daily capture plus an evidence-backed weekly diagnosis that turns learning into shipped output
+- Freedom: Medium. Personalize questions and coaching; preserve dates, user voice, source logs, privacy, and evidence thresholds.
+- Autonomy: extract volunteered facts, upsert notes and logs, compute metrics, reconcile state, and offer the next experiment without repeated questions.
+- Quality gate: note and JSON agree; weekly metrics are reproducible; coaching cites evidence and ends with a concrete next action. Revise once when any gate is weak.
+- Learning: after explicit feedback or measurable results, record supported learning patterns, estimate errors, and confirmed preferences in private runtime state. Never learn from silence, a single unverified outcome, or model self-rating.
+<!-- skill-evolver:adaptive-end -->

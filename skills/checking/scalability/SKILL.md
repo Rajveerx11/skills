@@ -1,147 +1,77 @@
 ---
 name: scalability
-description: Design and build scalable software systems. Use when writing database queries, caching logic, API endpoints, message queues, background jobs, connection pools, load balancing, microservices, or when reviewing code for performance bottlenecks. Covers database scaling, caching strategies, async processing, API design for scale, concurrency, frontend performance, observability, and infrastructure patterns.
-argument-hint: [area to scale or optimize]
+description: Diagnose, design, implement, and verify software scalability and performance improvements. Use for database/query load, connection pools, caching, queues, background jobs, API throughput, concurrency, rate limiting, backpressure, autoscaling, CDNs, microservices, load tests, capacity planning, or performance bottlenecks under growth.
 ---
 
-# Software Scalability
+# Scalability
 
-You are an expert at building systems that handle growth without rewriting. You focus on identifying real bottlenecks before optimizing, and you choose the simplest solution that solves the actual problem.
+Improve measured capacity or reliability against a real workload and SLO. Do not introduce distributed complexity to solve an unmeasured problem.
 
-Read the detailed reference files in `${CLAUDE_SKILL_DIR}` for comprehensive patterns:
+## Model the workload
 
-- `database-scaling.md` — Indexing, query optimization, connection pooling, read replicas, partitioning, sharding, N+1 prevention
-- `caching-and-queues.md` — Redis patterns, cache invalidation, message queues, async processing, event-driven architecture
-- `api-and-services.md` — Pagination, rate limiting, circuit breakers, graceful shutdown, load balancing, stateless design
-- `infrastructure.md` — Kubernetes autoscaling, serverless patterns, CDN caching, deployments, health checks, observability
+Inspect topology, code paths, data model, deployment, metrics, traces, queries, queue behavior, traffic shape, growth, failure history, and cost. Define:
 
-## The Scalability Mindset
+- request/job mix, payload sizes, read/write ratio, burst and sustained rates;
+- latency/error/availability SLOs and consistency requirements;
+- current capacity, saturation point, and headroom;
+- tenant hot spots, downstream limits, and recovery objectives.
 
-**Rule #1: Don't optimize what you haven't measured.** Profile first, then fix the actual bottleneck.
+If production telemetry is unavailable, create a representative fixture and label conclusions as test-environment evidence.
 
-### Bottleneck Identification Flow
+Read the relevant reference only:
 
-```
-Slow response times?
-  ↓
-Where is time spent?
-  ├─ Database (>50% of request time) → See database-scaling.md
-  │   ├─ Missing index → Add targeted index
-  │   ├─ N+1 queries → Use eager loading / joins
-  │   ├─ Full table scans → Add WHERE clauses, pagination
-  │   └─ Connection exhaustion → Add connection pooling
-  ├─ External API calls → See api-and-services.md
-  │   ├─ Slow downstream → Add caching or circuit breaker
-  │   └─ Too many calls → Batch or queue
-  ├─ CPU-bound computation → See infrastructure.md
-  │   ├─ Can parallelize → Worker threads / cluster mode
-  │   └─ Can defer → Move to background queue
-  └─ Memory pressure → Profile allocations
-      ├─ Large payloads → Stream instead of buffer
-      └─ Memory leaks → Heap snapshot analysis
-```
+- [database-scaling.md](database-scaling.md) for queries, indexes, pools, replicas, and partitioning.
+- [caching-and-queues.md](caching-and-queues.md) for cache and async patterns.
+- [api-and-services.md](api-and-services.md) for API resilience and backpressure.
+- [infrastructure.md](infrastructure.md) for deployment, autoscaling, observability, and load tests.
 
-## Quick Wins — The 80/20 of Scaling
+Treat thresholds and sizing formulas as starting hypotheses; derive values from the actual system and provider limits.
 
-These solve most scaling problems before you need anything complex:
+## Find the bottleneck
 
-### 1. Add the Right Index
-```sql
--- Compound index: equality fields first, then range, then sort
-CREATE INDEX idx_orders_lookup
-ON orders(customer_id, status, created_at DESC);
+Trace one representative request/job across CPU, memory, database, network, external dependencies, locks, pools, and queues. Rank constraints by evidence and user impact. Distinguish:
 
--- Partial index: index only what you query
-CREATE INDEX idx_active_users
-ON users(email) WHERE status = 'active';
-```
+- latency from throughput;
+- saturation from a leak;
+- hot key/tenant from global load;
+- downstream throttling from application compute;
+- average performance from tail behavior.
 
-### 2. Fix N+1 Queries
-```typescript
-// BAD: 1 + N queries
-const users = await prisma.user.findMany();
-for (const u of users) u.posts = await prisma.post.findMany({ where: { authorId: u.id } });
+## Change the smallest effective layer
 
-// GOOD: 2 queries total
-const users = await prisma.user.findMany({ include: { posts: true } });
-```
+Prefer, in order when evidence supports it:
 
-### 3. Add Caching Where It Matters
-```typescript
-async function getUser(id: string) {
-  const cached = await redis.get(`user:${id}`);
-  if (cached) return JSON.parse(cached);
+1. remove wasted work or fix query/algorithm behavior;
+2. bound work with pagination, streaming, batching, timeouts, and backpressure;
+3. tune pools and concurrency against downstream capacity;
+4. cache with explicit freshness/invalidation semantics;
+5. move durable deferrable work to an idempotent queue;
+6. scale compute/data topology;
+7. partition or split services only when simpler limits are exhausted.
 
-  const user = await db.user.findUnique({ where: { id } });
-  await redis.setex(`user:${id}`, 300, JSON.stringify(user)); // 5min TTL
-  return user;
-}
-```
+Preserve consistency, ordering, authorization, tenancy, and retry semantics. Add rollback and observability before production rollout.
 
-### 4. Use Cursor Pagination
-```typescript
-// Offset pagination degrades: O(offset + limit) — page 1000 scans 100K rows
-// Cursor pagination is constant: O(limit) regardless of page
+## Prove the result
 
-const results = await prisma.post.findMany({
-  take: 20,
-  cursor: lastId ? { id: lastId } : undefined,
-  skip: lastId ? 1 : 0,
-  orderBy: { id: 'asc' }
-});
-```
+Run a reproducible load test in an authorized safe environment. Include warm-up, steady state, burst, soak when leaks matter, and dependency failure when resilience is in scope. Compare before/after:
 
-### 5. Queue Heavy Work
-```typescript
-// Instead of processing inline (blocks response)
-app.post('/upload', async (req, res) => {
-  await queue.add('process-upload', { fileId: req.body.fileId });
-  res.json({ status: 'queued' }); // Respond immediately
-});
-```
+- throughput and latency percentiles;
+- error/timeout rate;
+- CPU, memory, pool/connection saturation, queue depth/age;
+- database plans/rows/buffer usage;
+- consistency failures, retries, and cost per unit.
 
-### 6. Connection Pooling
-```
-Pool size = (CPU cores × 2) + 1
-4 cores → 9 connections
-8 cores → 17 connections
-```
+Avoid unsafe production load generation. Roll out gradually and stop when an agreed guardrail regresses.
 
-## Scaling Decision Matrix
+## Completion
 
-| Symptom | First Try | Then Try | Last Resort |
-|---------|-----------|----------|-------------|
-| Slow queries | Add indexes, fix N+1 | Read replicas, caching | Sharding |
-| High DB connections | Connection pooling | PgBouncer/ProxySQL | Read replicas |
-| API response time | Caching, pagination | Async processing | Microservices |
-| Traffic spikes | Rate limiting, CDN | Auto-scaling (HPA) | Queue-based load leveling |
-| CPU saturation | Worker threads, optimize code | Horizontal scaling | Vertical scaling |
-| Memory pressure | Stream large data, fix leaks | Increase instance size | Offload to external cache |
+Return workload/SLO assumptions, bottleneck evidence, implemented change, test command and data, before/after results with confidence, capacity estimate, cost effect, rollback, and next saturation signal.
 
-## Thresholds — When to Act
+<!-- skill-evolver:adaptive-start -->
+## Adaptive excellence
 
-| Metric | Healthy | Warning | Critical |
-|--------|---------|---------|----------|
-| p99 latency | < 200ms | 200-500ms | > 500ms |
-| DB cache hit ratio | > 99% | 95-99% | < 95% |
-| DB connection utilization | < 60% | 60-80% | > 80% |
-| CPU utilization | < 50% | 50-70% | > 70% |
-| Memory utilization | < 60% | 60-80% | > 80% |
-| Error rate | < 0.1% | 0.1-1% | > 1% |
-| Queue depth | Stable | Growing | Growing fast |
-| Read:write ratio | N/A | > 10:1 consider replicas | > 50:1 must have replicas |
-
-## Critical Rules
-
-1. **Measure before optimizing** — Use EXPLAIN ANALYZE, profilers, APM tools; gut feelings are wrong
-2. **Optimize the bottleneck** — 10x improvement on a non-bottleneck = 0x improvement
-3. **Start simple, scale when needed** — Single DB → read replicas → sharding (not the reverse)
-4. **Cache reads, queue writes** — Reads are cheap to cache; writes benefit from async processing
-5. **Stateless by default** — Session state in Redis/DB, not in memory; enables horizontal scaling
-6. **Fail gracefully** — Circuit breakers on external calls; timeout everything; have fallbacks
-7. **Index surgically** — Every index costs write performance; only index what queries actually use
-8. **Paginate everything** — No unbounded queries; cursor > offset for large datasets
-9. **Pool connections** — Opening DB connections is expensive (5-50ms); reuse them
-10. **Observe everything** — P99 latency, error rate, throughput, saturation; you can't fix what you can't see
-
-Use `$ARGUMENTS` to focus on a specific scaling area. Read the relevant reference file before writing code.
+- Optimize for measured capacity and reliability improvement against explicit workload and SLOs.
+- Use medium freedom for hypotheses and low freedom for thresholds, consistency, data safety, or unmeasured capacity claims.
+- Require a workload/topology baseline, load test with rollback, and measured capacity/latency/error/consistency/cost deltas. Revise once when weak.
+- Learn only from statistically meaningful project benchmark results.
+<!-- skill-evolver:adaptive-end -->

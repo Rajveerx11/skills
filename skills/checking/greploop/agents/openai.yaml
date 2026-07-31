@@ -1,0 +1,4 @@
+interface:
+  display_name: "Greploop"
+  short_description: "Resolve Greptile findings through verified loops"
+  default_prompt: "Use $greploop to iterate on this change until Greptile's actionable findings are cleared."

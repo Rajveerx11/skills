@@ -1,0 +1,4 @@
+interface:
+  display_name: "Caveman"
+  short_description: "Compress responses without losing correctness"
+  default_prompt: "Use $caveman at ultra intensity to compress this response while preserving every technical condition and exact payload."

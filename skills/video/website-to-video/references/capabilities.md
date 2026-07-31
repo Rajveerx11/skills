@@ -86,7 +86,7 @@ The runtime registers these adapters in order; each implements `discover()` / `s
 ### GSAP plugins (documented patterns)
 
 - **TextPlugin** — text mutation in `tl.call` (skills/gsap/references/effects.md)
-- **MotionPathPlugin** — curve-constrained tweens (skills/hyperframes/references/techniques.md)
+- **MotionPathPlugin** — curve-constrained tweens (`<SKILL_DIR>/../hyperframes/references/techniques.md`)
 - **CustomEase** — bezier eases imported from Remotion-style timing
 - **ScrollTrigger / Flip / SplitText / Draggable / Inertia / Observer / ScrambleText / CustomWiggle / CustomBounce / ScrollSmoother / GSDevTools** — work natively if loaded and tweens are on the registered paused timeline, but no special HyperFrames adapter
 - Producer injects ScrollTrigger CDN automatically when needed (packages/producer/src/services/htmlCompiler.ts)
@@ -142,7 +142,7 @@ You can also **write custom GLSL shaders from scratch** — any fragment shader 
 
 ## 4. CSS scene transitions (30+ named patterns)
 
-Documented in skills/hyperframes/references/transitions/ across 14 category files. All GSAP-driven, none mixable with shader transitions in same composition.
+Documented in `<SKILL_DIR>/../hyperframes/references/transitions/` across 14 category files. All GSAP-driven, none mixable with shader transitions in same composition.
 
 ### By category
 
@@ -287,7 +287,7 @@ EQ bars, spectrum UI, generic waveforms, note clip-art, generic particles, rainb
 
 ## 8. HTML-in-canvas
 
-Documented in skills/hyperframes/references/html-in-canvas-patterns.md (504 lines).
+Documented in `<SKILL_DIR>/../hyperframes/references/html-in-canvas-patterns.md` (504 lines).
 
 ### Capability
 
@@ -335,7 +335,7 @@ window.addEventListener("hf-seek", (e) => {
 
 ## 10. SVG / canvas / variable fonts (other authored techniques)
 
-(From skills/hyperframes/references/techniques.md)
+(From `<SKILL_DIR>/../hyperframes/references/techniques.md`)
 
 | Technique                | Mechanism                                                                            |
 | ------------------------ | ------------------------------------------------------------------------------------ |
@@ -684,7 +684,7 @@ Control bridge actions: play, pause, seek, set-muted, set-playback-rate, enable-
 
 ---
 
-## 23. References inventory (skills/hyperframes/references/)
+## 23. References inventory (`<SKILL_DIR>/../hyperframes/references/`)
 
 16 reference docs covering:
 

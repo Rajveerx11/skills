@@ -1,49 +1,41 @@
-# PORTING — turning a cap_fx3 demo into a first-class theme DNA
+# Porting a demo into a first-class theme DNA
 
-One theme at a time. The demo is the spec; the engine is the law.
+Port one theme at a time. The visual reference is the spec; the compiler contract is the law. Keep demos, source footage, mattes, and regression renders in the caller's workspace or a private test-data directory—never inside the skill.
 
 ## Inputs
 
-- Demo: `~/Downloads/cap_fx3/<tNN_name>/` — index.html (bg: scene-reaction + apex
-  setpiece), rail.html (fg alpha: body + furniture + front fx), postfx.json,
-  final_fx.mp4 + strip.png (ground truth of how it should look).
-- Engine: `scripts/make-theme.cjs` — read the header + the existing paradigms
-  (rail/panel/poem/takeover) and setpieces (detonation/decode/drawon/assembly/
-  colorflip/cpslam/coverword/settle) before writing anything.
+- **Reference project** (`THEME_DEMO_DIR`): `index.html`, optional `rail.html`, `postfx.json`, a final render, and a comparison strip.
+- **Regression fixture** (`THEME_FIXTURE_DIR`): a representative `source.mp4`, `frames_fg/`, `frames_bg/`, `matte.fps`, `transcript.json`, and `safe-zones.json`.
+- **Engine**: `../scripts/make-theme.cjs`. Read its registries and existing theme files before changing code.
+
+If either directory is absent, ask for that artifact or build a synthetic fixture that exercises the same behavior. Do not invent private machine paths.
 
 ## Process
 
-1. DECOMPOSE the demo: body paradigm? body entrance/exit verbs? hero setpiece?
-   front fx? plate budget? linkages? Map each piece to an existing registry
-   entry or mark it NEW.
-2. EXTEND the engine for the NEW pieces only — port the demo's GSAP logic into
-   generator functions, parameterized (sizes, colors, counts, seeds become DNA
-   params). Registries stay generic: paradigms/setpieces are the unit of code,
-   the DNA json is the unit of identity. Match the file's existing code style.
-   `node --check scripts/make-theme.cjs` after every edit.
-3. WRITE `themes/<name>.json` (drop the tNN\_ prefix). voice/when/register/fonts/
-   palette/body/hero/fx/plate/linkages — follow anchor.json + ordnance.json shape.
-4. VERIFY on the rooftop fixture:
-   - scaffold: `mkdir ~/Downloads/port_<name>` + symlink source.mp4 / frames_fg /
-     frames_bg + cp matte.fps transcript.json safe-zones.json from
-     `~/Downloads/cap_multi/rooftop/` (frames_bg from `~/Downloads/cap_fx/_frames_bg`).
-   - theme.json: same lines/hero the demo used (read its rail.html data).
-   - `node scripts/make-theme.cjs <dir>` → `preview-frames.cjs <dir> <4 key times>`
-     → READ the previews; compare against the demo's strip.png. Iterate ≤3 rounds.
-   - full render: `bash scripts/render-theme.sh <dir>` → extract a 12-frame strip
-     around the apex → view → compare to the demo strip. Small deviations OK,
-     note them; the THEME must read identically at a glance.
-5. REGRESSION: recompile one prior theme project (e.g. `~/Downloads/cap_anchor`,
-   plus the previous port in this batch) — make-theme must still compile and a
-   2-frame preview must look unchanged.
-6. REGISTER: add the identity row to CATALOG.md (voice/when/needs, author →
-   make-theme) and a line in themes/README.md if it has one.
+1. **Decompose the reference.** Identify the body paradigm, layer, entrance/exit verbs, hero setpiece, front effects, plate budget, and linkages. Map each feature to an existing registry entry or mark it `NEW`.
+2. **Extend only shared primitives.** Port genuinely new behavior into parameterized generator functions. Sizes, colors, counts, timing, and random seeds belong in DNA parameters. Preserve existing registry behavior.
+3. **Write `themes/<name>.json`.** Follow the current schema and nearby theme examples for `voice`, `when`, `register`, `fonts`, `palette`, `body`, `hero`, `fx`, `plate`, and `linkages`.
+4. **Compile and preview.**
+
+   ```bash
+   node scripts/make-theme.cjs "$THEME_FIXTURE_DIR"
+   node scripts/preview-frames.cjs "$THEME_FIXTURE_DIR" <four-key-times>
+   ```
+
+   Compare the output against the reference strip. Iterate at most three focused rounds; record any deliberate deviations.
+5. **Render and compare.**
+
+   ```bash
+   bash scripts/render-theme.sh "$THEME_FIXTURE_DIR"
+   ```
+
+   Extract a 12-frame strip around the apex. The new theme must read identically at a glance while preserving deterministic timing and layout.
+6. **Regression-test.** Recompile at least one previously passing theme fixture plus the new fixture. Confirm the prior theme's two-frame preview remains visually unchanged.
+7. **Register.** Add the identity to `CATALOG.md` and `themes/README.md`, including voice, fit, dependencies, and authoring compiler.
 
 ## Hard rules
 
-- The CONTRACT.md disciplines apply verbatim (determinism, physics doctrine,
-  body stability, apex-owns-frame, equal-length keyframes, fonts whitelist,
-  ≤ DUR scheduling): `~/Downloads/cap_fx3/CONTRACT.md`.
-- Never edit existing setpieces'/paradigms' behavior unless fixing a bug —
-  existing themes must not change appearance.
-- Do NOT commit; the orchestrator reviews and commits per batch.
+- Preserve determinism, seeded randomness, equal-length keyframes, font constraints, stable body typography, apex ownership, and scheduling within clip duration.
+- Never alter an existing setpiece or paradigm merely to fit one theme. A shared change needs a reproduced defect and regression evidence.
+- Run `node --check scripts/make-theme.cjs` after compiler edits.
+- Keep reference media, previews, renders, and private notes out of synchronized skill copies.

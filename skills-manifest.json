@@ -1,0 +1,512 @@
+{
+  "schema": 1,
+  "canonical_root": "skills",
+  "roots": {
+    "codex": ".codex/skills",
+    "claude": ".claude/skills",
+    "agents": ".agents/skills"
+  },
+  "skills": [
+    {
+      "name": "agent-reach",
+      "path": "skills/writing/agent-reach",
+      "targets": [
+        "claude",
+        "agents"
+      ]
+    },
+    {
+      "name": "build-premium-website",
+      "path": "skills/building/build-premium-website",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "caveman",
+      "path": "skills/writing/caveman",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "code-structure",
+      "path": "skills/building/code-structure",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "composio",
+      "path": "skills/building/composio",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "cost-reducer",
+      "path": "skills/checking/cost-reducer",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "create-skill",
+      "path": "skills/workspace/create-skill",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "customer-support",
+      "path": "skills/sales/customer-support",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "design-taste-frontend",
+      "path": "skills/design/design-taste-frontend",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "embedded-captions",
+      "path": "skills/video/embedded-captions",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "enrich-lead",
+      "path": "skills/sales/enrich-lead",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "faceless-explainer",
+      "path": "skills/video/faceless-explainer",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "find-skills",
+      "path": "skills/workspace/find-skills",
+      "targets": [
+        "claude",
+        "agents"
+      ]
+    },
+    {
+      "name": "frontend-design-skill",
+      "path": "skills/building/frontend-design-skill",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "frontend-slides",
+      "path": "skills/writing/frontend-slides",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "general-video",
+      "path": "skills/video/general-video",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "genmedia",
+      "path": "skills/building/genmedia",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "graphic-overlays",
+      "path": "skills/video/graphic-overlays",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "greploop",
+      "path": "skills/checking/greploop",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "hyperframes",
+      "path": "skills/video/hyperframes",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "hyperframes-animation",
+      "path": "skills/video/hyperframes-animation",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "hyperframes-cli",
+      "path": "skills/video/hyperframes-cli",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "hyperframes-core",
+      "path": "skills/video/hyperframes-core",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "hyperframes-creative",
+      "path": "skills/video/hyperframes-creative",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "hyperframes-media",
+      "path": "skills/video/hyperframes-media",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "hyperframes-registry",
+      "path": "skills/video/hyperframes-registry",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "impeccable",
+      "path": "skills/design/impeccable",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "lead-scrapping-apify",
+      "path": "skills/sales/lead-scrapping-apify",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "learn-day",
+      "path": "skills/workspace/learn-day",
+      "targets": [
+        "codex",
+        "claude"
+      ],
+      "runtime_excludes": [
+        "data/**"
+      ]
+    },
+    {
+      "name": "learn-post",
+      "path": "skills/writing/learn-post",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "linkedin-post-writer",
+      "path": "skills/writing/linkedin-post-writer",
+      "targets": [
+        "codex",
+        "claude"
+      ],
+      "runtime_excludes": [
+        ".consent",
+        "memory/**",
+        ".skill-data/**"
+      ]
+    },
+    {
+      "name": "local-coder",
+      "path": "skills/building/local-coder",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "motion-graphics",
+      "path": "skills/video/motion-graphics",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "n8n",
+      "path": "skills/building/n8n",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "obsidian-vault-tune-up",
+      "path": "skills/workspace/obsidian-vault-tune-up",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "paper-deck-style",
+      "path": "skills/design/paper-deck-style",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "paper-mcp",
+      "path": "skills/building/paper-mcp",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "plan-day",
+      "path": "skills/workspace/plan-day",
+      "targets": [
+        "codex",
+        "claude"
+      ],
+      "runtime_excludes": [
+        "data/**"
+      ]
+    },
+    {
+      "name": "playwright-skill",
+      "path": "skills/checking/playwright-skill",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "pr-to-video",
+      "path": "skills/video/pr-to-video",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "product-launch-video",
+      "path": "skills/video/product-launch-video",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "remotion-to-hyperframes",
+      "path": "skills/video/remotion-to-hyperframes",
+      "targets": [
+        "agents"
+      ],
+      "runtime_excludes": [
+        "assets/test-corpus/run-report.json",
+        "assets/test-corpus/tier-*/**/node_modules/**",
+        "assets/test-corpus/tier-*/**/package-lock.json",
+        "assets/test-corpus/tier-*/remotion-src/out/**",
+        "assets/test-corpus/tier-*/hf-src/out/**",
+        "assets/test-corpus/tier-*/hf.mp4",
+        "assets/test-corpus/tier-*/diff/**",
+        "assets/test-corpus/tier-*/strip/**",
+        "assets/test-corpus/tier-2-multi-scene/remotion-src/public/**",
+        "assets/test-corpus/tier-2-multi-scene/hf-src/assets/**"
+      ]
+    },
+    {
+      "name": "remotion-video-prompt",
+      "path": "skills/video/remotion-video-prompt",
+      "targets": [
+        "codex",
+        "claude"
+      ],
+      "runtime_excludes": [
+        "LEARNINGS.md",
+        "history/**",
+        "memory/**",
+        ".skill-data/**"
+      ]
+    },
+    {
+      "name": "researcher",
+      "path": "skills/writing/researcher",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "resume-tailor",
+      "path": "skills/writing/resume-tailor",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "roast",
+      "path": "skills/checking/roast",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "scalability",
+      "path": "skills/checking/scalability",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "security",
+      "path": "skills/checking/security",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "session-handoff",
+      "path": "skills/workspace/session-handoff",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "shorts",
+      "path": "skills/video/shorts",
+      "targets": [
+        "codex",
+        "claude"
+      ],
+      "runtime_excludes": [
+        "LEARNINGS.md",
+        "history/**",
+        "memory/**",
+        ".skill-data/**"
+      ]
+    },
+    {
+      "name": "skill-evolver",
+      "path": "skills/workspace/skill-evolver",
+      "targets": [
+        "codex",
+        "claude"
+      ],
+      "runtime_excludes": [
+        "scripts/__pycache__/**",
+        "scripts/*.pyc"
+      ]
+    },
+    {
+      "name": "slideshow",
+      "path": "skills/writing/slideshow",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "task-to-pr",
+      "path": "skills/checking/task-to-pr",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "trigger-dev",
+      "path": "skills/building/trigger-dev",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "ui-ux-pro-max",
+      "path": "skills/design/ui-ux-pro-max",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "upwork",
+      "path": "skills/writing/upwork",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "upwork-proposal",
+      "path": "skills/writing/upwork-proposal",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "visual-plan",
+      "path": "skills/workspace/visual-plan",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    },
+    {
+      "name": "website-to-video",
+      "path": "skills/video/website-to-video",
+      "targets": [
+        "agents"
+      ]
+    },
+    {
+      "name": "youtube-researcher",
+      "path": "skills/writing/youtube-researcher",
+      "targets": [
+        "codex",
+        "claude"
+      ]
+    }
+  ]
+}

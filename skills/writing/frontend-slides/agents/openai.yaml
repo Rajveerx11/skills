@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Slides"
+  short_description: "Build animated, accessible HTML presentations"
+  default_prompt: "Use $frontend-slides to turn this material into a polished browser presentation with verified navigation and print output."

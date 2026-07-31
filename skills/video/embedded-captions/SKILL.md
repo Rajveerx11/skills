@@ -1,13 +1,11 @@
 ---
 name: embedded-captions
-description: 'Add captions to a talking-head video. ONE catalog (CATALOG.md) of 32 visual identities behind two engines: column-flow (captions composited INTO the scene — matte occlusion + mix-blend; cream/ink/editorial/keynote/documentary/loud/neon/glitch/chrome/velocity) and themed constitutions (anchor/ordnance/terminal/neonsign/stardust/stomp/scoreboard/transit/vhs/arcade/dossier/laser/thunder/hologram/biolume/aurora/spectrum/papercut/popup/chalkboard/graffiti/brush/inkwater/ransom/lastpage/nightcity — e.g. a glyph-decode climax, a neon sign WRITTEN stroke by stroke, or the quiet `anchor` rail default). Route by identity, never by mode. Trigger on "captions/subtitles", "embed/cinematic captions", "VFX captions", "炸/特效/酷炫字幕", a named identity, or top-tier motion-graphics asks. Embedding every word is wrong for most talking-head content — `anchor` is the verbatim default. Pipeline: transcription → hyperframes remove-background matting → HTML render → ffmpeg overlay. Requires hyperframes and a single-subject clip.'
-metadata:
-  tags: captions, embedded-captions, occlusion, matting, talking-head, rembg-matting, whisper, ffmpeg, cinematic
+description: 'Add captions to a single-subject talking-head video through one identity catalog backed by Standard, Cinematic, and Theme engines. Supports a quiet verbatim rail with a scarce embedded climax, fully scene-embedded cinematic typography, and VFX-grade themed constitutions. Use for captions, subtitles, embedded or cinematic captions, VFX captions, 炸/特效/酷炫字幕, a named catalog identity, or top-tier caption motion. Route by identity, never by backend mode. Default to the readable `anchor` identity for ordinary speech; embedding every word is usually wrong. Pipeline: transcription, HyperFrames background-removal matte, HTML render, ffmpeg composite. Requires HyperFrames and suitable single-subject footage.'
 ---
 
 # Embedded Captions
 
-**One catalog, picked up front** ([CATALOG.md](CATALOG.md) — 17 identities; the three engines behind it are backend detail). **Standard** (default) builds a clean verbatim **rail** (lower-third subtitle carrying most text) + an **embed** climax composited _into_ the scene behind the subject at the peak. **Cinematic** is pure embed — no rail, every caption composited behind the subject (hero typography, accumulation, occlusion as the effect). **Theme** is a complete themed constitution — body paradigm × hero setpiece × front fx × plate reaction, composed from registries ([themes/README.md](themes/README.md)): `ordnance` `terminal` `neonsign` `stardust` `stomp`. Most explainer / voiceover is **Standard**; **embed is the scarce, earned peak** — embedding every word is the common mistake; Theme is for VFX-grade asks ("炸", "特效", "像 AE 做的").
+**One catalog, picked up front** ([CATALOG.md](CATALOG.md); the three engines behind it are backend detail). **Standard** (default) builds a clean verbatim **rail** (lower-third subtitle carrying most text) + an **embed** climax composited _into_ the scene behind the subject at the peak. **Cinematic** is pure embed — no rail, every caption composited behind the subject (hero typography, accumulation, occlusion as the effect). **Theme** is a complete themed constitution — body paradigm × hero setpiece × front fx × plate reaction, composed from registries ([themes/README.md](themes/README.md)). Most explainer / voiceover is **Standard**; **embed is the scarce, earned peak** — embedding every word is the common mistake; Theme is for VFX-grade asks ("炸", "特效", "像 AE 做的").
 
 ---
 
@@ -16,7 +14,7 @@ metadata:
 The craft prose below is long; the **pipeline itself is short** — and everything
 deterministic is computed or compiled, never hand-written:
 
-1. **Decision gate** (refuse bad clips) → **pick ONE identity from [CATALOG.md](CATALOG.md)** (17 identities; engine/compiler derived by lookup — never surface a mode/category question)
+1. **Decision gate** (refuse bad clips) → **pick ONE identity from [CATALOG.md](CATALOG.md)** (engine/compiler derived by lookup — never surface a mode/category question)
 2. `hyperframes init` (skip it if the project dir already exists with the video inside — `matte.cjs`/`transcribe.cjs` adopt any video in the dir as source.mp4) → **`bash scripts/prepare.sh <project>`** (matte ∥ transcribe ∥ audio-envelope in parallel, then safe-zones v2 with scene palette/optics/lighting — one command, nothing forgotten)
 3. **author a small JSON of creative choices** (read `safe-zones.json` first):
    Cinematic → `plan.json` → `fill-timings.cjs` → `fit-fonts.cjs` → `make-composition.cjs`;
@@ -51,7 +49,7 @@ Rail-surface identities build exactly this (rail = `rail.html`, embed = the clim
 ## Step 0 — pick ONE identity from the CATALOG
 
 **One front-end, three engines behind.** The user picks an IDENTITY from
-[CATALOG.md](CATALOG.md) (17 entries: 12 classic + 5 themed); the engine,
+[CATALOG.md](CATALOG.md); the engine,
 compiler and authoring file are derived by lookup from the catalog row.
 **Never surface "Standard vs Cinematic vs Theme" as a question** — those are
 backend names (a product has one UX even with several engines). The catalog
@@ -193,9 +191,8 @@ co-visible captions dim (setup) → per-letter entrance with amplitude ∝ spoke
 (impact) → breathe + glow until exit (afterglow).
 
 (Legacy: `plan.template:"cinematic-cream"` maps to `dna:"cream"` automatically.
-The retired 54-template library lives outside the skill at
-`~/Downloads/embedded-captions-archive/standard-templates-54/`; `_motion.md` remains
-in-skill as the motion-verb reference catalog.)
+The retired template library is not shipped and is never required; `_motion.md`
+remains in-skill as the motion-verb reference catalog.)
 
 ---
 
@@ -274,11 +271,23 @@ track has its own, much simpler spec → **[references/rail.md](references/rail.
 
 ## Dependencies
 
-- **hyperframes**, built (`packages/cli/dist/cli.js`). Scripts auto-resolve the checkout: `HYPERFRAMES_ROOT` env → repo root if this skill ships _inside_ hyperframes → `~/Downloads/hyperframes`. Build with `bun install && bun run build`.
-- **Node-first; two Python touchpoints via `uvx` (no manual installs):** transcription runs WhisperX through `uvx` (word-level timings; falls back per SKILL §transcription), and Theme's `drawon` setpiece shells `python3 scripts/gen-stroke-path.py` at compile time. Everything else runs on the toolchain hyperframes already ships: matting via the hyperframes CLI's **`remove-background`** (u2net_human_seg; weights auto-download once, ~168 MB, to `~/.cache/hyperframes/`), image/alpha math via **`sharp`**, layout/occlusion/overflow via **`puppeteer`**, plus **`ffmpeg`**. The scripts auto-resolve these from the hyperframes checkout — nothing extra to install.
+- **HyperFrames CLI** through explicit `HYPERFRAMES_CLI` (executable, command name, or built CLI JavaScript file) or the current `npx hyperframes`. Installed skills never infer or require a HyperFrames source-checkout layout.
+- **Node-first; two Python touchpoints via `uvx` (no manual installs):** transcription runs WhisperX through `uvx` (word-level timings; falls back per SKILL §transcription), and Theme's `drawon` setpiece shells `python3 scripts/gen-stroke-path.py` at compile time. Everything else uses the installed HyperFrames CLI for matting, **`sharp`** for image/alpha math, **`puppeteer`** for layout/occlusion/overflow, and **`ffmpeg`** for media processing. Node dependencies may be installed normally beside the skill/project; `HYPERFRAMES_ROOT` is accepted only as an optional dependency-resolution hint for development environments.
 - **Transcription = WhisperX via `uvx`** (word-level timings + alignment; no manual install — `transcribe.cjs` drives `uvx whisperx`). Falls back to an existing word-level `transcript.json` if present.
 - **Source video** — `matte.cjs` / `transcribe.cjs` auto-resolve `source.mp4` (or glob the clip / read `hyperframes.json`), so `hyperframes init --video X.mp4` needs no manual rename.
 - **fps** — `matte.cjs` extracts at the source's native rate and records `matte.fps`; `render-and-composite.sh` uses that so the matte stays frame-aligned.
 - Matting weights are NOT bundled: `matte.cjs` shells the hyperframes CLI's `remove-background`, which downloads u2net_human_seg (~168 MB, Apache-2.0) once to `~/.cache/hyperframes/background-removal/models/`. First prepare on a fresh machine needs network for that one download.
 
 If a hard dependency is missing, STOP and ask the user — don't silently skip steps.
+
+<!-- skill-evolver:adaptive-start -->
+## Professional execution
+
+- **Discover automatically:** locate the source clip, existing transcript, project manifest, prior matte, safe-zone analysis, and earlier previews before asking for paths or repeating expensive work. Probe duration, dimensions, fps, audio, cuts, subject count, and source language first.
+- **Default intelligently:** use `anchor` for ordinary talking-head footage, one scarce embed climax, source-native fps, transcript wording unchanged, and the shipped fallback chain. Choose another identity only when tone, platform, and footage support it.
+- **Resume safely:** treat `transcript.json`, matte metadata, `safe-zones.json`, compiled composition, preview frames, and `final.mp4` as checkpoints. Re-run only a missing, stale, or failed stage; invalidate downstream files when transcript timing, fps, or source video changes.
+- **Protect contracts:** never invent words, hide low-confidence transcription, place text over unsafe facial/hand zones, skip the matte alignment check, or bypass timing, overflow, occlusion, contrast, and hero gates. Preserve Theme's documented plate exception; do not grade ordinary footage.
+- **Use creative freedom where useful:** explore identity, hierarchy, typography, and motion internally, then commit to one coherent system. Favor fewer meaningful embeds over constant effects.
+- **Finish the handoff:** deliver the resolved source/transcript, chosen identity and rationale, preview/contact-sheet evidence, validation results, exact final path, duration/fps/dimensions, and any unverified dependency or transcription segment.
+- **Learn only from evidence:** record approved identities, corrected timing patterns, and measured readability feedback through `skill-evolver`; never self-edit from silence, one unverified outcome, or model self-rating.
+<!-- skill-evolver:adaptive-end -->

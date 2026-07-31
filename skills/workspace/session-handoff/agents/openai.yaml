@@ -1,0 +1,4 @@
+interface:
+  display_name: "Session Handoff"
+  short_description: "Create a verified fresh-session handoff"
+  default_prompt: "Use $session-handoff to prepare a complete handoff for the next session."

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Graphic Overlays"
+  short_description: "Add timed editorial graphics to existing footage"
+  default_prompt: "Use $graphic-overlays to analyze this footage, add useful timed graphic cards, validate safe placement, and deliver the final render."
+policy:
+  allow_implicit_invocation: true

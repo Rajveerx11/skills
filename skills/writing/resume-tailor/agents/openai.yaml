@@ -1,0 +1,4 @@
+interface:
+  display_name: "Resume Tailor"
+  short_description: "Create honest, ATS-readable tailored resumes"
+  default_prompt: "Use $resume-tailor to tailor my master resume to this job, expose genuine gaps, and produce a verified application package."

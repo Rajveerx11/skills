@@ -1,0 +1,4 @@
+interface:
+  display_name: "Trigger.dev"
+  short_description: "Build durable typed background tasks"
+  default_prompt: "Use $trigger-dev to build and verify a durable Trigger.dev task for this workflow."

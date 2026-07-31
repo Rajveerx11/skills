@@ -14,8 +14,7 @@
 #   - ffmpeg, ffprobe, python3 on PATH
 #   - node 22 (for the HF CLI)
 #   - npm (for Remotion installs)
-#   - HF CLI built at packages/cli/dist/cli.js (run `bun run --filter @hyperframes/cli build`
-#     in the repo root if missing)
+#   - HyperFrames available through HYPERFRAMES_CLI or `npx hyperframes`
 #
 # Output:
 #   <fixture>/diff/summary.json   per-fixture SSIM summary
@@ -26,13 +25,12 @@ set -euo pipefail
 
 THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILL_DIR="$(cd "$THIS_DIR/../.." && pwd)"
-REPO_ROOT="$(cd "$SKILL_DIR/../.." && pwd)"
 
 LINT="$SKILL_DIR/scripts/lint_source.py"
 DIFF="$SKILL_DIR/scripts/render_diff.sh"
 STRIP="$SKILL_DIR/scripts/frame_strip.sh"
-HF_CLI="$REPO_ROOT/packages/cli/dist/cli.js"
 REPORT="$THIS_DIR/run-report.json"
+HF_CMD=()
 
 # Per-fixture results land here as one JSON file each, then the aggregator
 # globs them. This is safer than building JSON via bash string concatenation
@@ -44,9 +42,29 @@ trap 'rm -rf "$RESULTS_DIR"' EXIT
 # toolchain checks until run_render_tier() actually runs, so
 # `./run.sh tier-4-escape-hatch` works on a clean checkout.
 require_render_tier_tools() {
-  if [[ ! -f "$HF_CLI" ]]; then
-    echo "error: HF CLI not built at $HF_CLI" >&2
-    echo "       Run 'bun run --filter @hyperframes/cli build' in $REPO_ROOT" >&2
+  if [[ -n "${HYPERFRAMES_CLI:-}" ]]; then
+    if [[ -f "$HYPERFRAMES_CLI" ]]; then
+      case "$HYPERFRAMES_CLI" in
+        *.js|*.cjs|*.mjs) HF_CMD=(node "$HYPERFRAMES_CLI") ;;
+        *)
+          if [[ -x "$HYPERFRAMES_CLI" ]]; then
+            HF_CMD=("$HYPERFRAMES_CLI")
+          else
+            echo "error: HYPERFRAMES_CLI is not executable: $HYPERFRAMES_CLI" >&2
+            return 2
+          fi
+          ;;
+      esac
+    elif command -v "$HYPERFRAMES_CLI" >/dev/null 2>&1; then
+      HF_CMD=("$HYPERFRAMES_CLI")
+    else
+      echo "error: HYPERFRAMES_CLI does not resolve: $HYPERFRAMES_CLI" >&2
+      return 2
+    fi
+  elif command -v npx >/dev/null 2>&1; then
+    HF_CMD=(npx hyperframes)
+  else
+    echo "error: HyperFrames unavailable; set HYPERFRAMES_CLI or install npx" >&2
     return 2
   fi
   if ! command -v ffmpeg >/dev/null 2>&1; then
@@ -140,7 +158,7 @@ run_render_tier() {
 
   echo "    ⏳ render HF translation"
   if ! (cd "$fixture_dir" && \
-        node "$HF_CLI" render hf-src/ --output hf.mp4 --quiet >/dev/null 2>&1); then
+        "${HF_CMD[@]}" render hf-src/ --output hf.mp4 --quiet >/dev/null 2>&1); then
     echo "    ✗ HF render failed"
     write_result "$fixture_name" "fail" stage "hf-render"
     return 0

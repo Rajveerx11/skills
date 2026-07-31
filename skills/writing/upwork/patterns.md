@@ -1,168 +1,144 @@
-# Upwork Copywriting Patterns — Reference
+# Upwork Profile Patterns
 
-Detailed pattern library distilled from top earners on Upwork ($1M+ lifetime, Top Rated Plus, Expert Vetted). Read this when you need depth beyond the SKILL.md summary.
+Use these as modular patterns, not mandatory templates. Current platform limits and features can change; verify them before giving exact character, tag, pricing, or ranking claims.
 
-## The 8-Part Overview Structure
+## Contents
 
-Every $100/hr+ profile uses some subset of this sequence:
+- Positioning statement
+- Headline
+- Overview
+- Proof
+- Fit boundaries
+- Skills and search relevance
+- Portfolio case studies
+- Project catalog
+- Consultation
+- Measurement
 
-1. **Hook** (1 line) — transformation, not introduction
-2. **Proof block** (3–5 bullets) — dollar amounts, named clients, hard metrics
-3. **Qualifier** ("you're in the right place if...") — invites self-selection
-4. **Disqualifier** ("not a good fit if...") — filters and signals scarcity
-5. **Transformation** ("working with me you will...") — outcome-painted benefits
-6. **Expertise stack** — categorized tech/tool list (front/back/AI/cloud/etc.)
-7. **Industries / solutions** — comma-list of verticals served
-8. **CTA** — direct, urgent, action verb
+## Positioning statement
 
-## Power Words & Phrases (steal these)
+Internal formula:
 
-**Leverage / authority:**
-- "Create Leverage"
-- "Apex developer"
-- "Silver bullet you've been looking for"
-- "Fire and forget"
-- "Strategic architect"
-- "10X your business"
-- "Print money together"
+`I help [specific client] solve [expensive problem] by delivering [service/artifact], supported by [best proof].`
 
-**Scarcity / qualification:**
-- "I cannot help everybody"
-- "Not everyone is my client"
-- "Some signs we might not be a good fit"
-- "No time to waste"
-- "Your competition has been busy..."
+Strong positioning excludes work the freelancer does not want. It does not require public "not for you" copy unless that tone fits.
 
-**Outcome framing:**
-- "Stop struggling with..."
-- "Anticipate objections and pre-handle them"
-- "Put your best foot forward"
-- "Turnkey, investor-grade, futureproofed"
-- "Zero to revenue in 90 days"
+## Headline
 
-**Authority numbers (always cite specifics):**
-- "$10M+ generated for client software revenue"
-- "Clients generated $10K/month on avg"
-- "Over 56+ SaaS products built"
-- "10+ years of experience"
-- "200+ successful projects"
+Useful structures:
 
-## Headline Patterns (≤70 chars optimal)
-
-| Pattern | Example |
-|---|---|
-| `[Rank] [Role] \| [Specialty 1] & [Specialty 2] \| [Stack] Expert` | `10X Full-Stack Developer \| SaaS & AI Specialist \| Azure & .NET Expert` |
-| `[Role], [Domain] & [Skill] Expert \| [Platform]` | `Software Engineer, AI Integration & Automation Expert \| GoHighLevel` |
-| `[Role], [Buzz Skill], [Buzz Skill], [Outcome]` | `Full Stack Developer, AI Agent, Automation, SaaS, Web` |
+- `[Role/service] for [industry or problem] | [key capability]`
+- `[Outcome category] specialist | [service] + [tool/domain]`
+- `[Verified badge] [role] | [specific buyer outcome]`
 
 Rules:
-- First two words must be searchable role keywords
-- Use `|` separators for scannability
-- Avoid clever wordplay — clarity > cleverness
-- Front-load the highest-value specialty
 
-## Proof Bullet Formula
+- begin with terms clients use in relevant jobs;
+- add one specialization that proof supports;
+- avoid self-awarded ranks such as "Top 1%" or "10x";
+- never imply a platform badge that is not visible and current;
+- favor a readable phrase over a comma pile.
 
-`[arrow] [verb past-tense] [specific $/% metric] [for whom / via what]`
+## Overview
 
-✅ `→ I save over $2.3M in operating costs through AI-driven automations`
-✅ `→ Chevron: $2.2M saved through process automation`
-✅ `→ Grew real estate firm from startup to $843K annual revenue`
+Recommended sequence:
 
-❌ "I help businesses save money" (no number)
-❌ "Experience with major brands" (no proof)
-❌ "Improved efficiency significantly" (no metric)
+1. **Relevance:** mirror the client's problem and desired outcome.
+2. **Proof:** one or two closest case-study results.
+3. **Offer:** services/artifacts the client can buy.
+4. **Approach:** enough process to reduce risk.
+5. **Fit:** useful boundaries on stage, scope, or collaboration.
+6. **Next step:** one specific invitation to discuss scope.
 
-## Qualifier Block Template
+Not every profile needs all six as separate sections.
 
-> "I cannot help everybody, but we may be a great fit if you are thinking:
-> - 'There's millions on the line and I want the BEST'
-> - 'I know my business, but I don't understand code'
-> - 'The last [thing we built] was embarrassing — I don't want that EVER again'
-> - 'I need a [solution] that I KNOW 100% will work RIGHT'"
+## Proof
 
-The quoted thoughts mirror the client's internal monologue. They read it and think "that's literally me."
+Use the strongest truthful evidence available:
 
-## Disqualifier Block Template
+1. verified business outcome;
+2. shipped artifact and adoption;
+3. scale/complexity handled;
+4. before/after process improvement;
+5. client quote with permission;
+6. relevant credential or platform record.
 
-> "Not everyone is my client, though. Some signs we might not be a good fit include:
-> - ✗ Only looking to make a quick buck — no long-term product vision
-> - ✗ No realistic budget to execute the idea
-> - ✗ Only interested in getting information, not committed to completion"
+Proof sentence:
 
-Disqualifying = highest-status move on a sales page. Counter-intuitively *increases* conversion among qualified buyers.
+`[Action/contribution] for [client/problem], resulting in [verified outcome] under [relevant constraint].`
 
-## Transformation Bullets
+When exact metrics are confidential, say what can be defended: number of workflows, team size, transaction band, launch state, reliability target, or time saved without a false number.
 
-Use `★` and active future-tense:
+## Fit boundaries
 
-> ★ Stop struggling with tech — I handle planning, design, development, marketing, strategy
-> ★ Put your best foot forward for your one shot at the market
-> ★ Anticipate client objections and pre-handle them
-> ★ Receive a turnkey, investor-grade, futureproofed product
+Use boundaries to prevent mismatch, not manufacture status.
 
-## Tech Stack Block (categorized list)
+Good:
 
-```
-MY TECH STACK
-- Front End Development: React.js, Next.js, Vue.js, TypeScript, Tailwind CSS
-- Back End Development: Go, Node.js, Python, Django, FastAPI
-- Mobile App Development: React Native, Flutter, Swift, Kotlin
-⁃ Database Management: PostgreSQL, MongoDB, MySQL, Redis
-⁃ AI Integration: OpenAI, Claude, Gemini, LangChain, RAG
-⁃ Cloud & Infrastructure: AWS, GCP, Docker, Kubernetes, Terraform
-```
+- "Best fit: teams with an existing workflow and an owner available for weekly decisions."
+- "Not a fit for: scraping that bypasses platform controls or projects without access to source systems."
 
-Format note: mix `-` and `⁃` for visual rhythm. Categories on separate lines. No prose.
+Avoid insults, fake scarcity, fear about competitors, or assumptions about client budget.
 
-## CTA Closers (rotate by tone)
+## Skills and search relevance
 
-**Direct response (Vepa style):**
-> "As you read this bio, your competition has been busy building a rival product — no time to waste. Message me now, and let's print money together!"
+Build terms from a sample of real target jobs:
 
-**Authority (Harsumeet style):**
-> "I focus on B2B SaaS Products that aim for $1M ARR. If that's you, message me."
+- role/service;
+- artifact or business problem;
+- key platform/tool;
+- industry/domain;
+- adjacent high-value capability.
 
-**Friendly expert (Abayomi style):**
-> "Let me show you how I can save you time and money today!"
+Use only supported skills. Order by desired work. Remove commodity tags that dilute the profile unless target jobs commonly require them.
 
-## Skills Tags Strategy
+## Portfolio case study
 
-Upwork lets you list ~15 skills. Optimize for:
-1. **Search match** — what clients type when hiring
-2. **Specialty signal** — niche tags > broad tags for premium pricing
-3. **Stack breadth** — mix categories so multiple search queries pull you
+Use:
 
-Bad mix: `JavaScript`, `Python`, `HTML`, `CSS`, `SQL` (commodity)
-Good mix: `AI Agent Development`, `n8n`, `GoHighLevel`, `SaaS Development`, `Full-Stack Development`, `Marketing Automation Software`, `Business Process Automation`
+1. client/problem context;
+2. user's role and decisions;
+3. constraints;
+4. solution/artifacts;
+5. verified result;
+6. visual proof and stack.
 
-## Project Catalog Pricing Ladder
+The first image and first two lines must demonstrate the promised service. Blur private data and get permission for named clients.
 
-| Tier | Price | Delivery | Purpose |
-|---|---|---|---|
-| Consult | $30–$99 | 1 day | Foot in the door |
-| Small fix | $150–$500 | 1–3 days | Quick wins, builds reviews |
-| Standard build | $1K–$2K | 7 days | Anchor for mid-market |
-| Industry vertical | $7K–$8K | 30 days | Premium positioning + filters serious buyers |
+## Project catalog
 
-Catalog titles should be outcome-led: "You will get AI Agent for [Industry] Process Automation" — never "I will build you an agent."
+Create catalog offers only for repeatable, bounded outcomes.
 
-## Employment History — Tell Outcome Stories
+Each offer needs:
 
-Wrong:
-> "Senior Developer at Kursoft. Built CRM software. Used C# and SQL."
+- buyer and problem;
+- exact deliverable;
+- required inputs/access;
+- included revisions;
+- exclusions and change-order trigger;
+- delivery window;
+- acceptance criteria;
+- price derived from effort, risk, support, and positioning.
 
-Right:
-> "Developed KRS 4 CRM application enabling Kursoft to grow customer base from 2,000 to 10,000+ businesses in less than a year. Design and UI philosophies I instilled are still in use in the 5th iteration."
+Use tiers only when scope differences are real. Do not invent a low-price tier solely as bait.
 
-Every job entry = a metric + a lasting impact + a brand name when possible.
+## Consultation
 
-## Testimonials — Format & Solicitation
+A consultation works when discovery itself has independent value. Define:
 
-Format: short quote → full client name → role + company → date → "Verified" badge.
+- agenda;
+- pre-call inputs;
+- live output;
+- post-call artifact;
+- who should book;
+- what it does not include.
 
-Solicit immediately after every 5-star job close: "Would you mind leaving a short testimonial about the [specific outcome]? Two sentences is plenty."
+Price from expertise and deliverable, not a universal range.
 
-## Final Note
+## Measurement
 
-The pattern beneath all of these: **proof, not promises**. Top earners win by being the freelancer who can prove what they did with a dollar sign and a brand name. Everything in the profile is in service of that proof.
+Use comparable time windows:
+
+`qualified invites / profile views`, `replies / qualified invites`, `hires / interviews`.
+
+Record rate, availability, niche, season, and proposal volume. Treat small samples cautiously. Optimize for qualified opportunity and project fit, not raw views.

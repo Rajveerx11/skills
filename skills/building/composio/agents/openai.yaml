@@ -1,0 +1,4 @@
+interface:
+  display_name: "Composio Integration"
+  short_description: "Build scoped multi-app agent integrations"
+  default_prompt: "Use $composio to build this least-privilege multi-app agent integration and verify its auth flow."

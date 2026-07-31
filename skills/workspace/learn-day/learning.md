@@ -12,7 +12,9 @@ Log daily (capture studied + shipped) → live the week → Weekly Report (diagn
 
 ## 1. Log reality (every Log)
 
-Write/append `data/logs/YYYY-MM-DD.json` using the shape in `templates.md`. The two numbers that matter most: **watched** and **shipped**. Everything else is color.
+Upsert `<state-root>/logs/YYYY-MM-DD.json` using the shape in `templates.md`.
+The configured consumption and creation metrics matter most; everything else is
+context. Never store runtime logs in the installed skill directory.
 
 ## 2. Distill into LEARNINGS.md
 
@@ -35,11 +37,11 @@ Update rules:
 
 This is the heart of the "where you're going wrong" section. Run every item against the week's logs and call out the ones that fire, **with the numbers**:
 
-1. **Consuming, not doing** — watched ≫ shipped (ratio worse than ~1:1). The cardinal sin. *"9 watched, 2 shipped — you're a student, not a builder this week."*
+1. **Consuming, not doing** — consumption materially exceeds the configured creation target. *"9 study units, 2 shipped artifacts — creation is not keeping pace this week."*
 2. **Under the posting target** — posts_shipped < weekly_targets.posts. *"2 of 3 — the algorithm and the habit both need the 3rd."*
 3. **Broken streak / front-loading** — ships early then fades. *"Shipped Mon–Wed, nothing Thu–Sun — consistency, not intensity, wins."*
 4. **Focus drift / pivoting** — work logged outside the committed track/platform. *"You committed to LinkedIn + one niche — 3 days went elsewhere. Pivoting is the progress-killer."*
-5. **No product progress** — zero build/validate/pre-sell steps for the week (or multiple weeks). *"All input, no output — when does the n8n pack ship?"*
+5. **No applied progress** — zero configured build, practice, validation, or shipping steps for the week.
 6. **No validation-with-money** — building without a single pre-sell/demand test. *"Opinions aren't validation — test with a pre-order."*
 7. **Avoiding the hard track** — one track (often Scaling SaaS or Copywriting reps) consistently untouched. *"Copywriting got 0 reps again — it's the skill under everything."*
 8. **Passive logging** — days logged but thin (no takeaway, no ship). *"Showing up isn't the same as moving."*
@@ -56,7 +58,9 @@ Turn the fired failure modes into **1–3 concrete, measurable fixes** for next 
 
 ## 5. Reinforce the plan
 
-Tie the report back to the curriculum and the 5 rules (watch→ship, one niche/platform/6-months, validate-with-money, consistency>virality, don't-quit-the-slow-weeks). The weekly read is also where you keep the user from drifting off the committed path.
+Tie the report back to the profile's curriculum, north-star behavior, focus
+constraints, and success measures. The weekly read should catch drift from the
+user's chosen path without hard-coding a creator, platform, or business model.
 
 ## Tone guardrails
 

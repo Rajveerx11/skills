@@ -1,151 +1,67 @@
 ---
 name: n8n
-description: Build n8n workflow automations, custom nodes, and integrations. Use when the user wants to create n8n workflows, build custom n8n nodes, write n8n expressions, configure n8n triggers, handle n8n errors, set up webhook automations, or work with n8n's API. Triggers on mentions of n8n, workflow automation with n8n, or imports from n8n-workflow.
-argument-hint: [description of workflow or node to build]
+description: Design, build, import, export, test, or repair n8n workflows, expressions, custom nodes, webhooks, credentials, and API/CLI automation. Use for n8n workflow JSON, n8n 2.x publish/unpublish flows, queue/error/idempotency design, n8n REST API work, or packages importing n8n-workflow.
 ---
 
-# n8n Skill
+# n8n
 
-You are an expert at building production-grade n8n workflow automations, custom nodes, and integrations.
+Deliver an importable, version-compatible workflow or node with safe credentials, deterministic data contracts, and failure handling.
 
-Read the detailed reference files in `${CLAUDE_SKILL_DIR}` for comprehensive patterns:
+## Detect the environment
 
-- `workflow-reference.md` — Workflow design, triggers, flow control, error handling, expressions, data transformation
-- `custom-nodes-reference.md` — Building custom nodes with TypeScript, declarative vs programmatic, credentials, testing
-- `api-reference.md` — n8n REST API for programmatic workflow management, execution control, credential operations
+Inspect the n8n version, deployment type (Cloud, npm, Docker, queue mode), available nodes, current workflow JSON/API state, credential names, project conventions, and whether production is in scope. Use installed node descriptions or current official docs for exact `typeVersion`, parameters, and CLI/API behavior.
 
-## Setup Checklist
+Read references only as needed:
 
-### Self-Hosted (Docker)
-```bash
-docker run -it --rm --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n docker.n8n.io/n8nio/n8n
-```
+- [workflow-reference.md](workflow-reference.md) for flow patterns.
+- [custom-nodes-reference.md](custom-nodes-reference.md) for package structure.
+- [api-reference.md](api-reference.md) for API concepts.
 
-### Custom Node Development
-```bash
-npx n8n-node-dev new        # scaffold a new node
-npm link                     # link node to local n8n
-n8n start                   # start with custom nodes loaded
-```
+Verify version-sensitive examples. In n8n 2.x, publication uses publish/unpublish semantics; do not rely on old active-toggle instructions.
 
-### npm (Global)
-```bash
-npm install n8n -g
-n8n start
-```
+## Define the contract
 
-## Core Patterns
+Before editing, state:
 
-### Workflow JSON Structure
-```json
-{
-  "name": "My Workflow",
-  "nodes": [
-    {
-      "parameters": {},
-      "id": "unique-id",
-      "name": "Webhook",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [250, 300]
-    }
-  ],
-  "connections": {
-    "Webhook": {
-      "main": [[{ "node": "Next Node", "type": "main", "index": 0 }]]
-    }
-  },
-  "settings": { "executionOrder": "v1" }
-}
-```
+- trigger/input, expected item schema, and output/side effects;
+- credential and permission requirements;
+- volume, ordering, rate limits, duplicate policy, and retry behavior;
+- partial-failure route, observability, and replay/resume mechanism.
 
-### Common Trigger Types
-| Trigger | Use Case |
-|---------|----------|
-| `n8n-nodes-base.webhook` | HTTP requests, API endpoints |
-| `n8n-nodes-base.scheduleTrigger` | Cron-based recurring tasks |
-| `n8n-nodes-base.formTrigger` | User form submissions |
-| `n8n-nodes-base.emailReadImap` | Incoming emails |
-| `n8n-nodes-base.workflowTrigger` | Called by other workflows |
+Design for arrays of items. Preserve item linkage when downstream nodes depend on it.
 
-### Expression Syntax
-```
-{{ $json.fieldName }}                    // current node data
-{{ $input.first().json.field }}          // first input item
-{{ $('NodeName').first().json.field }}   // data from specific node
-{{ $now.toFormat('yyyy-MM-dd') }}        // Luxon date formatting
-{{ $if($json.age > 18, "adult", "minor") }}  // conditional
-{{ $jmespath($json, "items[?price > `100`]") }}  // JMESPath query
-```
+## Build with the smallest reliable nodes
 
-### Error Handling Pattern
-```json
-{
-  "nodes": [
-    {
-      "name": "Main Task",
-      "type": "n8n-nodes-base.httpRequest",
-      "onError": "continueErrorOutput",
-      "retryOnFail": true,
-      "maxTries": 3,
-      "waitBetweenTries": 1000
-    }
-  ]
-}
-```
+1. Prefer built-in nodes and expressions for clear mappings.
+2. Use Code nodes only for logic that is materially clearer there.
+3. Extract shared behavior into sub-workflows with explicit input/output contracts.
+4. Add batching or Loop Over Items for rate-limited/high-volume APIs.
+5. Add stable idempotency keys before external creates, sends, charges, or updates.
+6. Configure bounded retries only for transient failures; route permanent errors with useful context.
+7. Attach an Error Trigger workflow for operational failures when the deployment supports it.
+8. Keep secrets in n8n credentials. Remove headers/tokens copied from cURL and anonymize credential names/IDs before sharing workflow JSON.
 
-### Code Node (JavaScript)
-```javascript
-// In a Code node — process all items
-const results = [];
-for (const item of $input.all()) {
-  results.push({
-    json: {
-      processed: item.json.name.toUpperCase(),
-      timestamp: new Date().toISOString(),
-    }
-  });
-}
-return results;
-```
+For custom nodes, detect the supported Node.js/n8n toolchain, scaffold from the current official starter, implement typed credentials and operations, then build and lint the package.
 
-### Code Node (Python)
-```python
-# In a Code node — process all items
-results = []
-for item in _input.all():
-    results.append({
-        "json": {
-            "processed": item.json["name"].upper(),
-            "timestamp": str(datetime.now()),
-        }
-    })
-return results
-```
+## Import, test, publish
 
-## Critical Rules
+- Save a sanitized workflow JSON artifact and a small fixture for representative input.
+- Import into a non-production project or manual-test context first. Existing IDs can overwrite records; inspect and remove/change IDs when necessary.
+- Test happy path, empty input, multiple items, invalid data, pagination, rate limit, timeout, retry, duplicate delivery, and partial failure.
+- Confirm executions contain enough context to diagnose failures without logging secrets or sensitive payloads.
+- Leave imported workflows unpublished/inactive by default. Publish, activate, replace credentials, or alter a production workflow only when the user explicitly requests it.
 
-1. **Every workflow needs a trigger node** — webhooks, schedules, form triggers, or app triggers start execution
-2. **Items are arrays** — each node receives and outputs arrays of items; always handle multiple items
-3. **Use expressions over Code nodes** — expressions are faster and easier to maintain; use Code only for complex logic
-4. **Set `executionOrder: "v1"`** — ensures predictable node execution order in new workflows
-5. **Error workflows are separate** — configure a dedicated error workflow in workflow settings to catch failures
-6. **Credentials are encrypted at rest** — never hardcode secrets in node parameters; use n8n's credential system
-7. **Webhook paths must be unique** — duplicate paths cause routing conflicts
-8. **Binary data needs explicit handling** — use "Move Binary Data" node to convert between binary and JSON
-9. **Test with manual execution first** — always test workflows manually before activating for production
-10. **Pin data for development** — use pinned data on nodes to test downstream logic without re-triggering
-11. **Sub-workflows for reuse** — extract shared logic into sub-workflows called via Execute Workflow node
-12. **Respect rate limits** — use the SplitInBatches node and wait nodes when calling rate-limited APIs
+When using the self-hosted Server CLI, distinguish it from the remote n8n CLI: the Server CLI has direct database access and can bypass normal API permissions. Prefer scoped API/remote tooling for agent-driven management.
 
-## Key Node Categories
+## Completion
 
-| Category | Nodes |
-|----------|-------|
-| **Flow** | IF, Switch, Merge, SplitInBatches, Loop Over Items |
-| **Transform** | Set, Code, HTML Extract, Markdown, XML, Date & Time |
-| **Data** | HTTP Request, GraphQL, FTP, RSS, Read/Write Files |
-| **Developer** | Webhook, Execute Command, Execute Workflow, Function |
-| **AI** | AI Agent, Text Classifier, Summarization Chain, Vector Store |
+Return workflow/node paths or IDs, detected n8n version, credentials still requiring manual connection, test evidence, publication state, and exact resume/replay instructions. Never claim a JSON file was imported or executed unless verified.
 
-Use `$ARGUMENTS` to understand what the user wants to build. Read the reference files for detailed patterns before writing code.
+<!-- skill-evolver:adaptive-start -->
+## Adaptive excellence
+
+- Optimize for an importable, version-compatible, observable workflow or node with safe credentials and failure handling.
+- Use medium freedom for architecture; use low freedom for node schemas, type versions, credentials, idempotency, and platform limits.
+- Require verified n8n schemas, explicit error/retry/rate-limit/idempotency paths, and a successful import or API dry-run. Revise once when weak.
+- Learn only from versioned import failures, fixtures, and observed execution defects.
+<!-- skill-evolver:adaptive-end -->
